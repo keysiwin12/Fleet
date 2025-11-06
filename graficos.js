@@ -189,7 +189,7 @@ function alertBarsDTCOnly(dtc) {
   const total  = alta + media + info;
 
   if (total === 0) {
-    return `<div class="alert-bar-item"><span class="severity-label">Sin códigos</span><span class="severity-count">-</span></div>`;
+    return `<div class="alert-bar-item"><div class="alert-bar-label"><span>Sin códigos</span><span>-</span></div></div>`;
   }
 
   const pA = ((alta  / total) * 100).toFixed(1);
@@ -197,23 +197,25 @@ function alertBarsDTCOnly(dtc) {
   const pI = ((info  / total) * 100).toFixed(1);
 
   return `
-<div class="alert-bars">
   <div class="alert-bar-item">
-    <span class="severity-label">Alta ${alta}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-    <span class="severity-count">${pA}%</span>
+    <div class="alert-bar-label"><span>Alta</span><span>${alta}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="critical" style="width:${pA}%">${pA}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Media ${media}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pM}%"></div></div>
-    <span class="severity-count">${pM}%</span>
+    <div class="alert-bar-label"><span>Media</span><span>${media}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pM}%">${pM}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Info ${info}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#4299e1;width:${pI}%"></div></div>
-    <span class="severity-count">${pI}%</span>
+    <div class="alert-bar-label"><span>Info</span><span>${info}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="info" style="width:${pI}%">${pI}%</div>
+    </div>
   </div>
-</div>`;
+`;
 }
 
 // function alertEANumber(ea) {
@@ -323,7 +325,7 @@ function alertBarsEAOnly(ea) {
   const total = crit + alta + rend;
 
   if (total === 0) {
-    return `<div class="alert-bar-item"><span class="severity-label">Sin alertas</span><span class="severity-count">-</span></div>`;
+    return `<div class="alert-bar-item"><div class="alert-bar-label"><span>Sin alertas</span><span>-</span></div></div>`;
   }
 
   const pC = ((crit / total) * 100).toFixed(1);
@@ -331,23 +333,25 @@ function alertBarsEAOnly(ea) {
   const pR = ((rend / total) * 100).toFixed(1);
 
   return `
-<div class="alert-bars">
   <div class="alert-bar-item">
-    <span class="severity-label">Crítica ${crit}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#9b1c1c;width:${pC}%"></div></div>
-    <span class="severity-count">${pC}%</span>
+    <div class="alert-bar-label"><span>Crítica</span><span>${crit}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="critical" style="width:${pC}%">${pC}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Alta ${alta}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pH}%"></div></div>
-    <span class="severity-count">${pH}%</span>
+    <div class="alert-bar-label"><span>Alta</span><span>${alta}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pH}%">${pH}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Rendimiento ${rend}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#f59e0b;width:${pR}%"></div></div>
-    <span class="severity-count">${pR}%</span>
+    <div class="alert-bar-label"><span>Rendimiento</span><span>${rend}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pR}%">${pR}%</div>
+    </div>
   </div>
-</div>`;
+`;
 }
 
 /* ---------- ANÁLISIS DE ACEITE ---------- */
@@ -371,7 +375,7 @@ function alertBarsAceiteOnly(aceite) {
   const total      = normal + precaucion + anormal;
 
   if (total === 0) {
-    return `<div class="alert-bar-item"><span class="severity-label">Sin análisis</span><span class="severity-count">-</span></div>`;
+    return `<div class="alert-bar-item"><div class="alert-bar-label"><span>Sin análisis</span><span>-</span></div></div>`;
   }
 
   const pN = ((normal     / total) * 100).toFixed(1);
@@ -379,23 +383,25 @@ function alertBarsAceiteOnly(aceite) {
   const pA = ((anormal    / total) * 100).toFixed(1);
 
   return `
-<div class="alert-bars">
   <div class="alert-bar-item">
-    <span class="severity-label">Normal ${normal}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#38a169;width:${pN}%"></div></div>
-    <span class="severity-count">${pN}%</span>
+    <div class="alert-bar-label"><span>Normal</span><span>${normal}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="info" style="width:${pN}%">${pN}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Precaución ${precaucion}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pP}%"></div></div>
-    <span class="severity-count">${pP}%</span>
+    <div class="alert-bar-label"><span>Precaución</span><span>${precaucion}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pP}%">${pP}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Anormal ${anormal}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-    <span class="severity-count">${pA}%</span>
+    <div class="alert-bar-label"><span>Anormal</span><span>${anormal}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="critical" style="width:${pA}%">${pA}%</div>
+    </div>
   </div>
-</div>`;
+`;
 }
 
 
