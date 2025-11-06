@@ -3515,10 +3515,13 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     );
 
     // 🔔 EXPERT ALERTS
-    const { html: expertAlertsHTML } = renderExpertAlerts({
-      equipos: cliente.equipos,
-      periodo: modelo.periodo
-    });
+    const expertAlertsHTML = generarEventosAlerta(
+      cliente.equipos || [],
+      {
+        inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || config.fecha_inicio,
+        fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin || config.fecha_fin
+      }
+    );
 
     //recomendaciones
     const accionesHTML = generarAccionesRecomendaciones(
