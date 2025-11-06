@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reporte de Gestión de Flota</title>
+  <style>
+    :root{
+      --color-primary:#1a365d;--color-primary-light:#2c5282;--color-success:#38a169;--color-warning:#ed8936;--color-critical:#e53e3e;--color-info:#4299e1;
+      --gray-50:#f7fafc;--gray-100:#edf2f7;--gray-200:#e2e8f0;--gray-600:#718096;--gray-700:#4a5568;--gray-800:#2d3748;
+      --font-base:'Segoe UI',Arial,sans-serif
+    }
+
+    @page{ size:A4 landscape; margin:10mm; }
+
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:var(--font-base); font-size:8pt; line-height:1.2; color:var(--gray-800); background:#fff; }
+
+    /* ====== PAGINADO ====== */
+    /* Página 1: exactamente 1 hoja, sin salto extra */
+    .page-first{
+      width:calc(297mm - 20mm);  /* área imprimible */
+      height:calc(210mm - 20mm);
+      margin:0 auto;
+      position:relative;
+      overflow:hidden;
+      page-break-after:avoid !important;
+      background:#fff;
+    }
+    .page-inner{
+      width:100%; height:100%;
+      padding:10mm;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    /* La siguiente empieza en nueva hoja */
+    .page-first + .page{ break-before:page; }
+
+    /* Páginas siguientes: fluyen (pueden ocupar varias hojas) */
+    .page{
+      break-before:page;
+      padding:10mm;
+      background:#fff;
+      margin:0 auto;
+      position:relative;
+    }
+
+    /* ====== PORTADA 2 PÁGINAS ====== */
+    .page.portada{
+      width:calc(297mm - 20mm);
+      height:calc(210mm - 20mm);
+      margin:0 auto; position:relative; overflow:hidden; background:#fff;
+    }
+    .page.portada + .page{ break-before:page; } /* salto a nueva hoja tras cada .page.portada */
+
+    .portada-hero .portada-hero-wrap,
+    .portada-institucional .portada-institucional-wrap{
+      width:100%; height:100%; position:relative;
+    }
+
+    .img-cover{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; object-position:center;
+    }
+
+    /* Overlays de la página 1 (hero) */
+    .portada-hero .overlay-top{
+      position:absolute; top:10mm; right:12mm; left:12mm;
+      display:flex; justify-content:flex-end; align-items:center; gap:6mm;
+    }
+    .logo-csc{ max-height:20mm; width:auto; display:block; }
+
+    .portada-hero .overlay-bottom{
+      position:absolute; left:12mm; right:12mm; bottom:10mm;
+      display:flex; justify-content:space-between; align-items:flex-end; gap:10mm;
+    }
+    .portada-hero .overlay-bottom .texto .title{
+      font-size:22pt; font-weight:800; color:#fff;
+      text-shadow:0 2px 8px rgba(0,0,0,.35); margin:0 0 3mm 0;
+    }
+    .portada-hero .overlay-bottom .texto .subtitle{
+      font-size:10pt; color:#f0f8ff; text-shadow:0 1px 4px rgba(0,0,0,.35); margin:0 0 5mm 0;
+    }
+    .portada-hero .overlay-bottom .texto .cliente{
+      font-size:14pt; font-weight:700; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.35); margin:0 0 4mm 0;
+    }
+    .portada-hero .overlay-bottom .chips .chip{
+      display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px;
+      font-size:9pt; font-weight:700; background:rgba(255,255,255,.85); color:#1e4e8c;
+      border:1px solid rgba(255,255,255,.9); margin-right:4mm;
+    }
+    .logo-ipesa{ max-height:18mm; width:auto; display:block; filter:drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+
+    /* Evitar cortes feos en bloques grandes (por defecto) */
+    .section,.header,.kpi-bar,.metrics-grid,.alerts-group,.economic-group,
+    .alert-card,.economic-card{ break-inside:avoid; }
+
+    /* Tablas al imprimir */
+    @media print{
+      body{ margin:0; padding:0; }
+      *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+      thead{ display:table-header-group; }
+      tfoot{ display:table-footer-group; }
+      tr,thead,tfoot{ break-inside:avoid; }
+    }
+
+    /* ====== PLANTILLA ====== */
+    .header{
+      background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-primary-light) 100%);
+      color:#fff; padding:10px 15px; border-radius:6px; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,.1);
+    }
+    .header h1{ font-size:14pt; font-weight:600; margin-bottom:2px; }
+    .header-subtitle{ font-size:7pt; opacity:.9; }
+
+    .kpi-bar{ display:grid; grid-template-columns:repeat(8,1fr); gap:5px; margin-bottom:8px; }
+    .kpi-item{ background:#fff; border:1px solid var(--gray-200); border-radius:5px; padding:6px 4px; text-align:center; position:relative; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+    .kpi-item::before{ content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+    .kpi-item[data-type="critical"]::before{ background:linear-gradient(90deg,#fc8181,var(--color-critical)); }
+    .kpi-item[data-type="warning"]::before{ background:linear-gradient(90deg,#f6ad55,var(--color-warning)); }
+    .kpi-item[data-type="success"]::before{ background:linear-gradient(90deg,#68d391,var(--color-success)); }
+    .kpi-item[data-type="info"]::before{ background:linear-gradient(90deg,#63b3ed,var(--color-info)); }
+    .kpi-value{ font-size:13pt; font-weight:700; color:var(--color-primary); display:block; margin-bottom:2px; }
+    .kpi-label{ font-size:6pt; color:var(--gray-600); line-height:1.1; text-transform:uppercase; font-weight:600; }
+
+    .section{ background:#fff; border:1px solid var(--gray-200); border-radius:6px; padding:8px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+    .section-header{ font-size:9pt; font-weight:600; color:var(--color-primary); margin-bottom:6px; padding-bottom:4px; border-bottom:1.5px solid var(--gray-200); display:flex; align-items:center; gap:5px; }
+    .section-icon{ font-size:10pt; }
+
+    .metrics-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:6px; }
+    .metric-card{ background:var(--gray-50); border-radius:5px; padding:6px 4px; text-align:center; border:1px solid var(--gray-200); }
+    .metric-title{ font-size:6.5pt; color:var(--gray-600); margin-bottom:4px; font-weight:600; text-transform:uppercase; min-height:18px; display:flex; align-items:center; justify-content:center; line-height:1.1; }
+
+    .gauge-container{ position:relative; width:60px; height:60px; margin:0 auto 4px; }
+    .gauge-svg{ transform:rotate(-90deg); }
+    .gauge-bg{ fill:none; stroke:var(--gray-200); stroke-width:6; }
+    .gauge-fill{ fill:none; stroke-width:6; stroke-linecap:round; transition:stroke-dashoffset 1s ease; }
+    .gauge-fill[data-color="critical"]{ stroke:var(--color-critical); }
+    .gauge-fill[data-color="warning"]{ stroke:var(--color-warning); }
+    .gauge-fill[data-color="success"]{ stroke:var(--color-success); }
+    .gauge-fill[data-color="info"]{ stroke:var(--color-info); }
+    .gauge-text{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+    .gauge-percentage{ font-size:13pt; font-weight:700; display:block; line-height:1; }
+    .gauge-subtitle{ font-size:5.5pt; color:var(--gray-600); display:block; margin-top:2px; }
+    .metric-footer{ font-size:6pt; color:var(--gray-600); padding-top:4px; border-top:1px solid var(--gray-200); margin-top:4px; line-height:1.2; }
+
+    .status-indicator{ display:inline-flex; align-items:center; gap:3px; padding:2px 6px; border-radius:8px; font-size:5.5pt; font-weight:700; margin-top:3px; text-transform:uppercase; }
+    .status-dot{ width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .status-critical{ background:#fed7d7; color:#7b1e1e; }
+    .status-warning{ background:#feebc8; color:#7c2d12; }
+    .status-success{ background:#c6f6d5; color:#22543d; }
+    .status-info{ background:#bee3f8; color:#1e4e8c; }
+
+    .efficiency-bar{ background:var(--gray-50); border-radius:5px; padding:6px; border:1px solid var(--gray-200); }
+    .efficiency-label{ font-size:6.5pt; color:var(--gray-600); margin-bottom:4px; font-weight:600; text-transform:uppercase; }
+    .progress-bar{ height:16px; background:var(--gray-200); border-radius:8px; overflow:hidden; position:relative; box-shadow:inset 0 1px 2px rgba(0,0,0,.1); }
+    .progress-fill{ height:100%; background:linear-gradient(90deg,var(--color-warning),#dd6b20); display:flex; align-items:center; justify-content:flex-end; padding:0 6px; transition:width 1s ease; }
+    .progress-text{ font-size:7pt; font-weight:700; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.2); }
+    .progress-legend{ display:flex; justify-content:space-between; margin-top:4px; font-size:6pt; color:var(--gray-600); }
+
+    .alerts-economic-wrapper{ display:grid; grid-template-columns:75% 25%; gap:8px; margin-bottom:8px; }
+    .alerts-group,.economic-group{ background:#fff; border:1px solid var(--gray-200); border-radius:6px; padding:8px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+    .alerts-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+
+    .alert-card{ background:#fff; border:1.5px solid var(--gray-300); border-radius:6px; padding:12px 10px; box-shadow:0 2px 4px rgba(0,0,0,.08); height:100%; display:flex; flex-direction:column; min-width:0; }
+    .card-header{ display:none; }
+    .alert-header{ display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:8px; padding-bottom:8px; border-bottom:2px solid var(--gray-200); flex-shrink:0; }
+    .alert-number{ font-size:32pt; font-weight:700; color:var(--color-primary); line-height:1; margin-bottom:4px; }
+    .alert-label{ font-size:6.5pt; color:var(--gray-700); text-transform:uppercase; font-weight:700; letter-spacing:.3px; }
+    .alert-bars{ margin-top:0; flex:1; display:flex; flex-direction:column; justify-content:center; }
+    .alert-bar-item{ margin-bottom:5px; }
+    .alert-bar-item:last-child{ margin-bottom:0; }
+    .alert-bar-label{ display:flex; justify-content:space-between; font-size:6pt; margin-bottom:3px; color:var(--gray-700); font-weight:600; }
+    .alert-bar-bg{ height:14px; background:var(--gray-100); border-radius:4px; overflow:hidden; border:1px solid var(--gray-200); width:100%; }
+    .alert-bar-fill{ height:100%; display:flex; align-items:center; justify-content:flex-end; padding:0 6px; font-size:6pt; font-weight:700; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.3); min-width:fit-content; }
+    .alert-bar-fill[data-severity="critical"]{ background:linear-gradient(90deg,#fc8181,var(--color-critical)); }
+    .alert-bar-fill[data-severity="warning"]{ background:linear-gradient(90deg,#f6ad55,var(--color-warning)); }
+    .alert-bar-fill[data-severity="info"]{ background:linear-gradient(90deg,#90cdf4,var(--color-info)); }
+
+    .economic-card{ background:linear-gradient(135deg,#fed7d7 0%,#feb2b2 100%); border:2px solid #fc8181; border-radius:5px; padding:10px; box-shadow:0 2px 6px rgba(229,62,62,.15); text-align:center; height:100%; display:flex; flex-direction:column; justify-content:center; }
+    .economic-main{ margin:6px 0; }
+    .economic-label{ font-size:6.5pt; color:#742a2a; font-weight:700; text-transform:uppercase; margin-bottom:6px; }
+    .economic-value{ font-size:28pt; font-weight:700; color:#c53030; line-height:1; text-shadow:0 1px 2px rgba(0,0,0,.1); }
+    .economic-breakdown{ display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:8px; }
+    .breakdown-item{ background:rgba(255,255,255,.85); padding:6px 4px; border-radius:4px; }
+    .breakdown-value{ font-size:14pt; font-weight:700; color:#c53030; line-height:1; }
+    .breakdown-label{ font-size:5.5pt; color:#742a2a; text-transform:uppercase; margin-top:2px; font-weight:600; }
+    .economic-footer{ font-size:5.5pt; color:#742a2a; margin-top:6px; padding-top:6px; border-top:1px solid rgba(116,42,42,.2); line-height:1.3; }
+
+    .recommendations{ background:#fffaf0; border:2px solid #f6ad55; border-radius:6px; padding:12px; }
+    .recommendation-title{ font-size:9pt; font-weight:700; color:#c05621; margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+    .recommendation-list{ list-style:none; padding:0; }
+    .recommendation-list li{ padding:5px 0 5px 15px; font-size:7.5pt; color:#744210; position:relative; line-height:1.4; }
+    .recommendation-list li::before{ content:'▸'; position:absolute; left:0; color:var(--color-warning); font-weight:bold; }
+
+    /* ====== FIX ESPECÍFICO: ANÁLISIS DE UTILIZACIÓN ====== */
+    #utilizacion{ break-inside:auto; }
+    #utilizacion .section-header,
+    #utilizacion .section-intro{
+      break-after:avoid-page;
+      page-break-after:avoid;
+    }
+    #utilizacion table{ page-break-inside:auto; }
+    #utilizacion thead{ display:table-header-group; }
+    #utilizacion tr{ break-inside:avoid; page-break-inside:avoid; }
+
+    /* Elimina cualquier contador de páginas que pudieras tener */
+    .page-number{ display:none !important; }
+
+    /* ====== DTC ====== */
+    .page-dtc .section-header{ display:flex; align-items:center; gap:5px; }
+
+    .dtc-info-box {
+      background: #f0f7ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 16px; margin: 10px 0;
+    }
+    .dtc-info-title { font-size: 9pt; color: #1e40af; font-weight: 700; margin-bottom: 8px; line-height:1.4; }
+    .dtc-info-text { font-size: 8pt; color: #374151; line-height:1.5; }
+
+    .dtc-status-positive {
+      background: #ffffff; border: 2px solid #10b981; border-radius: 8px; padding: 16px; margin: 10px 0; text-align: center;
+    }
+    .status-icon-large {
+      width: 28px; height: 28px; background: #10b981; color: white; font-size: 16px; font-weight: 700; border-radius: 50%;
+      display:flex; align-items:center; justify-content:center; margin: 0 auto 6px auto;
+    }
+    .status-title { font-size: 11pt; color: #065f46; font-weight: 700; margin-bottom: 6px; }
+    .status-message { font-size: 9pt; color: #047857; margin-bottom: 6px; font-weight: 600; }
+    .status-description { font-size: 8pt; color: #374151; margin-bottom: 6px; }
+    .status-benefits { list-style:none; padding:0; margin:8px auto 0 auto; max-width:120mm; text-align:left; }
+    .status-benefits li { font-size:8pt; color:#374151; padding:5px 8px; margin-bottom:5px; background:#f0fdf4; border-left:3px solid #10b981; border-radius:3px; }
+    .status-benefits li::before { content:"✓"; color:#10b981; font-weight:700; margin-right:6px; }
+
+    .resumen-box-mejorado {
+      background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; margin: 6px 0 10px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .resumen-header { text-align:center; margin-bottom:8px; padding-bottom:6px; border-bottom:2px solid #367c2b; }
+    .resumen-title-mejorado { font-size: 10pt; color: #1a202c; font-weight: 700; }
+
+    .stats-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:6px; margin-bottom:8px; }
+    .stat-card { background:#f7fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 6px; text-align:center; }
+    .stat-card.highlight { background:#fff5e6; border:2px solid #f59e0b; }
+    .stat-label { font-size:6pt; color:#718096; text-transform:uppercase; letter-spacing:.3px; margin-bottom:4px; font-weight:600; }
+    .stat-value-big { font-size:16pt; color:#1a202c; font-weight:700; line-height:1; }
+    .stat-percent { font-size:9pt; color:#4a5568; font-weight:600; }
+
+    .resumen-divider-mejorado { height:2px; background:linear-gradient(to right,#e2e8f0,#cbd5e0,#e2e8f0); margin:8px 0; }
+
+    .seccion-familias { margin: 6px 0; }
+    .seccion-title { font-size:8pt; color:#2d3748; font-weight:700; text-transform:uppercase; letter-spacing:.3px; margin-bottom:6px; }
+    .familias-grafico { display:flex; flex-direction:column; gap:6px; }
+
+    .familia-row-visual {
+      display:flex; gap:8px; align-items:center; padding:6px; background:#f7fafc; border-radius:6px; border:1px solid #e2e8f0;
+    }
+    .familia-info { min-width:40mm; }
+    .familia-nombre-visual { font-size:8pt; font-weight:700; color:#2d3748; margin-bottom:2px; }
+    .familia-numeros { font-size:7pt; color:#718096; font-weight:500; }
+    .familia-barra-visual { flex:1; }
+    .barra-container-visual {
+      display:flex; height:10mm; background:#e2e8f0; border-radius:5px; overflow:hidden; margin-bottom:4px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .barra-segmento {
+      display:flex; align-items:center; justify-content:center; color:white; font-size:9pt; font-weight:700; min-width:8mm;
+    }
+    .barra-segmento.critico { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .barra-segmento.atencion { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+    .barra-leyenda { display:flex; gap:8px; font-size:7pt; padding-left:2px; }
+    .leyenda-critico { color:#c53030; font-weight:600; }
+    .leyenda-critico::before { content:"●"; margin-right:3px; }
+    .leyenda-atencion { color:#d69e2e; font-weight:600; }
+    .leyenda-atencion::before { content:"●"; margin-right:3px; }
+
+    .dtc-section-header { margin:10px 0 6px 0; }
+    .dtc-section-title { font-size:10pt; color:#2d3748; font-weight:700; padding-bottom:6px; border-bottom:2px solid #e2e8f0; }
+
+    .dtc-card-critico, .dtc-card-atencion { border-radius:6px; padding:8px; margin:6px 0; }
+    .dtc-card-critico { border:2px solid #dc2626; background:#fee2e2; }
+    .dtc-card-atencion { border:2px solid #f59e0b; background:#fef3c7; }
+    .dtc-card-header { margin-bottom:6px; }
+    .dtc-card-title { font-size:9pt; color:#1a202c; font-weight:700; margin-bottom:4px; }
+    .dtc-card-info { display:flex; justify-content:space-between; align-items:center; font-size:7pt; }
+    .dtc-card-serie { color:#4a5568; }
+    .dtc-card-count { color:#2d3748; font-weight:600; }
+
+    .dtc-subsection { margin:8px 0 5px 0; }
+    .dtc-subsection-title { font-size:8pt; color:#2d3748; font-weight:700; margin-bottom:4px; }
+
+    .dtc-table { width:100%; border-collapse:collapse; font-size:7pt; margin:6px 0; background:white; }
+    .dtc-table thead { background:#2d3748; color:white; }
+    .dtc-table th { padding:6px 5px; text-align:left; font-weight:600; font-size:6.5pt; text-transform:uppercase; letter-spacing:.3px; }
+    .dtc-table td { padding:6px 5px; border-bottom:1px solid #e2e8f0; color:#4a5568; }
+    .dtc-table tbody tr:hover { background:#f7fafc; }
+
+    .dtc-additional { text-align:center; padding:6px; background:white; border-radius:4px; margin-top:5px; font-size:7pt; color:#718096; font-style:italic; }
+
+    @media print{
+      #dtc thead{ display:table-header-group; }
+      #dtc tfoot{ display:table-footer-group; }
+      #dtc tr, #dtc thead, #dtc tfoot{ break-inside:avoid; page-break-inside:avoid; }
+    }
+
+    /* ============================================
+       💧 ANÁLISIS DE FLUIDOS - ESTILOS
+       ============================================ */
+    .page-fluidos .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #367c2b;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .page-fluidos .section-header h2 { font-size: 22px; color: #1a202c; font-weight: 700; }
+    .page-fluidos .periodo-text { font-size: 14px; color: #616161; margin-bottom: 15px; }
+    .fluidos-chart-container { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:10px; padding:15px; margin-bottom:25px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+    .fluidos-legend { display:flex; justify-content:center; gap:30px; font-size:13px; font-weight:600; margin-bottom:20px; }
+    .fluidos-legend p { margin:0; }
+    .fluidos-equipo { margin-bottom:25px; }
+    .fluidos-equipo h4 { font-size:14px; font-weight:700; color:#1b5e20; margin-bottom:8px; }
+    .tabla-fluidos { width:100%; border-collapse:collapse; font-size:12px; background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
+    .tabla-fluidos thead { background:#367c2b; color:#ffffff; }
+    .tabla-fluidos th { text-align:left; padding:8px 10px; font-size:11px; text-transform:uppercase; }
+    .tabla-fluidos td { padding:8px 10px; border-bottom:1px solid #f0f0f0; color:#333; }
+    .tabla-fluidos tbody tr:hover { background:#f1f8e9; }
+
+    .fluidos-mensaje-simple {
+      background:#f9f9f9; border:2px dashed #c5e1a5; border-radius:10px; padding:25px 30px; text-align:center; margin:30px auto; width:90%;
+    }
+    .fluidos-mensaje-simple p { margin-bottom:10px; font-size:14px; color:#424242; line-height:1.6; }
+    .fluidos-mensaje-simple .mensaje-principal { font-weight:700; color:#1b5e20; font-size:15px; }
+    .fluidos-imagen-container { text-align:center; margin-top:30px; }
+
+    /* 💧 ANÁLISIS DE FLUIDOS (solo sin datos) */
+    .page-fluidos {
+      background:#ffffff; padding:40px 50px; font-family:'Segoe UI', Tahoma, sans-serif;
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      min-height:90vh; max-height:250mm; box-sizing:border-box; page-break-after:always; overflow:hidden;
+    }
+    .page-fluidos h2 { font-size:22px; color:#1b5e20; font-weight:700; margin-bottom:8px; text-align:center; }
+    .page-fluidos .periodo-text { font-size:13px; color:#555; margin-bottom:25px; text-align:center; }
+    .fluidos-mensaje-simple { max-width:580px; background:#f9fcf8; border:2px dashed #a5d6a7; border-radius:10px; padding:25px 35px; text-align:justify; line-height:1.6; color:#424242; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.05); page-break-inside:avoid; }
+    .fluidos-mensaje-simple p { font-size:13px; margin-bottom:12px; }
+    .fluidos-mensaje-simple .mensaje-principal { font-weight:700; color:#1b5e20; font-size:14px; margin-bottom:15px; text-align:center; }
+    .fluidos-mensaje-simple strong { color:#1b5e20; }
+    .fluidos-imagen-container { text-align:center; margin-top:10px; }
+    .fluidos-imagen-grande { max-width:42%; height:auto; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    .page-fluidos,.fluidos-mensaje-simple,.fluidos-imagen-container { page-break-inside:avoid; }
+
+    /* 🎯 EXPERT ALERTS */
+    .page-ea {
+      background:#ffffff; padding:50px 70px; page-break-after:always; font-family:'Arial', sans-serif; box-sizing:border-box;
+    }
+    .page-ea .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
+    .page-ea .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
+    .page-ea .periodo-text { font-size:13px; color:#666; margin-bottom:25px; }
+    .page-ea .ea-info-box { background:#fff3e0; border-left:4px solid #f57c00; padding:25px 30px; margin-bottom:30px; border-radius:4px; }
+    .page-ea .ea-info-title { margin:0 0 15px 0; color:#e65100; font-size:16px; font-weight:700; }
+    .page-ea .ea-info-text { margin:0; color:#424242; font-size:14px; line-height:1.7; text-align:justify; }
+    .page-ea .ea-resumen { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:8px; padding:30px; margin-bottom:30px; }
+    .page-ea .ea-resumen-titulo { margin:0 0 25px 0; color:#212121; font-size:18px; font-weight:700; text-align:center; }
+    .page-ea .ea-barras-container { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin-bottom:30px; }
+    .page-ea .ea-barra-grupo { text-align:center; }
+    .page-ea .ea-barra-header { display:flex; flex-direction:column; align-items:center; margin-bottom:10px; }
+    .page-ea .ea-barra-label { font-size:11px; font-weight:700; color:#616161; letter-spacing:.5px; margin-bottom:5px; }
+    .page-ea .ea-barra-valor { font-size:24px; font-weight:700; }
+    .page-ea .ea-barra-bg { background:#e0e0e0; height:12px; border-radius:6px; overflow:hidden; margin-bottom:5px; }
+    .page-ea .ea-barra-fill { height:100%; border-radius:6px; transition:width .3s ease; }
+    .page-ea .ea-barra-fill.critica { background: linear-gradient(90deg,#d32f2f 0%, #f44336 100%); }
+    .page-ea .ea-barra-fill.alta { background: linear-gradient(90deg,#f57c00 0%, #ff9800 100%); }
+    .page-ea .ea-barra-fill.rendimiento { background: linear-gradient(90deg,#fbc02d 0%, #ffeb3b 100%); }
+    .page-ea .ea-barra-pct { font-size:12px; color:#757575; font-weight:600; }
+    .page-ea .ea-tarjeta { background:white; border:1px solid #e0e0e0; border-radius:8px; padding:25px; margin-bottom:20px; box-shadow:0 2px 4px rgba(0,0,0,0.05); page-break-inside:avoid; }
+    .page-ea .ea-tarjeta-header { border-bottom:2px solid #f0f0f0; padding-bottom:15px; margin-bottom:15px; }
+    .page-ea .ea-equipo-titulo { margin:0; color:#212121; font-size:16px; font-weight:700; }
+    .page-ea .ea-alerta-item { margin-bottom:15px; padding-left:5px; }
+    .page-ea .alerta-descripcion { font-size:14px; color:#212121; line-height:1.6; margin-bottom:5px; }
+    .page-ea .alerta-meta { font-size:12px; color:#757575; padding-left:15px; }
+    .page-ea .ea-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:30px; text-align:center; margin-top:30px; }
+    .page-ea .status-icon-large { font-size:48px; margin-bottom:15px; }
+    .page-ea .status-title { margin:0 0 15px 0; color:#2e7d32; font-size:20px; font-weight:700; }
+    .page-ea .status-message { font-size:15px; color:#424242; margin-bottom:20px; font-weight:600; }
+    .page-ea .status-description { font-size:14px; color:#424242; margin-bottom:15px; }
+    .page-ea .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:20px; }
+    .page-ea .status-benefits li { font-size:14px; color:#424242; margin-bottom:8px; line-height:1.6; }
+
+    /* ================================
+       ACCIONES Y RECOMENDACIONES
+       ================================ */
+    .page-acciones { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:Arial, sans-serif; }
+    @media print { .page-acciones .accion-tarjeta { break-inside: avoid; } }
+    .page-acciones .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
+    .page-acciones .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
+    .page-acciones .btn-volver { color:#3182ce; text-decoration:none; font-size:13px; font-weight:600; }
+    .page-acciones .periodo-text { font-size:13px; color:#666; margin:10px 0 18px; }
+    .page-acciones .acciones-section-header { margin:26px 0 14px; }
+    .page-acciones .acciones-section-title { margin:0; padding:12px 16px; background:linear-gradient(135deg,#424242 0%,#616161 100%); color:#ffffff; font-size:15px; font-weight:700; border-radius:6px; text-transform:uppercase; letter-spacing:.5px; }
+    .page-acciones .accion-tarjeta { background:#ffffff; border:1px solid #e0e0e0; border-radius:8px; padding:18px; margin-bottom:16px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
+    .page-acciones .accion-tarjeta-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #f0f0f0; padding-bottom:10px; margin-bottom:12px; }
+    .page-acciones .accion-equipo-titulo { margin:0; color:#212121; font-size:15px; font-weight:700; }
+    .page-acciones .accion-equipo-serie { color:#757575; font-size:12px; font-weight:600; }
+    .page-acciones .accion-tarjeta-body { margin-bottom:12px; }
+    .page-acciones .accion-subtitulo { margin:0 0 12px; color:#424242; font-size:13px; font-weight:700; }
+    .page-acciones .accion-item { margin-bottom:12px; }
+    .page-acciones .accion-descripcion { font-size:13px; color:#212121; line-height:1.55; margin-bottom:4px; }
+    .page-acciones .accion-contexto { font-size:12px; color:#757575; padding-left:22px; }
+    .page-acciones .accion-tarjeta-footer { border-top:1px solid #f0f0f0; padding-top:10px; }
+    .page-acciones .accion-asesor { font-size:13px; color:#424242; font-weight:600; }
+    .page-acciones .acciones-contactos { margin-top:26px; padding-top:20px; border-top:3px solid #e0e0e0; }
+    .page-acciones .contactos-titulo { margin:0 0 8px; color:#212121; font-size:16px; font-weight:700; }
+    .page-acciones .contactos-intro { font-size:13px; color:#424242; margin:0 0 14px; line-height:1.55; }
+    .page-acciones .contactos-tabla { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
+    .page-acciones .contacto-header-row { background:#f5f5f5; border-bottom:2px solid #e0e0e0; }
+    .page-acciones .contacto-th { padding:10px 12px; text-align:left; font-size:12px; font-weight:700; color:#424242; }
+    .page-acciones .contacto-fila { border-bottom:1px solid #f0f0f0; }
+    .page-acciones .contacto-fila:last-child { border-bottom:none; }
+    .page-acciones .contacto-fila td { padding:10px 12px; font-size:12px; color:#424242; }
+    .page-acciones .contacto-nombre { font-weight:600; color:#212121; }
+    .page-acciones .acciones-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:28px; text-align:center; margin-top:18px; }
+    .page-acciones .status-icon-large { font-size:44px; margin-bottom:12px; }
+    .page-acciones .status-title { margin:0 0 12px; color:#2e7d32; font-size:18px; font-weight:700; }
+    .page-acciones .status-message { font-size:14px; color:#424242; margin-bottom:14px; font-weight:600; }
+    .page-acciones .status-description { font-size:13px; color:#424242; margin-bottom:10px; }
+    .page-acciones .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:18px; }
+    .page-acciones .status-benefits li { font-size:13px; color:#424242; margin-bottom:6px; line-height:1.55; }
+
+    /* 🔧 Ajuste para el bloque que devuelven alert*Number() */
+    .alert-number{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      margin-bottom:8px; padding-bottom:8px; border-bottom:2px solid var(--gray-200);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 0) PORTADA -->
+  <?!= portadaHTML ?>
+
+  <!-- PÁGINA 2: RESUMEN -->
+  <div class="page-first">
+    <div class="page-inner">
+      <div class="header">
+        <h1> RESUMEN - GESTIÓN DE FLOTA</h1>
+        <div class="header-subtitle">Monitoreo y Control de Maquinaria</div>
+      </div>
+
+      <div class="kpi-bar">
+        <div class="kpi-item" data-type="info">
+          <span class="kpi-value"><?!= metricas.totales.totalEquipos ?></span>
+          <span class="kpi-label">Total Equipos</span>
+        </div>
+        <div class="kpi-item" data-type="critical">
+          <span class="kpi-value"><?!= metricas.totales.conectados15d ?></span>
+          <span class="kpi-label">Conectados (<?!= metricas.porcentajes.conectadas ?>%)</span>
+        </div>
+        <div class="kpi-item" data-type="success">
+          <span class="kpi-value"><?!= metricas.totales.equiposTrabajando ?></span>
+          <span class="kpi-label">En Operación</span>
+        </div>
+        <div class="kpi-item" data-type="critical">
+          <span class="kpi-value"><?!= (metricas.totales.totalEquipos - metricas.totales.conectados15d) ?></span>
+          <span class="kpi-label">Desconectados</span>
+        </div>
+        <div class="kpi-item" data-type="critical">
+          <span class="kpi-value"><?!= Number(metricas.totales.equiposExcesoRalenti) ?></span>
+          <span class="kpi-label">Exceso Ralentí</span>
+        </div>
+        <div class="kpi-item" data-type="warning">
+          <span class="kpi-value"><?!= Number(metricas.totales.horasRalenti).toFixed(0) ?>h</span>
+          <span class="kpi-label">Horas Ralentí</span>
+        </div>
+        <div class="kpi-item" data-type="info">
+          <span class="kpi-value"><?!= metricas.totales.horasMotor ?>h</span>
+          <span class="kpi-label">Horas Motor</span>
+        </div>
+        <div class="kpi-item" data-type="info">
+          <span class="kpi-value"><?!= metricas.promediosPorEquipo.horasRalenti ?>h</span>
+          <span class="kpi-label">Promedio Ralentí</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">📊</span>
+          Indicadores Clave de Desempeño
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-title">Conectividad de Flota</div>
+            <?!= data.gaugeConectividad ?>
+            <div class="metric-footer">
+              Equipos conectados (15d)
+              <div class="status-indicator status-<?!=data.estadoConectividadEtiqueta ?>">
+                <span class="status-dot"></span>
+                <?!= data.estadoConectividadTexto ?>
+              </div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Próximo Mantenimiento</div>
+            <?!= data.gaugeMantenimiento ?>
+            <div class="metric-footer">
+              Mantenimiento (&lt;50h)
+              <div class="status-indicator status-<?!= data.estadoMantenimientoEtiqueta ?>">
+                <span class="status-dot"></span>
+                <?!= data.estadoMantenimientoTexto ?>
+              </div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Exceso de Ralentí</div>
+            <?!= data.gaugeExcesoRalenti ?>
+            <div class="metric-footer">
+              Equipos ralentí (&gt;15%)
+              <div class="status-indicator status-<?!= data.estadoExcesoEtiqueta ?>">
+                <span class="status-dot"></span>
+                <?!= data.estadoExcesoTexto ?>
+              </div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Ralentí Total Flota</div>
+            <?!= data.gaugePercentRalentiFlota ?>
+            <div class="metric-footer">
+              % Horas (ralentí vs motor)
+              <div class="status-indicator status-<?!= data.estadoRalentiEtiqueta ?>">
+                <span class="status-dot"></span>
+                <?!= data.estadoRalentiTexto ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="efficiency-bar">
+          <div class="efficiency-label">⏱️ EFICIENCIA OPERATIVA (Tiempo Motor vs Ralentí)</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: <?!= metricas.porcentajes.ralentiFlota ?>%;">
+              <span class="progress-text"><?!= metricas.porcentajes.ralentiFlota ?>% Ralentí</span>
+            </div>
+          </div>
+          <div class="progress-legend">
+            <span>🔴 Ralentí: <?!= metricas.totales.horasRalenti ?>h</span>
+            <span>🟢 Productivo: <?!= (metricas.totales.horasMotor - metricas.totales.horasRalenti).toFixed(1) ?>h</span>
+            <span>⚡ Total: <?!= metricas.totales.horasMotor ?>h</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="alerts-economic-wrapper">
+        <div class="alerts-group">
+          <div class="section-header">
+            <span class="section-icon">⚠️</span>
+            Alertas Técnicas
+          </div>
+          <div class="alerts-grid">
+            <!-- DTC -->
+            <div class="alert-card">
+              <?!= data.alertDTC ?>
+              <div class="alert-bars"><?!= data.alertDTCBars ?></div>
+            </div>
+            <!-- Expert Alerts -->
+            <div class="alert-card">
+              <?!= data.alertEA ?>
+              <div class="alert-bars"><?!= data.alertEABars ?></div>
+            </div>
+            <!-- Análisis de Aceite -->
+            <div class="alert-card">
+              <?!= data.alertAceite ?>
+              <div class="alert-bars"><?!= data.alertAceiteBars ?></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="economic-group">
+          <div class="section-header">
+            <span class="section-icon">💰</span>
+            Impacto Económico
+          </div>
+          <div class="economic-card">
+            <div class="economic-main">
+              <div class="economic-label">⚠️ PÉRDIDA ESTIMADA</div>
+              <div class="economic-value">$<?!= metricas.economico.perdidaUSD_por_combustible ?></div>
+            </div>
+            <div class="economic-breakdown">
+              <div class="breakdown-item">
+                <div class="breakdown-value"><?!= metricas.totales.combPerdidoGal ?> gal</div>
+                <div class="breakdown-label">Combustible</div>
+              </div>
+              <div class="breakdown-item">
+                <div class="breakdown-value">$<?!= metricas.economico.perdidaUSD_por_equipo ?></div>
+                <div class="breakdown-label">Por Equipo</div>
+              </div>
+            </div>
+            <div class="economic-footer">
+              💵 $<?!= metricas.economico.precioPorGalon ?>/gal • ⛽ <?!= metricas.promediosPorEquipo.combPerdidoGal ?> gal/eq
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2: RECOMENDACIONES (fluye) -->
+  <div class="page">
+    <div class="header">
+      <h1>RESUMEN - GESTIÓN DE FLOTA</h1>
+      <div class="header-subtitle">Recomendaciones y Plan de Acción</div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">💡</span>
+        Recomendaciones Prioritarias
+      </div>
+      <div class="recommendations">
+        <div class="recommendation-title">🎯 Acciones Inmediatas Sugeridas</div>
+        <ul class="recommendation-list">
+          <?!= recomendacionesHTML ?>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 3: CONECTIVIDAD (fluye) -->
+  <div class="page">
+    <div class="header">
+      <h1>📡 CONECTIVIDAD DE EQUIPOS Y PRÓXIMO MANTENIMIENTO</h1>
+      <div class="header-subtitle">Conectividad y Mantenimiento Preventivo del <?!= periodo.inicio ?> al <?!= periodo.fin ?></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">📊</span>
+        Indicadores Clave de Conectividad
+      </div>
+      <div class="metrics-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="metric-card">
+          <div class="metric-title">Conectividad de Flota</div>
+          <?!= dataConectividad.gaugeConectividad ?>
+          <div class="metric-footer">
+            Equipos conectados (15d)
+            <div class="status-indicator status-<?!= dataConectividad.estadoConectividad ?>">
+              <span class="status-dot"></span>
+              <?!= dataConectividad.etiquetaConectividad ?>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Próximo Mantenimiento</div>
+          <?!= dataConectividad.gaugeMantenimiento ?>
+          <div class="metric-footer">
+            Mantenimiento (&lt;50h)
+            <div class="status-indicator status-<?!= dataConectividad.estadoMantenimiento ?>">
+              <span class="status-dot"></span>
+              <?!= dataConectividad.etiquetaMantenimiento ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🔧</span>
+        Máquinas Próximas a Mantenimiento
+      </div>
+      <div style="font-size:7pt; color:#718096; margin-bottom:5px;">
+        Menos de 50 horas para el próximo servicio
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-size:7pt;">
+        <thead>
+          <tr style="background:var(--gray-100); font-weight:700;">
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">N° Serie</th>
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">N° Interno</th>
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">Familia</th>
+            <th style="padding:5px; text-align:center; border:1px solid var(--gray-200);">Ubicación</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Horómetro</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Próx. MTO (h)</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Horas Restantes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?!= dataConectividad.tablaMantenimientoHTML ?>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" style="margin-top:10px;">
+      <div class="section-header">
+        <span class="section-icon">📡</span>
+        Máquinas sin Conexión
+      </div>
+      <div style="font-size:7pt; color:#718096; margin-bottom:5px;">Más de 15 días sin reportar</div>
+      <table style="width:100%; border-collapse:collapse; font-size:7pt;">
+        <thead>
+          <tr style="background:var(--gray-100); font-weight:700;">
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">N° Serie</th>
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">N° Interno</th>
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">Familia</th>
+            <th style="padding:5px; text-align:center; border:1px solid var(--gray-200);">Ubicación</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Horómetro</th>
+            <th style="padding:5px; text-align:center; border:1px solid var(--gray-200);">Última Conexión</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?!= dataConectividad.tablaSinConexionHTML ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PÁGINA 4: UTILIZACIÓN (fluye con fix anti-huérfanos) -->
+  <div class="page">
+    <div class="header">
+      <h1>📊 ANÁLISIS DE UTILIZACIÓN Y GESTIÓN DE RALENTÍ</h1>
+      <div class="header-subtitle">Análisis de utilización del <?!= periodo.inicio ?> al <?!= periodo.fin ?></div>
+    </div>
+
+    <div class="section" id="utilizacion">
+      <div class="section-header">
+        <span class="section-icon">📊</span>
+        UTILIZACIÓN DE EQUIPOS OPERATIVOS
+      </div>
+      <div class="section-intro" style="font-size:7pt; color:#718096; margin-bottom:5px;">
+        Equipos con actividad operativa en el periodo (ordenados por % de ralentí)
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; font-size:7pt;">
+        <thead>
+          <tr style="background:var(--gray-100); font-weight:700;">
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">N° Serie</th>
+            <th style="padding:5px; text-align:left; border:1px solid var(--gray-200);">Modelo</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Hrs<br>Trabajo</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Hrs<br>Ralentí</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Hrs<br>Totales</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">%<br>Ralentí</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Pérdida<br>(gal)</th>
+            <th style="padding:5px; text-align:right; border:1px solid var(--gray-200);">Impacto<br>($)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?!= dataUtilizacion.filasTablaHTML ?>
+        </tbody>
+        <tfoot>
+          <?!= dataUtilizacion.footerTablaHTML ?>
+        </tfoot>
+      </table>
+
+      <?!= dataUtilizacion.resumenTablaHTML ?>
+      <?!= dataUtilizacion.recuadroEducativoHTML ?>
+
+    </div>
+  </div>
+
+  <!-- PÁGINA 5: DTC -->
+  <?!= dtcHTML ?>
+
+  <!-- PÁGINA 6: ACEITE -->
+  <?!= htmlFluidos ?>
+
+  <!-- PÁGINA 7: EXPERT ALERTS -->
+  <?!= expertAlertsHTML ?>
+
+  <!-- PÁGINA 8: ACCIONES Y RECOMENDACIONES -->
+  <?!= accionesHTML ?>
+
+</body>
+</html>
