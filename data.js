@@ -293,15 +293,44 @@ function buildDataModel() {
     if (id) sucursalesIndex[id] = s;
   });
 
-  // 📍 Configuración
+  // 📍 Configuración y Periodo
   let config = {};
+  let periodo = null;
+
   if (configData && configData.length > 0) {
     const cfg = configData[0];
+    const fechaInicio = cfg.fecha_inicio ? new Date(cfg.fecha_inicio) : null;
+    const fechaFin = cfg.fecha_fin ? new Date(cfg.fecha_fin) : null;
+
     config = {
-      fecha_inicio: cfg.fecha_inicio ? new Date(cfg.fecha_inicio) : null,
-      fecha_fin: cfg.fecha_fin ? new Date(cfg.fecha_fin) : null,
-      precio_galon: cfg.precio_galon 
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      precio_galon: cfg.precio_galon || 4.2  // ✅ Valor por defecto
     };
+
+    // 🗓️ Crear objeto periodo con múltiples formatos
+    if (fechaInicio && fechaFin) {
+      periodo = {
+        // Formato corto para secciones (dd-MM-yy)
+        inicio: Utilities.formatDate(fechaInicio, "America/Lima", "dd-MM-yy"),
+        fin: Utilities.formatDate(fechaFin, "America/Lima", "dd-MM-yy"),
+
+        // Formato largo para emails (dd/MM/yyyy)
+        inicioLargo: Utilities.formatDate(fechaInicio, "America/Lima", "dd/MM/yyyy"),
+        finLargo: Utilities.formatDate(fechaFin, "America/Lima", "dd/MM/yyyy"),
+
+        // Objetos Date originales para cálculos
+        fecha_inicio: fechaInicio,
+        fecha_fin: fechaFin,
+
+        // Formato para portada (usado en renderPortada2Paginas)
+        ini: fechaInicio,
+        fin: fechaFin,
+
+        // Label legible para chips
+        label: `${Utilities.formatDate(fechaInicio, "America/Lima", "dd/MM/yy")} — ${Utilities.formatDate(fechaFin, "America/Lima", "dd/MM/yy")}`
+      };
+    }
   }
 
   const clientes_por_opcenter = {};  // ← AGREGAR ESTA LÍNEA
@@ -391,6 +420,7 @@ function buildDataModel() {
   // 🧾 Retornar modelo final
   return {
     config,
+    periodo,  // ✅ Objeto periodo formateado desde CONFIG
     clientes,
     contactos,
     dtc,
@@ -582,7 +612,7 @@ function generarModeloConMetricas() {
   console.log("🚀 Construyendo modelo base...");
   const modelo = buildDataModel();
   console.log("📊 Agregando métricas por cliente...");
-  const modeloMetricas = addMetricasClientes(modelo,config.precio_galon);
+  const modeloMetricas = addMetricasClientes(modelo, modelo.config.precio_galon);
   console.log("✅ Modelo completo generado con métricas.");
   return modeloMetricas;
 }
