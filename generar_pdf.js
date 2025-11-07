@@ -212,8 +212,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
       ruc: cliente.ruc || cliente.nif || '',
       segmento: cliente.segmento || cliente.tipo || ''
     },
-    // periodo: modelo.periodo || { ini: '2025-10-01', fin: '2025-10-30' },
-    periodo : { ini: '2025-10-01', fin: '2025-10-30' },
+    periodo: modelo.periodo,  // ✅ Desde CONFIG
     images: {
       fleetAssurance: toDataUrl(logosB64.fleetAssurance, 'image/png'),
       imagenInstitucional: toDataUrl(logosB64.imagenInstitucional, 'image/png'),
@@ -243,15 +242,19 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   }));
   const { html: dtcHTML } = renderDTC({
     equipos: equiposDTC,
-    periodo: { ini: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio, fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin, label: null },
+    periodo: {
+      ini: modelo.periodo.fecha_inicio,
+      fin: modelo.periodo.fecha_fin,
+      label: modelo.periodo.label
+    },  // ✅ Desde CONFIG
     opciones: { ordenar: 'criticos' }
   });
 
   // 🔹 Fluidos
   const periodoFluidos = {
-    inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "2025-10-01",
-    fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || "2025-10-30"
-  };
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
   const htmlFluidos = generarAnalisisFluidosRenderizado(
     cliente.equipos || [],
     periodoFluidos,
@@ -262,18 +265,18 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   const expertAlertsHTML = generarEventosAlerta(
     cliente.equipos || [],
     {
-      inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "01-10-25",
-      fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin || "30-10-25"
-    }
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    }  // ✅ Desde CONFIG
   );
 
   // 🔹 Acciones/Recomendaciones extendidas
   const accionesHTML = generarAccionesRecomendaciones(
     cliente.equipos || [],
     {
-      inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "01-10-25",
-      fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || "30-10-25"
-    }
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    }  // ✅ Desde CONFIG
   );
 
   // 🔹 Template
@@ -289,7 +292,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   htmlTemplate.dataUtilizacion = dataUtilizacion;
   htmlTemplate.dtcHTML = dtcHTML;
   htmlTemplate.cliente = cliente;
-  htmlTemplate.periodo = modelo.periodo || { inicio: "01-10-25", fin: "30-10-25" };
+  htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 
   // 🔹 Render → PDF → Drive
   const htmlOutput = htmlTemplate.evaluate();

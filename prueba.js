@@ -16,13 +16,13 @@ function previsualizarConectividad() {
   
   // 3. Obtener equipos del cliente
   const equipos = cliente.equipos || [];
-  
-  // 4. Obtener periodo (del modelo o crear uno de prueba)
+
+  // 4. Obtener periodo
   const periodo = {
-    inicio: modelo.periodo?.fecha_inicio || "01-10-25",
-    fin: modelo.periodo?.fecha_fin || "28-10-25"
-  };
-  
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
+
   // 5. Generar el HTML de la sección de conectividad
   const htmlConectividad = generarConectividad(equipos, periodo);
   
@@ -258,13 +258,13 @@ function previsualizarUtilizacion() {
   // 3. Obtener equipos y métricas del cliente
   const equipos = cliente.equipos || [];
   const metricas = cliente.metricas || {};
-  
-  // 4. Obtener periodo (del modelo o crear uno de prueba)
+
+  // 4. Obtener periodo
   const periodo = {
-    inicio: modelo.periodo?.fecha_inicio || "01-10-25",
-    fin: modelo.periodo?.fecha_fin || "28-10-25"
-  };
-  
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
+
   // 5. Generar el HTML de la sección de utilización
   const htmlUtilizacion = generarUtilizacion(equipos, metricas, periodo);
   
@@ -696,13 +696,13 @@ function previsualizarDTC() {
   // 3. Obtener equipos y métricas
   const equipos = cliente.equipos || [];
   const metricas = cliente.metricas || {};
-  
+
   // 4. Obtener periodo
   const periodo = {
-    inicio: modelo.periodo?.fecha_inicio || "01-10-25",
-    fin: modelo.periodo?.fecha_fin || "28-10-25"
-  };
-  
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
+
   // 5. Generar HTML de DTC
   const htmlDTC = generarDTC(equipos, metricas, periodo);
 
@@ -1422,13 +1422,13 @@ function previsualizarAnalisisFluidos() {
   
   // 3. Obtener equipos
   const equipos = cliente.equipos || [];
-  
+
   // 4. Obtener periodo
   const periodo = {
-    inicio: modelo.periodo?.fecha_inicio || "01-10-25",
-    fin: modelo.periodo?.fecha_fin || "28-10-25"
-  };
-  
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
+
   // 5. Obtener imagen ALS (si existe)
   const imagenBase64 = getBase64ImageFromDrive("1_W2fwyNLTHPSUUx6g6b3u2x6UnPESiVS");
   
@@ -2454,13 +2454,13 @@ function previsualizarEventosAlerta() {
   } else {
     Logger.log(`✅ Cliente tiene ${equiposConAlertas.length} equipos con alertas.`);
   }
-  
+
   // 5. Obtener periodo
   const periodo = {
-    inicio: modelo.periodo?.fecha_inicio || "01-10-25",
-    fin: modelo.periodo?.fecha_fin || "28-10-25"
-  };
-  
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
+
   // 6. Generar HTML de Expert Alerts
   const htmlEA = generarEventosAlerta(equipos, periodo);
   
@@ -2889,10 +2889,10 @@ function previsualizarAccionesRecomendaciones() {
   
   // 4. Obtener periodo
   const periodo = {
-    inicio: modelo.periodo?.fecha_inicio || "01-10-25",
-    fin: modelo.periodo?.fecha_fin || "28-10-25"
-  };
-  
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
+
   // 5. Generar HTML de Acciones
   const htmlAcciones = generarAccionesRecomendaciones(equipos, periodo);
   
@@ -3203,15 +3203,11 @@ function previsualizarSeccionContactos() {
   // 3. Obtener contactos del cliente
   const contactos = cliente.contactos || [];
 
-  // 4. Obtener periodo (del modelo o crear uno de prueba)
-  let periodo = { inicio: "01-10-25", fin: "28-10-25" };
-
-  if (modelo.config?.fecha_inicio && modelo.config?.fecha_fin) {
-    periodo = {
-      inicio: Utilities.formatDate(new Date(modelo.config.fecha_inicio), "America/Lima", "dd-MM-yy"),
-      fin: Utilities.formatDate(new Date(modelo.config.fecha_fin), "America/Lima", "dd-MM-yy")
-    };
-  }
+  // 4. Obtener periodo
+  const periodo = {
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
 
   // 5. Generar el HTML de la sección de contactos
   const htmlContactos = generarSeccionContactos(cliente, periodo);
@@ -3499,14 +3495,18 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
 
     const { html: dtcHTML, resumen: dtcResumen } = renderDTC({
       equipos: equiposDTC,
-      periodo: { ini: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio, fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin, label: null },
+      periodo: {
+        ini: modelo.periodo.fecha_inicio,
+        fin: modelo.periodo.fecha_fin,
+        label: modelo.periodo.label
+      },  // ✅ Desde CONFIG
       opciones: { ordenar: 'criticos' }
     });
 
     const periodoFluidos = {
-      inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || config.fecha_inicio,
-      fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin || config.fecha_fin
-    };
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    };  // ✅ Desde CONFIG
 
     const htmlFluidos = generarAnalisisFluidosRenderizado(
       cliente.equipos,
@@ -3518,18 +3518,18 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     const expertAlertsHTML = generarEventosAlerta(
       cliente.equipos || [],
       {
-        inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || config.fecha_inicio,
-        fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin || config.fecha_fin
-      }
+        inicio: modelo.periodo.inicio,
+        fin: modelo.periodo.fin
+      }  // ✅ Desde CONFIG
     );
 
     //recomendaciones
     const accionesHTML = generarAccionesRecomendaciones(
       cliente.equipos || [],
       {
-        inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || config.fecha_inicio,
-        fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || config.fecha_fin
-      }
+        inicio: modelo.periodo.inicio,
+        fin: modelo.periodo.fin
+      }  // ✅ Desde CONFIG
     );
 
     // 6. Cargar template de 4 páginas
@@ -3547,7 +3547,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     htmlTemplate.dataUtilizacion = dataUtilizacion;  // NUEVO
     htmlTemplate.dtcHTML = dtcHTML;
     htmlTemplate.cliente = cliente;
-    htmlTemplate.periodo = modelo.periodo || { inicio: config.fecha_inicio, fin: config.fecha_fin };
+    htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 
     // 8. Evaluar template
     const htmlOutput = htmlTemplate.evaluate();
