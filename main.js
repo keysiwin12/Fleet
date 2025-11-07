@@ -1,6 +1,6 @@
 function main() {
-  datos = extraerDatosHojas();
-  const precioPorGalon = 3.75; 
-  const pdfPorCliente = generarPDF(datos,precioPorGalon);
+  const datos = extraerDatosHojas();  // ✅ Agregado const
+  const precioPorGalon = datos.config.precio_galon;  // ✅ Desde CONFIG
+  const pdfPorCliente = generarPDF(datos, precioPorGalon);
   //enviarPDFsPorCorreo(pdfPorCliente, datos.contactos);
 }

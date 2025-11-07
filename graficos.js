@@ -668,7 +668,7 @@ function renderGraficosConectividad(equipos, periodo) {
  * @param {Object} periodo - {inicio: "01-10-25", fin: "28-10-25"}
  * @returns {Object} - Objeto con HTML de tabla, footer, resumen y recuadro educativo
  */
-function renderUtilizacion(equipos, metricas, periodo) {
+function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   // Helpers internos
   function safeNum(val) {
     const num = parseFloat(val);
@@ -687,7 +687,6 @@ function renderUtilizacion(equipos, metricas, periodo) {
   const equiposExcesoRalenti = safeInt(totales.equiposExcesoRalenti);
   const combPerdidoGal = safeNum(totales.combPerdidoGal);
   const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);
-  const precioPorGalon = 4.2;
 
   // 2. FILTRAR EQUIPOS OPERATIVOS
   const UMBRAL_MINIMO_HORAS = 1;

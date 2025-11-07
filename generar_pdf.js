@@ -229,7 +229,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   const dataResumen = renderGraficosResumen(cliente.metricas || {});
   const recomendacionesHTML = buildRecomendaciones(cliente.metricas || {});
   const dataConectividad = renderGraficosConectividad(cliente.equipos || [], modelo.periodo);
-  const dataUtilizacion = renderUtilizacion(cliente.equipos || [], cliente.metricas || {}, modelo.periodo);
+  const dataUtilizacion = renderUtilizacion(cliente.equipos || [], cliente.metricas || {}, modelo.periodo, modelo.config.precio_galon);  // ✅ Desde CONFIG
 
   // 🔹 DTC
   const equiposDTC = (cliente.equipos || []).map(eq => ({

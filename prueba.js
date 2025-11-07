@@ -266,7 +266,7 @@ function previsualizarUtilizacion() {
   };  // ✅ Desde CONFIG
 
   // 5. Generar el HTML de la sección de utilización
-  const htmlUtilizacion = generarUtilizacion(equipos, metricas, periodo);
+  const htmlUtilizacion = generarUtilizacion(equipos, metricas, periodo, modelo.config.precio_galon);  // ✅ Desde CONFIG
   
   // 6. Crear HTML completo con estilos CSS inline
   const htmlCompleto = `
@@ -3481,7 +3481,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     const dataConectividad = renderGraficosConectividad(cliente.equipos, modelo.periodo);
 
     // 5. Generar datos para UTILIZACIÓN (NUEVO)
-    const dataUtilizacion = renderUtilizacion(cliente.equipos, cliente.metricas, modelo.periodo);
+    const dataUtilizacion = renderUtilizacion(cliente.equipos, cliente.metricas, modelo.periodo, modelo.config.precio_galon);  // ✅ Desde CONFIG
 
     //dtc
     const equiposDTC = (cliente.equipos || []).map(eq => ({

@@ -278,19 +278,17 @@ function generarConectividad(equipos, periodo) {
  * @param {Object} periodo - {inicio: "01-10-25", fin: "28-10-25"}
  * @returns {String} HTML de la sección completa
  */
-function generarUtilizacion(equipos, metricas, periodo) {
-  
+function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
+
   // ============================================
   // 1. EXTRAER MÉTRICAS NECESARIAS
   // ============================================
   const totales = metricas.totales || {};
   const economico = metricas.economico || {};
-  
+
   const equiposExcesoRalenti = safeInt(totales.equiposExcesoRalenti);
   const combPerdidoGal = safeNum(totales.combPerdidoGal);
   const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);
-  
-  const precioPorGalon = 4.2;
   
   // ============================================
   // 2. FILTRAR EQUIPOS PARA TABLA
