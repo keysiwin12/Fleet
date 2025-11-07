@@ -1,10 +1,3 @@
-function getBase64ImageFromDrive(fileId) {
-  const file = DriveApp.getFileById(fileId);
-  const blob = file.getBlob();
-  return Utilities.base64Encode(blob.getBytes());
-}
-
-
 /**************************************
  * 🧠 FUNCIÓN BASE DE LECTURA
  **************************************/
