@@ -122,17 +122,6 @@ function estadoPorValor(direccion, valorPct) {
 // ===============================
 // COMPONENTS HTML PEQUEÑOS
 // ===============================
-// function alertDTCNumber(dtc) {
-//   const tot = safeInt(dtc?.total_activos || 0);
-//   const alta = safeInt(dtc?.alta_prioridad || 0);
-//   return `
-// <div class="alert-number">
-//   <div class="alert-value">${tot}</div>
-//   <div class="alert-label">CÓDIGOS DTC</div>
-// </div>`;
-// }
-
-
 function alertDTCNumber(dtc) {
   // total_activos si existe; si no, suma por categorías
   const alta   = _pickInt(dtc, ["alta_prioridad", "alta"]);
@@ -146,41 +135,6 @@ function alertDTCNumber(dtc) {
   <div class="alert-label">CÓDIGOS DTC</div>
 </div>`;
 }
-
-// function alertBarsDTCOnly(dtc) {
-//   const alta = safeInt(dtc?.alta_prioridad || 0);
-//   const media= safeInt(dtc?.mediana_prioridad || 0);
-//   const info = safeInt(dtc?.info || 0);
-
-//   // Porcentajes
-//   const total = alta + media + info;
-//   if (total === 0) {
-//     return `<div class="alert-bar-item"><span class="severity-label">Sin códigos</span><span class="severity-count">-</span></div>`;
-//   }
-
-//   const pA = ((alta / total) * 100).toFixed(1);
-//   const pM = ((media / total) * 100).toFixed(1);
-//   const pI = ((info / total) * 100).toFixed(1);
-
-//   return `
-// <div class="alert-bars">
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Alta ${alta}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-//     <span class="severity-count">${pA}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Media ${media}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pM}%"></div></div>
-//     <span class="severity-count">${pM}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Info ${info}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#4299e1;width:${pI}%"></div></div>
-//     <span class="severity-count">${pI}%</span>
-//   </div>
-// </div>`;
-// }
 
 function alertBarsDTCOnly(dtc) {
   const alta   = _pickInt(dtc, ["alta_prioridad", "alta"]);
@@ -217,92 +171,6 @@ function alertBarsDTCOnly(dtc) {
   </div>
 `;
 }
-
-// function alertEANumber(ea) {
-//   const tot = safeInt(ea?.total_activas || 0);
-//   return `
-// <div class="alert-number">
-//   <div class="alert-value">${tot}</div>
-//   <div class="alert-label">EXPERT ALERTS</div>
-// </div>`;
-// }
-
-// function alertBarsEAOnly(ea) {
-//   const crit = safeInt(ea?.critica || 0);
-//   const alta = safeInt(ea?.alta || 0);
-//   const rend = safeInt(ea?.rendimiento || 0);
-
-//   const total = crit + alta + rend;
-//   if (total === 0) {
-//     return `<div class="alert-bar-item"><span class="severity-label">Sin alertas</span><span class="severity-count">-</span></div>`;
-//   }
-
-//   const pC = ((crit / total) * 100).toFixed(1);
-//   const pH = ((alta / total) * 100).toFixed(1);
-//   const pR = ((rend / total) * 100).toFixed(1);
-
-//   return `
-// <div class="alert-bars">
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Crítica ${crit}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#9b1c1c;width:${pC}%"></div></div>
-//     <span class="severity-count">${pC}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Alta ${alta}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pH}%"></div></div>
-//     <span class="severity-count">${pH}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Rendimiento ${rend}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#f59e0b;width:${pR}%"></div></div>
-//     <span class="severity-count">${pR}%</span>
-//   </div>
-// </div>`;
-// }
-
-// function alertAceiteNumber(aceite) {
-//   const tot = safeInt(aceite?.total_analisis || 0);
-//   return `
-// <div class="alert-number">
-//   <div class="alert-value">${tot}</div>
-//   <div class="alert-label">ANÁLISIS DE ACEITE</div>
-// </div>`;
-// }
-
-// function alertBarsAceiteOnly(aceite) {
-//   const normal = safeInt(aceite?.normal || 0);
-//   const precaucion = safeInt(aceite?.precaucion || 0);
-//   const anormal = safeInt(aceite?.anormal || 0);
-
-//   const total = normal + precaucion + anormal;
-//   if (total === 0) {
-//     return `<div class="alert-bar-item"><span class="severity-label">Sin análisis</span><span class="severity-count">-</span></div>`;
-//   }
-
-//   const pN = ((normal / total) * 100).toFixed(1);
-//   const pP = ((precaucion / total) * 100).toFixed(1);
-//   const pA = ((anormal / total) * 100).toFixed(1);
-
-//   return `
-// <div class="alert-bars">
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Normal ${normal}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#38a169;width:${pN}%"></div></div>
-//     <span class="severity-count">${pN}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Precaución ${precaucion}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pP}%"></div></div>
-//     <span class="severity-count">${pP}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Anormal ${anormal}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-//     <span class="severity-count">${pA}%</span>
-//   </div>
-// </div>`;
-// }
 
 /* ---------- EXPERT ALERTS ---------- */
 function alertEANumber(ea) {
