@@ -1875,12 +1875,18 @@ function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
 
       <!-- Mensaje de estado positivo -->
       <div class="ea-status-positive">
-        <div class="status-icon-large">✅</div>
-        <h3 class="status-title">Estado Óptimo de la Flota</h3>
+        <div class="status-header">
+          <div class="status-icon-large">✅</div>
+          <h3 class="status-title">Estado Óptimo de la Flota</h3>
+        </div>
         <p class="status-message">
-          No se generaron Expert Alerts. Sus equipos operan sin alertas predictivas,
-          indicando operación normal, bajo riesgo de fallas y mantenimiento preventivo efectivo.
+          No se generaron Expert Alerts en este periodo.
         </p>
+        <ul class="status-benefits">
+          <li>Operación dentro de parámetros normales</li>
+          <li>Bajo riesgo de fallas inesperadas</li>
+          <li>Reducción de tiempos de inactividad</li>
+        </ul>
       </div>
 
     </div>
