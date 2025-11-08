@@ -1040,7 +1040,7 @@ function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta =
           <div class="cliente">${esc(razon)}</div>
           <div class="chips">
             ${segmento ? `<span class="chip chip-segmento">${esc(segmento)}</span>` : ''}
-            <span class="chip chip-periodo">01/10/25 - 30/10/25</span>
+            <span class="chip chip-periodo">${esc(periodoTxt)}</span>
             ${rucTxt ? `<span class="chip chip-ruc">${esc(rucTxt)}</span>` : ''}
           </div>
         </div>
