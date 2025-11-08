@@ -302,16 +302,6 @@
     /* ============================================
        💧 ANÁLISIS DE FLUIDOS - ESTILOS
        ============================================ */
-    .page-fluidos .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 3px solid #367c2b;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    .page-fluidos .section-header h2 { font-size: 22px; color: #1a202c; font-weight: 700; }
-    .page-fluidos .periodo-text { font-size: 14px; color: #616161; margin-bottom: 15px; }
     .fluidos-chart-container { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:10px; padding:15px; margin-bottom:25px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
     .fluidos-legend { display:flex; justify-content:center; gap:30px; font-size:13px; font-weight:600; margin-bottom:20px; }
     .fluidos-legend p { margin:0; }
@@ -332,12 +322,8 @@
 
     /* 💧 ANÁLISIS DE FLUIDOS (solo sin datos) */
     .page-fluidos {
-      background:#ffffff; padding:40px 50px; font-family:'Segoe UI', Tahoma, sans-serif;
-      display:flex; flex-direction:column; justify-content:center; align-items:center;
-      min-height:90vh; max-height:250mm; box-sizing:border-box; page-break-after:always; overflow:hidden;
+      background:#ffffff; padding:50px 70px; font-family:'Segoe UI', Tahoma, sans-serif; box-sizing:border-box;
     }
-    .page-fluidos h2 { font-size:22px; color:#1b5e20; font-weight:700; margin-bottom:8px; text-align:center; }
-    .page-fluidos .periodo-text { font-size:13px; color:#555; margin-bottom:25px; text-align:center; }
     .fluidos-mensaje-simple { max-width:580px; background:#f9fcf8; border:2px dashed #a5d6a7; border-radius:10px; padding:25px 35px; text-align:justify; line-height:1.6; color:#424242; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.05); page-break-inside:avoid; }
     .fluidos-mensaje-simple p { font-size:13px; margin-bottom:12px; }
     .fluidos-mensaje-simple .mensaje-principal { font-weight:700; color:#1b5e20; font-size:14px; margin-bottom:15px; text-align:center; }
@@ -350,9 +336,6 @@
     .page-ea {
       background:#ffffff; padding:50px 70px; font-family:'Arial', sans-serif; box-sizing:border-box;
     }
-    .page-ea .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
-    .page-ea .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
-    .page-ea .periodo-text { font-size:13px; color:#666; margin-bottom:25px; }
     .page-ea .ea-info-box { background:#fff3e0; border-left:4px solid #f57c00; padding:25px 30px; margin-bottom:30px; border-radius:4px; }
     .page-ea .ea-info-title { margin:0 0 15px 0; color:#e65100; font-size:16px; font-weight:700; }
     .page-ea .ea-info-text { margin:0; color:#424242; font-size:14px; line-height:1.7; text-align:justify; }
@@ -387,10 +370,6 @@
        ================================ */
     .page-acciones { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:Arial, sans-serif; }
     @media print { .page-acciones .accion-tarjeta { break-inside: avoid; } }
-    .page-acciones .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
-    .page-acciones .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
-    .page-acciones .btn-volver { color:#3182ce; text-decoration:none; font-size:13px; font-weight:600; }
-    .page-acciones .periodo-text { font-size:13px; color:#666; margin:10px 0 18px; }
     .page-acciones .acciones-section-header { margin:26px 0 14px; }
     .page-acciones .acciones-section-title { margin:0; padding:12px 16px; background:linear-gradient(135deg,#424242 0%,#616161 100%); color:#ffffff; font-size:15px; font-weight:700; border-radius:6px; text-transform:uppercase; letter-spacing:.5px; }
     .page-acciones .accion-tarjeta { background:#ffffff; border:1px solid #e0e0e0; border-radius:8px; padding:18px; margin-bottom:16px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
