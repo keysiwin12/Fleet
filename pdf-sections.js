@@ -1875,10 +1875,7 @@ function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
 
       <!-- Mensaje de estado positivo -->
       <div class="ea-status-positive">
-        <div class="status-header">
-          <div class="status-icon-large">✅</div>
-          <h3 class="status-title">Estado Óptimo de la Flota</h3>
-        </div>
+        <h3 class="status-title">Estado Óptimo de la Flota</h3>
         <p class="status-message">
           No se generaron Expert Alerts en este periodo.
         </p>
