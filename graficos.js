@@ -142,13 +142,9 @@ function alertBarsDTCOnly(dtc) {
   const info   = _pickInt(dtc, ["info", "baja", "informativo"]);
   const total  = alta + media + info;
 
-  if (total === 0) {
-    return `<div class="alert-bar-item"><div class="alert-bar-label"><span>Sin códigos</span><span>-</span></div></div>`;
-  }
-
-  const pA = ((alta  / total) * 100).toFixed(1);
-  const pM = ((media / total) * 100).toFixed(1);
-  const pI = ((info  / total) * 100).toFixed(1);
+  const pA = total > 0 ? ((alta  / total) * 100).toFixed(1) : '0.0';
+  const pM = total > 0 ? ((media / total) * 100).toFixed(1) : '0.0';
+  const pI = total > 0 ? ((info  / total) * 100).toFixed(1) : '0.0';
 
   return `
   <div class="alert-bar-item">
@@ -192,13 +188,9 @@ function alertBarsEAOnly(ea) {
   const rend = _pickInt(ea, ["rendimiento"]);
   const total = crit + alta + rend;
 
-  if (total === 0) {
-    return `<div class="alert-bar-item"><div class="alert-bar-label"><span>Sin alertas</span><span>-</span></div></div>`;
-  }
-
-  const pC = ((crit / total) * 100).toFixed(1);
-  const pH = ((alta / total) * 100).toFixed(1);
-  const pR = ((rend / total) * 100).toFixed(1);
+  const pC = total > 0 ? ((crit / total) * 100).toFixed(1) : '0.0';
+  const pH = total > 0 ? ((alta / total) * 100).toFixed(1) : '0.0';
+  const pR = total > 0 ? ((rend / total) * 100).toFixed(1) : '0.0';
 
   return `
   <div class="alert-bar-item">
@@ -242,13 +234,9 @@ function alertBarsAceiteOnly(aceite) {
   const anormal    = _pickInt(aceite, ["anormal"]);
   const total      = normal + precaucion + anormal;
 
-  if (total === 0) {
-    return `<div class="alert-bar-item"><div class="alert-bar-label"><span>Sin análisis</span><span>-</span></div></div>`;
-  }
-
-  const pN = ((normal     / total) * 100).toFixed(1);
-  const pP = ((precaucion / total) * 100).toFixed(1);
-  const pA = ((anormal    / total) * 100).toFixed(1);
+  const pN = total > 0 ? ((normal     / total) * 100).toFixed(1) : '0.0';
+  const pP = total > 0 ? ((precaucion / total) * 100).toFixed(1) : '0.0';
+  const pA = total > 0 ? ((anormal    / total) * 100).toFixed(1) : '0.0';
 
   return `
   <div class="alert-bar-item">
