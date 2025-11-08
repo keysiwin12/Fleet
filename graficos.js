@@ -397,12 +397,21 @@ function renderGraficosResumen(m) {
     stroke: 7
   });
 
-  // Estados exportados
+  // Estados exportados (con etiquetas y textos desglosados)
   const estados = {
     estadoConectividad: estadoCon,
     estadoMantenimiento: estadoMan,
     estadoExcesoRalenti: estadoExc,
-    estadoRalentiFlota: estadoRal
+    estadoRalentiFlota: estadoRal,
+    // Desglosados para el HTML
+    estadoConectividadEtiqueta: estadoCon.etq,
+    estadoConectividadTexto: estadoCon.txt,
+    estadoMantenimientoEtiqueta: estadoMan.etq,
+    estadoMantenimientoTexto: estadoMan.txt,
+    estadoExcesoEtiqueta: estadoExc.etq,
+    estadoExcesoTexto: estadoExc.txt,
+    estadoRalentiEtiqueta: estadoRal.etq,
+    estadoRalentiTexto: estadoRal.txt
   };
 
   return {
