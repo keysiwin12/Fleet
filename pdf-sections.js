@@ -1568,15 +1568,10 @@ function generarEventosAlerta(equipos, periodo) {
     <div class="page page-ea">
       
       <!-- Header de sección -->
-      <div class="section-header">
-        <h2>EXPERT ALERTS</h2>
-        <a href="#contenido" class="btn-volver">🔼 Volver al Contenido</a>
+      <div class="header">
+        <h1>⚠️ EXPERT ALERTS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
       </div>
-      
-      <!-- Periodo -->
-      <p class="periodo-text">
-        Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
-      </p>
       
       <!-- Recuadro educativo -->
       ${recuadroEducativo}
@@ -1860,15 +1855,10 @@ function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
     <div class="page page-ea">
 
       <!-- Header de sección -->
-      <div class="section-header">
-        <h2>EXPERT ALERTS</h2>
-        <a href="#contenido" class="btn-volver">🔼 Volver al Contenido</a>
+      <div class="header">
+        <h1>⚠️ EXPERT ALERTS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
       </div>
-
-      <!-- Periodo -->
-      <p class="periodo-text">
-        Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
-      </p>
 
       <!-- Recuadro educativo -->
       ${recuadroEducativo}

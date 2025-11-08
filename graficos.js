@@ -1478,10 +1478,10 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
   if (equiposConAnalisis.length === 0) {
     return `
       <section id="fluidos" class="page page-fluidos">
-        <h2>ANÁLISIS DE FLUIDOS</h2>
-        <p class="periodo-text">
-          Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
-        </p>
+        <div class="header">
+          <h1>🔬 ANÁLISIS DE FLUIDOS</h1>
+          <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+        </div>
 
         <div class="fluidos-mensaje-simple">
           <p class="mensaje-principal">
@@ -1524,12 +1524,10 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
   // 5️⃣ HTML de la sección
   return `
     <section id="fluidos" class="page page-fluidos">
-      <header class="section-header">
-        <h2>ANÁLISIS DE FLUIDOS</h2>
-      </header>
-      <p class="periodo-text">
-        Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
-      </p>
+      <div class="header">
+        <h1>🔬 ANÁLISIS DE FLUIDOS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+      </div>
 
       <!-- 📊 Resumen gráfico -->
       <div class="fluidos-chart-container" style="height:220px; margin:20px 0;">
@@ -1800,13 +1798,10 @@ function generarAccionesRecomendaciones(equipos, periodo) {
       </style>
 
       <!-- Header -->
-      <div class="section-header">
-        <h2>ACCIONES Y RECOMENDACIONES</h2>
-        <a href="#contenido" class="btn-volver">🔼 Volver al Contenido</a>
+      <div class="header">
+        <h1>💡 ACCIONES Y RECOMENDACIONES</h1>
+        <div class="header-subtitle">Periodo: del ${_acc_fmt(p.inicio)} al ${_acc_fmt(p.fin)}</div>
       </div>
-
-      <!-- Periodo -->
-      <p class="periodo-text">Periodo: del <strong>${_acc_fmt(p.inicio)}</strong> al <strong>${_acc_fmt(p.fin)}</strong></p>
 
       <!-- Secciones -->
       ${seccionCriticas}
@@ -2076,11 +2071,10 @@ function _acc_generarMensajeSinAcciones(periodo) {
         .page-acciones .status-benefits{text-align:left;display:inline-block;margin:0;padding-left:18px;}
         .page-acciones .status-benefits li{font-size:13px;color:#424242;margin-bottom:6px;line-height:1.55;}
       </style>
-      <div class="section-header">
-        <h2>ACCIONES Y RECOMENDACIONES</h2>
-        <a class="btn-volver" href="#contenido">🔼 Volver al Contenido</a>
+      <div class="header">
+        <h1>💡 ACCIONES Y RECOMENDACIONES</h1>
+        <div class="header-subtitle">Periodo: del ${_acc_fmt(periodo.inicio)} al ${_acc_fmt(periodo.fin)}</div>
       </div>
-      <p class="periodo-text">Periodo: del <strong>${_acc_fmt(periodo.inicio)}</strong> al <strong>${_acc_fmt(periodo.fin)}</strong></p>
       <div class="acciones-status-positive">
         <div class="status-icon-large">✅</div>
         <h3 class="status-title">Operación Óptima de la Flota</h3>
