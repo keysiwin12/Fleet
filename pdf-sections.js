@@ -218,7 +218,7 @@ function generarConectividad(equipos, periodo) {
       
       <!-- Periodo -->
       <p class="periodo-text">
-        Conectividad y Mantenimiento Preventivo del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
+        Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
       </p>
       
       <!-- TABLA 1: Máquinas Próximas a Mantenimiento -->
@@ -471,7 +471,7 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
       
       <!-- Periodo -->
       <p class="periodo-text">
-        Análisis de utilización del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
+        Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
       </p>
       
       <!-- TABLA DE EQUIPOS OPERATIVOS -->

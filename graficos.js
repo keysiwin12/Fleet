@@ -1480,7 +1480,7 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
       <section id="fluidos" class="page page-fluidos">
         <h2>ANÁLISIS DE FLUIDOS</h2>
         <p class="periodo-text">
-          Periodo: <strong>${periodo.inicio}</strong> — <strong>${periodo.fin}</strong>
+          Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
         </p>
 
         <div class="fluidos-mensaje-simple">
@@ -1528,7 +1528,7 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
         <h2>ANÁLISIS DE FLUIDOS</h2>
       </header>
       <p class="periodo-text">
-        Periodo: <strong>${periodo.inicio}</strong> — <strong>${periodo.fin}</strong>
+        Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
       </p>
 
       <!-- 📊 Resumen gráfico -->
