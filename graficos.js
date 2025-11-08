@@ -1019,7 +1019,7 @@ function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta =
     const y = dd.getFullYear(), m = String(dd.getMonth()+1).padStart(2,'0'), day = String(dd.getDate()).padStart(2,'0');
     return `${y}-${m}-${day}`;
   };
-  const periodoTxt = periodo.label || `${fmt(periodo.ini)} — ${fmt(periodo.fin)}`;
+  const periodoTxt = periodo.label || `${fmt(periodo.inicioDate)} — ${fmt(periodo.finDate)}`;
 
   const imgHero  = toDataUrl(images.fleetAssurance || images.hero);
   const imgInst  = toDataUrl(images.imagenInstitucional || images.institucional);
@@ -1155,7 +1155,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   }).filter(eq => (eq.totalDTCs || 0) > 0);
 
   if (!equiposConDTC.length) {
-    const periodoTxt = periodo.label || `${fmt(periodo.ini)} — ${fmt(periodo.fin)}`;
+    const periodoTxt = periodo.label || `${fmt(periodo.inicioDate)} — ${fmt(periodo.finDate)}`;
     const htmlNo = `
     <section class="page page-dtc">
       <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
@@ -1210,7 +1210,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   });
   const porFamilia = Object.values(famMap).sort((a,b)=>b.equipos-a.equipos);
 
-  const periodoTxt = periodo.label || `${fmt(periodo.ini)} — ${fmt(periodo.fin)}`;
+  const periodoTxt = periodo.label || `${fmt(periodo.inicioDate)} — ${fmt(periodo.finDate)}`;
 
   // resumen ejecutivo (igual a tu preview)
   const graficoFamilias = porFamilia.map(f=>{

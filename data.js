@@ -323,9 +323,9 @@ function buildDataModel() {
         fecha_inicio: fechaInicio,
         fecha_fin: fechaFin,
 
-        // Formato para portada (usado en renderPortada2Paginas)
-        ini: fechaInicio,
-        fin: fechaFin,
+        // Objetos Date para portada (usado en renderPortada2Paginas)
+        inicioDate: fechaInicio,
+        finDate: fechaFin,
 
         // Label legible para chips
         label: `${Utilities.formatDate(fechaInicio, "America/Lima", "dd/MM/yy")} — ${Utilities.formatDate(fechaFin, "America/Lima", "dd/MM/yy")}`
