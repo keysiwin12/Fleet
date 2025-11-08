@@ -111,16 +111,15 @@ function probarPDF4PaginasTodos(opts = {}) {
     throw new Error("No hay clientes para procesar (clientes_por_opcenter vacío o filtros vaciaron la lista).");
   }
 
-  // Carpeta destino
-  const tz = Session.getScriptTimeZone() || "America/Lima";
-  const fechaCarpeta = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd_HH-mm");
-  let folder;
-  if (opts.folderId) {
-    folder = DriveApp.getFolderById(opts.folderId);
-  } else {
-    folder = DriveApp.createFolder(`TEST_4Paginas_Lote_${fechaCarpeta}`);
-  }
-  log("📂 Carpeta destino:", folder.getName(), folder.getId());
+  // Carpetas destino (clasificadas por tipo de cliente)
+  const carpetas = prepararCarpetasSemana(
+    modelo.periodo.fecha_inicio,
+    modelo.periodo.fecha_fin
+  );
+  log("📂 Carpetas creadas:");
+  log("  - Clientes:", carpetas.clientes.getName());
+  log("  - CBD:", carpetas.cbd.getName());
+  log("  - Signature:", carpetas.signature.getName());
 
   // =========================
   // 1) Pre-cargar assets/ayudas
@@ -148,7 +147,7 @@ function probarPDF4PaginasTodos(opts = {}) {
         modelo,
         logosB64,
         toDataUrl,
-        folder,
+        carpetas,
       });
 
       resultados.push({ clienteId, ok: true, url: r.url, nombre: r.nombre, size: r.tamaño });
@@ -169,7 +168,11 @@ function probarPDF4PaginasTodos(opts = {}) {
     fail,
     bytesTotales: totalBytes,
     tamañoTotalKB: (totalBytes / 1024).toFixed(2),
-    carpeta: { name: folder.getName(), id: folder.getId(), url: folder.getUrl() },
+    carpetas: {
+      clientes: { name: carpetas.clientes.getName(), url: carpetas.clientes.getUrl() },
+      cbd: { name: carpetas.cbd.getName(), url: carpetas.cbd.getUrl() },
+      signature: { name: carpetas.signature.getName(), url: carpetas.signature.getUrl() }
+    },
     duracionSeg: dt,
     resultados
   };
@@ -178,12 +181,13 @@ function probarPDF4PaginasTodos(opts = {}) {
   try {
     SpreadsheetApp.getUi().alert(
       '✅ Lote PDF 4 Páginas — Completado',
-      `Carpeta: ${folder.getName()}\n` +
+      `Periodo: ${carpetas.periodo.inicio} — ${carpetas.periodo.fin}\n` +
       `Total clientes: ${targetIds.length}\n` +
       `OK: ${ok} | Fallidos: ${fail}\n` +
       `Peso total: ${(totalBytes/1024).toFixed(2)} KB\n` +
       `Duración: ${dt.toFixed(1)} s\n\n` +
-      `Nota: revisa la carpeta para validar estilos/tablas.`,
+      `PDFs clasificados en carpetas:\n` +
+      `• Clientes • CBD • Signature`,
       SpreadsheetApp.getUi().ButtonSet.OK
     );
   } catch (_) {}
@@ -201,10 +205,10 @@ function probarPDF4PaginasTodos(opts = {}) {
  * @param {Object} ctx.modelo
  * @param {Object} ctx.logosB64
  * @param {Function} ctx.toDataUrl
- * @param {GoogleAppsScript.Drive.Folder} ctx.folder
- * @returns {{url:string, nombre:string, tamaño:number}}
+ * @param {Object} ctx.carpetas - Objeto con carpetas {clientes, cbd, signature}
+ * @returns {{url:string, nombre:string, tamaño:number, carpeta:string}}
  */
-function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, folder }) {
+function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, carpetas }) {
   // 🔹 Portada (2 páginas)
   const { html: portadaHTML } = renderPortada2Paginas({
     cliente: {
@@ -303,15 +307,18 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   const nombreArchivo = `Reporte_de_Flota_${(cliente.razon_social || cliente.nombre || "Cliente").replace(/[^\w\- ]+/g,'').slice(0,60)}_${marca}.pdf`;
 
   pdfBlob.setName(nombreArchivo);
-  const file = folder.createFile(pdfBlob);
-  const pdfFileId = file.getId();
+
+  // Guardar en carpeta correspondiente según tipo de cliente (CBD, Signature, Clientes)
+  const resultado = guardarPDFEnDrive(pdfBlob, cliente, carpetas);
+  const pdfFileId = resultado.fileId;
 
   enviarCorreoCliente(cliente, pdfFileId);
 
   return {
-    url: file.getUrl(),
-    nombre: nombreArchivo,
-    tamaño: file.getSize()
+    url: resultado.url,
+    nombre: resultado.nombre,
+    tamaño: DriveApp.getFileById(pdfFileId).getSize(),
+    carpeta: resultado.carpeta  // "CBD", "Signature" o "Estándar"
   };
 }
 
