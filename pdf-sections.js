@@ -1858,21 +1858,18 @@ function generarListaAlertasPorSeveridad(alertas, severidad) {
 function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
   return `
     <div class="page page-ea">
-      
+
       <!-- Header de sección -->
       <div class="section-header">
         <h2>EXPERT ALERTS</h2>
         <a href="#contenido" class="btn-volver">🔼 Volver al Contenido</a>
       </div>
-      
+
       <!-- Periodo -->
       <p class="periodo-text">
         Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
       </p>
-      
-      <!-- Recuadro educativo -->
-      ${recuadroEducativo}
-      
+
       <!-- Mensaje de estado positivo -->
       <div class="ea-status-positive">
         <div class="status-icon-large">✅</div>
@@ -1890,7 +1887,7 @@ function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
           <li>Reducción de tiempos de inactividad</li>
         </ul>
       </div>
-      
+
     </div>
   `;
 }

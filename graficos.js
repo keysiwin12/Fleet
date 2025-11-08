@@ -1155,7 +1155,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   }).filter(eq => (eq.totalDTCs || 0) > 0);
 
   if (!equiposConDTC.length) {
-    const periodoTxt = periodo.label || `${fmt(periodo.inicioDate)} — ${fmt(periodo.finDate)}`;
+    const periodoTxt = `Periodo: del ${periodo.inicio} al ${periodo.fin}`;
     const htmlNo = `
     <section class="page page-dtc">
       <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
@@ -1210,7 +1210,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   });
   const porFamilia = Object.values(famMap).sort((a,b)=>b.equipos-a.equipos);
 
-  const periodoTxt = periodo.label || `${fmt(periodo.inicioDate)} — ${fmt(periodo.finDate)}`;
+  const periodoTxt = `Periodo: del ${periodo.inicio} al ${periodo.fin}`;
 
   // resumen ejecutivo (igual a tu preview)
   const graficoFamilias = porFamilia.map(f=>{
