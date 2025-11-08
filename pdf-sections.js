@@ -1870,22 +1870,19 @@ function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
         Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
       </p>
 
+      <!-- Recuadro educativo -->
+      ${recuadroEducativo}
+
       <!-- Mensaje de estado positivo -->
       <div class="ea-status-positive">
         <div class="status-icon-large">✅</div>
-        <h3 class="status-title">Estado Óptimo de la Flota</h3>
-        <p class="status-message">
-          No se generaron Expert Alerts en este periodo.
-        </p>
-        <p class="status-description">
-          Sus equipos operan sin alertas predictivas del sistema JDLink, lo que indica:
-        </p>
-        <ul class="status-benefits">
-          <li>Operación dentro de parámetros normales</li>
-          <li>Bajo riesgo de fallas inesperadas</li>
-          <li>Mantenimiento preventivo efectivo</li>
-          <li>Reducción de tiempos de inactividad</li>
-        </ul>
+        <div class="status-content">
+          <h3 class="status-title">Estado Óptimo de la Flota</h3>
+          <p class="status-message">
+            No se generaron Expert Alerts. Sus equipos operan sin alertas predictivas,
+            indicando operación normal, bajo riesgo de fallas y mantenimiento preventivo efectivo.
+          </p>
+        </div>
       </div>
 
     </div>
