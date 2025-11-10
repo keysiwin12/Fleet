@@ -3532,6 +3532,15 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
       }  // ✅ Desde CONFIG
     );
 
+    // 🔹 Contactos
+    const contactosHTML = generarSeccionContactos(
+      cliente,
+      {
+        inicio: modelo.periodo.inicio,
+        fin: modelo.periodo.fin
+      }  // ✅ Desde CONFIG
+    );
+
     // 6. Cargar template de 4 páginas
     const htmlTemplate = HtmlService.createTemplateFromFile('reporte-flota');
 
@@ -3546,6 +3555,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     htmlTemplate.dataConectividad = dataConectividad;
     htmlTemplate.dataUtilizacion = dataUtilizacion;  // NUEVO
     htmlTemplate.dtcHTML = dtcHTML;
+    htmlTemplate.contactosHTML = contactosHTML;  // 📞 Contactos
     htmlTemplate.cliente = cliente;
     htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 
@@ -3562,36 +3572,40 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     const fileUrl = file.getUrl();
     const fileSize = file.getSize();
 
-    Logger.log(`✅ PDF generado con 4 páginas: ${fileUrl}`);
+    Logger.log(`✅ PDF generado con reporte completo: ${fileUrl}`);
     Logger.log(`📊 Tamaño: ${(fileSize / 1024).toFixed(2)} KB`);
-    Logger.log(`📄 Páginas: 1-Resumen | 2-Recomendaciones | 3-Conectividad | 4-Utilización`);
+    Logger.log(`📄 Páginas: Portada | Resumen | Conectividad | Utilización | DTC | Fluidos | Expert Alerts | Acciones | Contactos`);
 
     // Mostrar alerta
     const ui = SpreadsheetApp.getUi();
     ui.alert(
-      '✅ PDF de Prueba Generado - 4 Páginas',
+      '✅ PDF de Prueba Generado - Reporte Completo',
       `Cliente: ${cliente.razon_social}\n\n` +
-      `Páginas:\n` +
-      `  1. Resumen Ejecutivo (KPIs + Gauges + Alertas)\n` +
-      `  2. Recomendaciones\n` +
-      `  3. Conectividad (Gauges + 2 Tablas)\n` +
-      `  4. Utilización (Tabla + Footer + Recuadro Educativo)\n\n` +
+      `Páginas incluidas:\n` +
+      `  1. Portada\n` +
+      `  2. Resumen Ejecutivo\n` +
+      `  3. Conectividad\n` +
+      `  4. Utilización\n` +
+      `  5. Códigos DTC\n` +
+      `  6. Análisis de Fluidos\n` +
+      `  7. Expert Alerts\n` +
+      `  8. Acciones y Recomendaciones\n` +
+      `  9. Contactos\n\n` +
       `Archivo: ${nombreArchivo}.pdf\n` +
       `Tamaño: ${(fileSize / 1024).toFixed(2)} KB\n\n` +
-      `Equipos procesados: ${dataUtilizacion.totalEquiposOperativos}\n` +
-      `Con exceso: ${dataUtilizacion.equiposConExceso}\n\n` +
+      `Equipos procesados: ${dataUtilizacion.totalEquiposOperativos}\n\n` +
       `URL: ${fileUrl}\n\n` +
-      `✨ Verifica que los estilos CSS y tabla se vean correctamente`,
+      `✨ Verifica que todas las secciones se vean correctamente`,
       ui.ButtonSet.OK
     );
 
     return {
-      metodo: 'HtmlService.getAs(MimeType.PDF) - 4 Páginas',
+      metodo: 'HtmlService.getAs(MimeType.PDF) - Reporte Completo',
       url: fileUrl,
       nombre: nombreArchivo + '.pdf',
       tamaño: fileSize,
       tamañoKB: (fileSize / 1024).toFixed(2),
-      secciones: ['Resumen', 'Recomendaciones', 'Conectividad', 'Utilización'],
+      secciones: ['Portada', 'Resumen', 'Conectividad', 'Utilización', 'DTC', 'Fluidos', 'Expert Alerts', 'Acciones', 'Contactos'],
       equiposOperativos: dataUtilizacion.totalEquiposOperativos
     };
 
