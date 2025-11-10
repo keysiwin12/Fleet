@@ -292,6 +292,9 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
     }  // ✅ Desde CONFIG
   );
 
+  // 🔹 John Deere Protect
+  const jdProtectHTML = generarPaginaJohnDeereProtect(logosB64.imagenPromoJDProtect);
+
   // 🔹 Template
   const htmlTemplate = HtmlService.createTemplateFromFile('reporte-flota');
   htmlTemplate.portadaHTML = portadaHTML;
@@ -305,6 +308,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   htmlTemplate.dataUtilizacion = dataUtilizacion;
   htmlTemplate.dtcHTML = dtcHTML;
   htmlTemplate.contactosHTML = contactosHTML;
+  htmlTemplate.jdProtectHTML = jdProtectHTML;  // 🛡️ John Deere Protect
   htmlTemplate.cliente = cliente;
   htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 

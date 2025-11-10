@@ -3541,6 +3541,9 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
       }  // ✅ Desde CONFIG
     );
 
+    // 🔹 John Deere Protect
+    const jdProtectHTML = generarPaginaJohnDeereProtect(L.imagenPromoJDProtect);
+
     // 6. Cargar template de 4 páginas
     const htmlTemplate = HtmlService.createTemplateFromFile('reporte-flota');
 
@@ -3556,6 +3559,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
     htmlTemplate.dataUtilizacion = dataUtilizacion;  // NUEVO
     htmlTemplate.dtcHTML = dtcHTML;
     htmlTemplate.contactosHTML = contactosHTML;  // 📞 Contactos
+    htmlTemplate.jdProtectHTML = jdProtectHTML;  // 🛡️ John Deere Protect
     htmlTemplate.cliente = cliente;
     htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 
@@ -3574,7 +3578,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
 
     Logger.log(`✅ PDF generado con reporte completo: ${fileUrl}`);
     Logger.log(`📊 Tamaño: ${(fileSize / 1024).toFixed(2)} KB`);
-    Logger.log(`📄 Páginas: Portada | Resumen | Conectividad | Utilización | DTC | Fluidos | Expert Alerts | Acciones | Contactos`);
+    Logger.log(`📄 Páginas: Portada | Resumen | Conectividad | Utilización | DTC | Fluidos | Expert Alerts | Acciones | Contactos | JD Protect`);
 
     // Mostrar alerta
     const ui = SpreadsheetApp.getUi();
@@ -3590,7 +3594,8 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
       `  6. Análisis de Fluidos\n` +
       `  7. Expert Alerts\n` +
       `  8. Acciones y Recomendaciones\n` +
-      `  9. Contactos\n\n` +
+      `  9. Contactos\n` +
+      `  10. John Deere Protect\n\n` +
       `Archivo: ${nombreArchivo}.pdf\n` +
       `Tamaño: ${(fileSize / 1024).toFixed(2)} KB\n\n` +
       `Equipos procesados: ${dataUtilizacion.totalEquiposOperativos}\n\n` +
@@ -3605,7 +3610,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "7499") {
       nombre: nombreArchivo + '.pdf',
       tamaño: fileSize,
       tamañoKB: (fileSize / 1024).toFixed(2),
-      secciones: ['Portada', 'Resumen', 'Conectividad', 'Utilización', 'DTC', 'Fluidos', 'Expert Alerts', 'Acciones', 'Contactos'],
+      secciones: ['Portada', 'Resumen', 'Conectividad', 'Utilización', 'DTC', 'Fluidos', 'Expert Alerts', 'Acciones', 'Contactos', 'JD Protect'],
       equiposOperativos: dataUtilizacion.totalEquiposOperativos
     };
 
