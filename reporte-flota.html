@@ -401,6 +401,27 @@
     .page-acciones .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:18px; }
     .page-acciones .status-benefits li { font-size:13px; color:#424242; margin-bottom:6px; line-height:1.55; }
 
+    /* ================================
+       📞 CONTACTOS
+       ================================ */
+    .page-contactos { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:Arial, sans-serif; }
+    .page-contactos .table-section { margin-bottom:30px; }
+    .page-contactos .table-title { margin:0 0 15px 0; color:#212121; font-size:16px; font-weight:700; }
+    .page-contactos .data-table { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
+    .page-contactos .data-table thead { background:#f5f5f5; }
+    .page-contactos .data-table th { text-align:left; padding:12px 15px; font-size:12px; font-weight:700; color:#424242; border-bottom:2px solid #e0e0e0; }
+    .page-contactos .data-table td { padding:12px 15px; font-size:12px; color:#424242; border-bottom:1px solid #f0f0f0; }
+    .page-contactos .data-table tbody tr:last-child td { border-bottom:none; }
+    .page-contactos .data-table tbody tr:hover { background:#f9f9f9; }
+    .page-contactos .contacto-ipesa-box { background:#fff3e0; border-left:4px solid #f57c00; padding:20px 25px; margin-bottom:25px; border-radius:4px; }
+    .page-contactos .contacto-ipesa-title { margin:0 0 10px 0; color:#e65100; font-size:15px; font-weight:700; }
+    .page-contactos .contacto-ipesa-text { margin:0; color:#424242; font-size:13px; line-height:1.6; }
+    .page-contactos .info-box-blue { background:#e3f2fd; border-left:4px solid #1976d2; padding:20px 25px; border-radius:4px; display:flex; gap:15px; align-items:flex-start; }
+    .page-contactos .info-icon { font-size:24px; flex-shrink:0; }
+    .page-contactos .info-content { flex:1; }
+    .page-contactos .info-title { margin:0 0 8px 0; color:#1565c0; font-size:14px; font-weight:700; }
+    .page-contactos .info-text { margin:0; color:#424242; font-size:12px; line-height:1.6; }
+
     /* 🔧 Ajuste para el bloque que devuelven alert*Number() */
     .alert-number{
       display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -740,6 +761,9 @@
 
   <!-- PÁGINA 8: ACCIONES Y RECOMENDACIONES -->
   <?!= accionesHTML ?>
+
+  <!-- PÁGINA 9: CONTACTOS -->
+  <?!= contactosHTML ?>
 
 </body>
 </html>

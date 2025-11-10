@@ -283,6 +283,15 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
     }  // ✅ Desde CONFIG
   );
 
+  // 🔹 Contactos
+  const contactosHTML = generarSeccionContactos(
+    cliente,
+    {
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    }  // ✅ Desde CONFIG
+  );
+
   // 🔹 Template
   const htmlTemplate = HtmlService.createTemplateFromFile('reporte-flota');
   htmlTemplate.portadaHTML = portadaHTML;
@@ -295,6 +304,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   htmlTemplate.dataConectividad = dataConectividad;
   htmlTemplate.dataUtilizacion = dataUtilizacion;
   htmlTemplate.dtcHTML = dtcHTML;
+  htmlTemplate.contactosHTML = contactosHTML;
   htmlTemplate.cliente = cliente;
   htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 

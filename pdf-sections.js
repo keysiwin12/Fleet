@@ -1968,7 +1968,7 @@ function generarSeccionContactos(cliente, periodo) {
   if (contactos.length === 0) {
     filasContactos = `
       <tr>
-        <td colspan="4" style="text-align:center; padding:30px; color:#718096; font-size:16px;">
+        <td colspan="4" style="text-align:center; padding:30px; color:#718096; font-size:14px;">
           ℹ️ No hay contactos registrados para este cliente
         </td>
       </tr>
@@ -2003,16 +2003,17 @@ function generarSeccionContactos(cliente, periodo) {
   // 3. ENSAMBLAR HTML COMPLETO
   // ============================================
   return `
-    <div class="page page-contactos">
+    <div class="page page-contactos" id="contactos">
 
       <!-- Header de sección -->
-      <div class="section-header" style="justify-content:center; border-bottom:none;">
-        <h2 style="color:#ed8936; text-align:center; margin:0;">CERCA DE LOS CLIENTES</h2>
+      <div class="header">
+        <h1>📞 CONTACTOS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
       </div>
 
       <!-- TABLA DE CONTACTOS DEL CLIENTE -->
       <div class="table-section">
-        <h3 class="table-title">Contactos con el Cliente:</h3>
+        <h3 class="table-title">Contactos del Cliente</h3>
 
         <table class="data-table">
           <thead>
@@ -2031,7 +2032,7 @@ function generarSeccionContactos(cliente, periodo) {
 
       <!-- CONTACTOS IPESA -->
       <div class="contacto-ipesa-box">
-        <h3 class="contacto-ipesa-title">CONTACTOS IPESA</h3>
+        <h3 class="contacto-ipesa-title">📧 CONTACTO IPESA</h3>
         <p class="contacto-ipesa-text">
           CSC IPESA: <a href="mailto:solucionesintegradas@ipesa.com.pe" style="color:#1a202c; font-weight:700; text-decoration:none;">solucionesintegradas@ipesa.com.pe</a>
         </p>
