@@ -423,6 +423,47 @@
     .page-acciones .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:18px; }
     .page-acciones .status-benefits li { font-size:13px; color:#424242; margin-bottom:6px; line-height:1.55; }
 
+    /* Tabla consolidada de acciones */
+    .page-acciones .acciones-tabla-container { margin:20px 0; overflow-x:auto; }
+    .page-acciones .acciones-tabla { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; font-size:12px; }
+    @media print { .page-acciones .acciones-tabla { page-break-inside:auto; } }
+    @media print { .page-acciones .acciones-tabla thead { display:table-header-group; } }
+    @media print { .page-acciones .acciones-fila { break-inside:avoid; page-break-inside:avoid; } }
+    .page-acciones .acciones-header-row { background:#424242; color:#ffffff; }
+    .page-acciones .acciones-th { padding:10px 8px; text-align:left; font-size:11px; font-weight:700; color:#ffffff; text-transform:uppercase; letter-spacing:0.3px; border-right:1px solid #616161; }
+    .page-acciones .acciones-th:last-child { border-right:none; }
+    .page-acciones .acciones-th-prioridad { width:80px; }
+    .page-acciones .acciones-th-familia { width:90px; }
+    .page-acciones .acciones-th-num { width:70px; }
+    .page-acciones .acciones-th-modelo { width:110px; }
+    .page-acciones .acciones-th-acciones { width:280px; }
+    .page-acciones .acciones-th-impacto { width:100px; }
+    .page-acciones .acciones-th-asesor { width:110px; }
+    .page-acciones .acciones-fila { border-bottom:1px solid #e0e0e0; }
+    .page-acciones .acciones-fila:last-child { border-bottom:none; }
+    .page-acciones .acciones-fila:hover { background:#f7fafc; }
+    .page-acciones .acciones-td { padding:12px 8px; vertical-align:top; color:#424242; border-right:1px solid #f0f0f0; }
+    .page-acciones .acciones-td:last-child { border-right:none; }
+    .page-acciones .acciones-prioridad { font-weight:700; font-size:11px; text-align:center; }
+    .page-acciones .prioridad-critica { background:#fee; color:#c53030; }
+    .page-acciones .prioridad-alta { background:#fef3cd; color:#d69e2e; }
+    .page-acciones .prioridad-preventiva { background:#e7f3ff; color:#3182ce; }
+    .page-acciones .acciones-familia { font-size:11px; color:#424242; }
+    .page-acciones .acciones-num-interno { font-weight:600; color:#212121; font-size:12px; }
+    .page-acciones .acciones-modelo-serie { font-size:11px; color:#424242; line-height:1.5; }
+    .page-acciones .acciones-serie { color:#757575; font-size:10px; }
+    .page-acciones .acciones-lista { font-size:12px; color:#212121; line-height:1.6; }
+    .page-acciones .accion-item-principal { margin-bottom:6px; color:#212121; font-weight:500; }
+    .page-acciones .accion-item-contexto { margin-bottom:6px; padding-left:12px; color:#757575; font-size:11px; line-height:1.5; }
+    .page-acciones .acciones-impacto { text-align:center; font-size:11px; }
+    .page-acciones .impacto-principal { font-weight:700; margin-bottom:4px; }
+    .page-acciones .impacto-critico { color:#c53030; }
+    .page-acciones .impacto-alto { color:#d69e2e; }
+    .page-acciones .impacto-prevenir { color:#3182ce; }
+    .page-acciones .impacto-programar { color:#718096; }
+    .page-acciones .impacto-secundario { color:#757575; font-size:10px; }
+    .page-acciones .acciones-asesor { font-size:11px; color:#424242; line-height:1.5; }
+
     /* 🔧 Ajuste para el bloque que devuelven alert*Number() */
     .alert-number{
       display:flex; flex-direction:column; align-items:center; justify-content:center;

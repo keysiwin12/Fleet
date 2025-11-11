@@ -1974,15 +1974,15 @@ function formatearFechaEA(fecha) {
  * @returns {String} HTML de la sección completa
  */
 function generarAccionesRecomendaciones(equipos, periodo) {
-  
+
   // ============================================
   // 1. CLASIFICAR EQUIPOS POR PRIORIDAD
   // ============================================
   const equiposConAcciones = [];
-  
+
   equipos.forEach(equipo => {
     const resultado = clasificarEquipoPorPrioridad(equipo);
-    
+
     if (resultado) {
       equiposConAcciones.push({
         equipo: equipo,
@@ -1991,72 +1991,332 @@ function generarAccionesRecomendaciones(equipos, periodo) {
       });
     }
   });
-  
+
   // Si no hay acciones, mostrar mensaje positivo
   if (equiposConAcciones.length === 0) {
     return generarMensajeSinAcciones(periodo);
   }
-  
-  // Separar por prioridad
-  const criticas = equiposConAcciones.filter(e => e.prioridad === 'critica');
-  const altas = equiposConAcciones.filter(e => e.prioridad === 'alta');
-  const preventivas = equiposConAcciones.filter(e => e.prioridad === 'preventiva');
-  
+
+  // Ordenar por prioridad (critica > alta > preventiva) y luego por num_interno
+  const ordenPrioridad = { critica: 1, alta: 2, preventiva: 3 };
+  equiposConAcciones.sort((a, b) => {
+    const difPrioridad = ordenPrioridad[a.prioridad] - ordenPrioridad[b.prioridad];
+    if (difPrioridad !== 0) return difPrioridad;
+    return (a.equipo.num_interno || '').localeCompare(b.equipo.num_interno || '');
+  });
+
   // ============================================
-  // 2. GENERAR SECCIONES POR PRIORIDAD
+  // 2. GENERAR TABLA CONSOLIDADA
   // ============================================
-  let seccionCriticas = '';
-  if (criticas.length > 0) {
-    seccionCriticas = generarSeccionPrioridad(criticas, 'critica');
-  }
-  
-  let seccionAltas = '';
-  if (altas.length > 0) {
-    seccionAltas = generarSeccionPrioridad(altas, 'alta');
-  }
-  
-  let seccionPreventivas = '';
-  if (preventivas.length > 0) {
-    seccionPreventivas = generarSeccionPrioridad(preventivas, 'preventiva');
-  }
-  
+  const tablaConsolidada = generarTablaConsolidada(equiposConAcciones);
+
   // ============================================
   // 3. OBTENER ASESORES ÚNICOS
   // ============================================
   const asesoresUnicos = obtenerAsesoresUnicos(equiposConAcciones);
   const tablaContactos = generarTablaContactosAsesores(asesoresUnicos);
-  
+
   // ============================================
   // 4. ENSAMBLAR HTML COMPLETO
   // ============================================
   return `
     <div class="page page-acciones">
-      
+
       <!-- Header de sección -->
       <div class="section-header">
         <h2>ACCIONES Y RECOMENDACIONES</h2>
         <a href="#contenido" class="btn-volver">🔼 Volver al Contenido</a>
       </div>
-      
+
       <!-- Periodo -->
       <p class="periodo-text">
         Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong>
       </p>
-      
-      <!-- Sección Críticas -->
-      ${seccionCriticas}
-      
-      <!-- Sección Altas -->
-      ${seccionAltas}
-      
-      <!-- Sección Preventivas -->
-      ${seccionPreventivas}
-      
+
+      <!-- Tabla consolidada -->
+      ${tablaConsolidada}
+
       <!-- Tabla de contactos -->
       ${tablaContactos}
-      
+
     </div>
   `;
+}
+
+// ============================================
+// FUNCIONES DE TABLA CONSOLIDADA
+// ============================================
+
+/**
+ * Genera tabla consolidada con todas las acciones
+ * @param {Array} equiposConAcciones - Array de {equipo, prioridad, acciones}
+ * @returns {String} HTML de la tabla
+ */
+function generarTablaConsolidada(equiposConAcciones) {
+
+  let filasHtml = '';
+
+  equiposConAcciones.forEach(item => {
+    const equipo = item.equipo;
+    const prioridad = item.prioridad;
+    const acciones = item.acciones;
+
+    // Obtener info del equipo
+    const familia = equipo.familia || 'OTROS';
+    const numInterno = equipo.num_interno || '-';
+    const modelo = equipo.modelo || '-';
+    const serie = equipo.id_equipo || equipo.pin || '-';
+
+    // Obtener info del asesor
+    const asesorNombre = equipo.asesor_nombre || '-';
+    const asesorSucursal = equipo.asesor_sucursal || '-';
+    const asesorCelular = equipo.asesor_celular || '';
+
+    // Generar texto de prioridad
+    const prioridadTexto = getPrioridadTexto(prioridad);
+    const prioridadClass = `prioridad-${prioridad}`;
+
+    // Generar acciones como lista con viñetas
+    const accionesHtml = generarAccionesConVinetas(acciones, equipo);
+
+    // Generar texto de impacto
+    const impactoHtml = generarImpactoTexto(equipo, acciones);
+
+    // Generar info de asesor
+    const asesorHtml = `
+      ${asesorNombre}<br>
+      ${asesorSucursal}${asesorCelular ? '<br>Tel: ' + asesorCelular : ''}
+    `;
+
+    filasHtml += `
+      <tr class="acciones-fila">
+        <td class="acciones-td acciones-prioridad ${prioridadClass}">${prioridadTexto}</td>
+        <td class="acciones-td acciones-familia">${familia}</td>
+        <td class="acciones-td acciones-num-interno">${numInterno}</td>
+        <td class="acciones-td acciones-modelo-serie">
+          ${modelo}<br>
+          <span class="acciones-serie">#${serie}</span>
+        </td>
+        <td class="acciones-td acciones-lista">${accionesHtml}</td>
+        <td class="acciones-td acciones-impacto">${impactoHtml}</td>
+        <td class="acciones-td acciones-asesor">${asesorHtml}</td>
+      </tr>
+    `;
+  });
+
+  return `
+    <div class="acciones-tabla-container">
+      <table class="acciones-tabla">
+        <thead>
+          <tr class="acciones-header-row">
+            <th class="acciones-th acciones-th-prioridad">PRIORIDAD</th>
+            <th class="acciones-th acciones-th-familia">FAMILIA</th>
+            <th class="acciones-th acciones-th-num">N° INT.</th>
+            <th class="acciones-th acciones-th-modelo">MODELO/SERIE</th>
+            <th class="acciones-th acciones-th-acciones">ACCIONES REQUERIDAS</th>
+            <th class="acciones-th acciones-th-impacto">IMPACTO</th>
+            <th class="acciones-th acciones-th-asesor">ASESOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filasHtml}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/**
+ * Obtiene el texto de prioridad
+ */
+function getPrioridadTexto(prioridad) {
+  switch (prioridad) {
+    case 'critica': return 'CRÍTICO';
+    case 'alta': return 'ALTO';
+    case 'preventiva': return 'PREVENTIVO';
+    default: return '';
+  }
+}
+
+/**
+ * Genera las acciones con viñetas (formato Opción A)
+ */
+function generarAccionesConVinetas(acciones, equipo) {
+  let html = '';
+
+  acciones.forEach(accion => {
+    // Generar descripción de la acción con verbo
+    const descripcion = generarDescripcionAccion(accion, equipo);
+
+    // Agregar la acción principal
+    html += `<div class="accion-item-principal">${descripcion}</div>`;
+
+    // Agregar contexto si existe (con viñeta)
+    if (accion.contexto) {
+      html += `<div class="accion-item-contexto">• ${accion.contexto}</div>`;
+    }
+  });
+
+  return html;
+}
+
+/**
+ * Genera descripción de acción con verbo apropiado
+ */
+function generarDescripcionAccion(accion, equipo) {
+  switch (accion.tipo) {
+    case 'ea_critica':
+      return `Atender EA Crítica: ${accion.descripcion.replace('Atender alerta crítica: ', '')}`;
+
+    case 'ea_alta':
+      return `Atender EA Alta: ${accion.descripcion.replace('Atender alerta de alta prioridad: ', '')}`;
+
+    case 'ea_rendimiento':
+      return `Optimizar: ${accion.descripcion.replace('Revisar alerta de rendimiento: ', '')}`;
+
+    case 'fluido_anormal':
+      return `Analizar fluido anormal: ${accion.descripcion.replace('Revisar resultado anormal en ', '')}`;
+
+    case 'fluido_precaucion':
+      return `Monitorear fluido: ${accion.descripcion.replace('Monitorear resultado en precaución en ', '')}`;
+
+    case 'dtc_critico':
+      return `Diagnosticar DTC crítico: ${accion.descripcion.replace('Revisar código de diagnóstico', 'Código')}`;
+
+    case 'dtc_alto':
+      return `Revisar DTC: ${accion.descripcion.replace('Revisar código de diagnóstico', 'Código')}`;
+
+    case 'dtc_medio':
+      return `Monitorear DTC: ${accion.descripcion.replace('Revisar código de diagnóstico', 'Código')}`;
+
+    case 'conectividad_critica':
+      return `Restaurar conexión: ${accion.descripcion.replace('Restaurar conexión del equipo ', '')} (verificar GPS/módem)`;
+
+    case 'conectividad_alta':
+      return `Verificar conexión: ${accion.descripcion.replace('Revisar conexión del equipo ', '')}`;
+
+    case 'ralenti_critico':
+    case 'ralenti_alto':
+      return `Reducir ralentí: ${accion.descripcion.replace('Capacitar operadores sobre ralentí excesivo ', '')} (capacitación operadores)`;
+
+    case 'mantenimiento':
+      return `Programar mantención: ${accion.descripcion.replace('Programar mantención preventiva ', '')}`;
+
+    default:
+      return accion.descripcion;
+  }
+}
+
+/**
+ * Genera el texto de impacto (cualitativo + cuantitativo)
+ */
+function generarImpactoTexto(equipo, acciones) {
+  let impactoLinea1 = '';
+  let impactoLinea2 = '';
+  let impactoClass = '';
+
+  // 1. Expert Alerts Críticas
+  const eaCriticas = acciones.filter(a => a.tipo === 'ea_critica');
+  if (eaCriticas.length > 0) {
+    impactoLinea1 = 'CRÍTICO';
+    impactoLinea2 = 'Falla grave';
+    impactoClass = 'impacto-critico';
+  }
+
+  // 2. Fluidos anormales
+  const fluidoAnormal = acciones.find(a => a.tipo === 'fluido_anormal');
+  if (fluidoAnormal && !impactoLinea1) {
+    impactoLinea1 = 'CRÍTICO';
+    impactoLinea2 = 'Falla grave';
+    impactoClass = 'impacto-critico';
+  }
+
+  // 3. Problemas de conectividad crítica
+  const conectividadCritica = acciones.find(a => a.tipo === 'conectividad_critica');
+  if (conectividadCritica && !impactoLinea1) {
+    impactoLinea1 = 'ALTO';
+    impactoLinea2 = 'Sin visibilidad';
+    impactoClass = 'impacto-alto';
+  }
+
+  // 4. Expert Alerts Altas
+  const eaAltas = acciones.filter(a => a.tipo === 'ea_alta');
+  if (eaAltas.length > 0 && !impactoLinea1) {
+    impactoLinea1 = 'ALTO';
+    impactoLinea2 = 'Monitorear';
+    impactoClass = 'impacto-alto';
+  }
+
+  // 5. DTC críticos
+  const dtcCritico = acciones.find(a => a.tipo === 'dtc_critico');
+  if (dtcCritico && !impactoLinea1) {
+    impactoLinea1 = 'ALTO';
+    impactoLinea2 = 'Monitorear';
+    impactoClass = 'impacto-alto';
+  }
+
+  // 6. Conectividad alta
+  const conectividadAlta = acciones.find(a => a.tipo === 'conectividad_alta');
+  if (conectividadAlta && !impactoLinea1) {
+    impactoLinea1 = 'ALTO';
+    impactoLinea2 = 'Sin visibilidad';
+    impactoClass = 'impacto-alto';
+  }
+
+  // 7. Fluidos en precaución
+  const fluidoPrecaucion = acciones.find(a => a.tipo === 'fluido_precaucion');
+  if (fluidoPrecaucion && !impactoLinea1) {
+    impactoLinea1 = 'PREVENIR';
+    impactoClass = 'impacto-prevenir';
+  }
+
+  // 8. Expert Alerts Rendimiento
+  const eaRendimiento = acciones.find(a => a.tipo === 'ea_rendimiento');
+  if (eaRendimiento && !impactoLinea1) {
+    impactoLinea1 = 'PREVENIR';
+    impactoClass = 'impacto-prevenir';
+  }
+
+  // 9. Mantenimiento
+  const mantenimiento = acciones.find(a => a.tipo === 'mantenimiento');
+  if (mantenimiento && !impactoLinea1) {
+    impactoLinea1 = 'Programar';
+    impactoClass = 'impacto-programar';
+  }
+
+  // 10. DTC medio
+  const dtcMedio = acciones.find(a => a.tipo === 'dtc_medio');
+  if (dtcMedio && !impactoLinea1) {
+    impactoLinea1 = 'Programar';
+    impactoClass = 'impacto-programar';
+  }
+
+  // 11. Ralentí excesivo (agregar costo si existe)
+  const ralenti = acciones.find(a => a.tipo === 'ralenti_critico' || a.tipo === 'ralenti_alto');
+  if (ralenti && equipo.impacto_economico_ral) {
+    const costoMensual = Math.round(equipo.impacto_economico_ral);
+    const costoFormateado = costoMensual.toLocaleString('en-US');
+
+    // Si ya hay un impacto, agregar ralentí como segunda línea
+    if (impactoLinea1) {
+      impactoLinea2 = `$${costoFormateado}/mes`;
+    } else {
+      impactoLinea1 = 'PREVENIR';
+      impactoLinea2 = `$${costoFormateado}/mes`;
+      impactoClass = 'impacto-prevenir';
+    }
+  }
+
+  // Construir HTML
+  let html = '';
+  if (impactoLinea1) {
+    html += `<div class="impacto-principal ${impactoClass}">${impactoLinea1}</div>`;
+  }
+  if (impactoLinea2) {
+    html += `<div class="impacto-secundario">${impactoLinea2}</div>`;
+  }
+
+  return html || '-';
 }
 
 // ============================================
