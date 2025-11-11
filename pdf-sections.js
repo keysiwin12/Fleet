@@ -2117,51 +2117,48 @@ function generarAccionesConVinetas(acciones, equipo) {
 function generarDescripcionAccion(accion, equipo) {
   switch (accion.tipo) {
     case 'ea_critica':
-      return `Verificar Expert Alert Crítica #${accion.descripcion.split('#')[1] || accion.descripcion.replace('Atender alerta crítica: ', '')}`;
-
     case 'ea_alta':
-      return `Verificar Expert Alert Alta #${accion.descripcion.split('#')[1] || accion.descripcion.replace('Atender alerta de alta prioridad: ', '')}`;
-
     case 'ea_rendimiento':
-      return `Verificar Expert Alert #${accion.descripcion.split('#')[1] || accion.descripcion.replace('Revisar alerta de rendimiento: ', '')}`;
+      // Extraer ID de EA si existe
+      const eaId = accion.descripcion.match(/#?EA-?\d+/i);
+      return eaId ? `Verificar ${eaId[0]}` : `Verificar Expert Alert`;
 
     case 'fluido_anormal':
-      return `Revisar análisis de aceite anormal ${accion.descripcion.replace('Revisar resultado anormal en ', '')}`;
+      // "Revisar resultado anormal en Motor" → "Revisar aceite Motor"
+      const compAnormal = accion.descripcion.replace('Revisar resultado anormal en ', '');
+      return `Revisar aceite ${compAnormal}`;
 
     case 'fluido_precaucion':
-      return `Monitorear análisis de aceite ${accion.descripcion.replace('Monitorear resultado en precaución en ', '')}`;
+      // "Monitorear resultado en precaución en Motor" → "Monitorear aceite Motor"
+      const compPrecau = accion.descripcion.replace('Monitorear resultado en precaución en ', '');
+      return `Monitorear aceite ${compPrecau}`;
 
     case 'dtc_critico':
-      const dtcCrit = accion.descripcion.match(/código\s+([A-Z0-9]+)/i);
-      return dtcCrit ? `Atender código ${dtcCrit[1]}` : `Atender DTC crítico`;
-
     case 'dtc_alto':
-      const dtcAlto = accion.descripcion.match(/código\s+([A-Z0-9]+)/i);
-      return dtcAlto ? `Atender código ${dtcAlto[1]}` : `Atender DTC`;
+      // Extraer código DTC
+      const dtcCode = accion.descripcion.match(/([A-Z]\d{4})/i);
+      return dtcCode ? `Atender ${dtcCode[1]}` : `Atender DTC`;
 
     case 'dtc_medio':
-      const dtcMedio = accion.descripcion.match(/código\s+([A-Z0-9]+)/i);
-      return dtcMedio ? `Monitorear código ${dtcMedio[1]}` : `Monitorear DTC`;
+      const dtcMed = accion.descripcion.match(/([A-Z]\d{4})/i);
+      return dtcMed ? `Monitorear ${dtcMed[1]}` : `Monitorear DTC`;
 
     case 'conectividad_critica':
-      // Extraer solo la parte útil: (sin conexión hace X días)
-      const conectMatch = accion.descripcion.match(/\(sin conexión hace .+?\)/);
-      return conectMatch ? `Restaurar conexión ${conectMatch[0]}` : `Restaurar conexión`;
-
     case 'conectividad_alta':
-      const verifyMatch = accion.descripcion.match(/\(sin conexión hace .+?\)/);
-      return verifyMatch ? `Verificar conexión ${verifyMatch[0]}` : `Verificar conexión`;
+      // "Restaurar conexión del equipo (sin conexión hace X días)" → "Restaurar conexión (X días)"
+      const diasMatch = accion.descripcion.match(/\d+\s+días?/);
+      return diasMatch ? `Restaurar conexión (${diasMatch[0]})` : `Restaurar conexión`;
 
     case 'ralenti_critico':
     case 'ralenti_alto':
-      // Extraer porcentaje si existe
-      const ralentiMatch = accion.descripcion.match(/\d+%/);
-      return ralentiMatch ? `Reducir tiempo en ralentí (${ralentiMatch[0]} del tiempo motor)` : `Reducir tiempo en ralentí`;
+      // "Reducir exceso de ralentí (actualmente 45%)" → "Reducir ralentí (45%)"
+      const pctMatch = accion.descripcion.match(/\d+%/);
+      return pctMatch ? `Reducir ralentí (${pctMatch[0]})` : `Reducir ralentí`;
 
     case 'mantenimiento':
-      // Extraer solo la parte útil: (restan X horas)
-      const mantMatch = accion.descripcion.match(/\(restan .+?\)/);
-      return mantMatch ? `Programar mantenimiento ${mantMatch[0]}` : `Programar mantenimiento`;
+      // "Programar mantenimiento (restan 11 horas)" → "Programar servicio (11 hrs)"
+      const hrsMatch = accion.descripcion.match(/restan\s+(\d+)\s+horas?/);
+      return hrsMatch ? `Programar servicio (${hrsMatch[1]} hrs)` : `Programar servicio`;
 
     default:
       return accion.descripcion;
