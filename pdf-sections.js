@@ -2117,41 +2117,51 @@ function generarAccionesConVinetas(acciones, equipo) {
 function generarDescripcionAccion(accion, equipo) {
   switch (accion.tipo) {
     case 'ea_critica':
-      return `Verificar Expert Alert Crítica: ${accion.descripcion.replace('Atender alerta crítica: ', '')}`;
+      return `Verificar Expert Alert Crítica #${accion.descripcion.split('#')[1] || accion.descripcion.replace('Atender alerta crítica: ', '')}`;
 
     case 'ea_alta':
-      return `Verificar Expert Alert Alta: ${accion.descripcion.replace('Atender alerta de alta prioridad: ', '')}`;
+      return `Verificar Expert Alert Alta #${accion.descripcion.split('#')[1] || accion.descripcion.replace('Atender alerta de alta prioridad: ', '')}`;
 
     case 'ea_rendimiento':
-      return `Verificar Expert Alert: ${accion.descripcion.replace('Revisar alerta de rendimiento: ', '')}`;
+      return `Verificar Expert Alert #${accion.descripcion.split('#')[1] || accion.descripcion.replace('Revisar alerta de rendimiento: ', '')}`;
 
     case 'fluido_anormal':
-      return `Revisar análisis de aceite anormal: ${accion.descripcion.replace('Revisar resultado anormal en ', '')}`;
+      return `Revisar análisis de aceite anormal ${accion.descripcion.replace('Revisar resultado anormal en ', '')}`;
 
     case 'fluido_precaucion':
-      return `Monitorear análisis de aceite: ${accion.descripcion.replace('Monitorear resultado en precaución en ', '')}`;
+      return `Monitorear análisis de aceite ${accion.descripcion.replace('Monitorear resultado en precaución en ', '')}`;
 
     case 'dtc_critico':
-      return `Atender DTC crítico: ${accion.descripcion.replace('Revisar código de diagnóstico', 'Código')}`;
+      const dtcCrit = accion.descripcion.match(/código\s+([A-Z0-9]+)/i);
+      return dtcCrit ? `Atender código ${dtcCrit[1]}` : `Atender DTC crítico`;
 
     case 'dtc_alto':
-      return `Atender DTC: ${accion.descripcion.replace('Revisar código de diagnóstico', 'Código')}`;
+      const dtcAlto = accion.descripcion.match(/código\s+([A-Z0-9]+)/i);
+      return dtcAlto ? `Atender código ${dtcAlto[1]}` : `Atender DTC`;
 
     case 'dtc_medio':
-      return `Monitorear DTC: ${accion.descripcion.replace('Revisar código de diagnóstico', 'Código')}`;
+      const dtcMedio = accion.descripcion.match(/código\s+([A-Z0-9]+)/i);
+      return dtcMedio ? `Monitorear código ${dtcMedio[1]}` : `Monitorear DTC`;
 
     case 'conectividad_critica':
-      return `Restaurar conexión: ${accion.descripcion.replace('Restaurar conexión del equipo ', '')}`;
+      // Extraer solo la parte útil: (sin conexión hace X días)
+      const conectMatch = accion.descripcion.match(/\(sin conexión hace .+?\)/);
+      return conectMatch ? `Restaurar conexión ${conectMatch[0]}` : `Restaurar conexión`;
 
     case 'conectividad_alta':
-      return `Verificar conexión: ${accion.descripcion.replace('Revisar conexión del equipo ', '')}`;
+      const verifyMatch = accion.descripcion.match(/\(sin conexión hace .+?\)/);
+      return verifyMatch ? `Verificar conexión ${verifyMatch[0]}` : `Verificar conexión`;
 
     case 'ralenti_critico':
     case 'ralenti_alto':
-      return `Reducir ralentí excesivo: ${accion.descripcion.replace('Capacitar operadores sobre ralentí excesivo ', '')}`;
+      // Extraer porcentaje si existe
+      const ralentiMatch = accion.descripcion.match(/\d+%/);
+      return ralentiMatch ? `Reducir tiempo en ralentí (${ralentiMatch[0]} del tiempo motor)` : `Reducir tiempo en ralentí`;
 
     case 'mantenimiento':
-      return `Programar mantenimiento preventivo: ${accion.descripcion.replace('Programar mantención preventiva ', '')}`;
+      // Extraer solo la parte útil: (restan X horas)
+      const mantMatch = accion.descripcion.match(/\(restan .+?\)/);
+      return mantMatch ? `Programar mantenimiento ${mantMatch[0]}` : `Programar mantenimiento`;
 
     default:
       return accion.descripcion;
