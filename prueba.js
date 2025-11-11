@@ -3468,7 +3468,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
         logoIpesa: toDataUrl(L.logoIpesa, 'image/png')
       },
       meta: {
-        titulo: 'Reporte de Gestión de Flota' + " " + cliente.num_informe,
+        titulo: 'Reporte de Gestión de Flota - Nº Informe:' + " " + cliente.num_informe,
         subtitulo: 'Centro de Soluciones Conectadas — IPESA'
       }
     });

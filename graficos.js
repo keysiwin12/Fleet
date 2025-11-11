@@ -527,7 +527,7 @@ function renderGraficosConectividad(equipos, periodo) {
     .sort((a, b) => a.horas_restantes - b.horas_restantes);
 
   const equiposSinConexion = equipos
-    .filter(eq => !estaConectado(eq.ult_conexion, 15))
+    .filter(eq => !estaConectado(eq.ult_conexion, 1000))
     .sort((a, b) => {
       const fechaA = a.ult_conexion ? new Date(a.ult_conexion) : new Date(0);
       const fechaB = b.ult_conexion ? new Date(b.ult_conexion) : new Date(0);
@@ -597,7 +597,7 @@ function renderGraficosConectividad(equipos, periodo) {
     `;
   } else {
     // Mostrar máximo 15 equipos
-    equiposSinConexion.slice(0, 15).forEach(eq => {
+    equiposSinConexion.slice(0, 1000).forEach(eq => {
       const ubicacionLink = eq.latitud && eq.longitud
         ? `<a href="https://www.google.com/maps?q=${eq.latitud},${eq.longitud}" target="_blank" style="color:var(--color-info); text-decoration:none;">📍 Ver</a>`
         : '-';
@@ -622,16 +622,6 @@ function renderGraficosConectividad(equipos, periodo) {
       `;
     });
 
-    // Agregar fila indicando equipos adicionales
-    if (equiposSinConexion.length > 15) {
-      tablaSinConexionHTML += `
-        <tr>
-          <td colspan="6" style="text-align: center; padding: 8px; background: var(--gray-50); color: var(--gray-600); font-style: italic;">
-            ... y ${equiposSinConexion.length - 15} equipos más sin conexión
-          </td>
-        </tr>
-      `;
-    }
   }
 
   return {
@@ -680,10 +670,10 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   // 1. EXTRAER MÉTRICAS
   const totales = metricas.totales || {};
   const economico = metricas.economico || {};
-
+  
   const equiposExcesoRalenti = safeInt(totales.equiposExcesoRalenti);
-  const combPerdidoGal = safeNum(totales.combPerdidoGal);
-  const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);
+  const combPerdidoGal = safeNum(totales.combPerdidoGal);  // ✅ Valor correcto del backend
+  const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);  // ✅ Valor correcto del backend
 
   // 2. FILTRAR EQUIPOS OPERATIVOS
   const UMBRAL_MINIMO_HORAS = 1;
@@ -699,7 +689,7 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
     .sort((a, b) => {
       const pctA = safeNum(a.percent_ralent_horas);
       const pctB = safeNum(b.percent_ralent_horas);
-      return pctB - pctA; // Descendente
+      return pctB - pctA;
     });
 
   // 3. GENERAR FILAS DE TABLA
@@ -708,7 +698,6 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   let totalHorasRalenti = 0;
   let totalHorasTotales = 0;
   let totalCombPerdido = 0;
-  let totalPerdidaUSD = 0;
 
   if (equiposOperativos.length === 0) {
     filasTablaHTML = `
@@ -731,7 +720,6 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
       totalHorasRalenti += horasRalentiEq;
       totalHorasTotales += horasTotales;
       totalCombPerdido += combPerdido;
-      totalPerdidaUSD += perdidaUSD_eq;
 
       // Color según % ralentí
       let colorPct = '';
@@ -768,6 +756,10 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
     });
   }
 
+  // ✅ Usar valores de métricas (calculados correctamente en backend)
+  const combFormat = combPerdidoGal.toLocaleString('en-US', {maximumFractionDigits: 0});
+  const perdidaFormat = perdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0});
+
   // 4. GENERAR FOOTER
   const footerTablaHTML = equiposOperativos.length > 0 ? `
     <tr style="background: var(--gray-100); font-weight: 700;">
@@ -776,8 +768,8 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
       <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${totalHorasRalenti.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
       <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${totalHorasTotales.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
       <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">-</td>
-      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${totalCombPerdido.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
-      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200); color: var(--color-critical);">$${totalPerdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0})}</td>
+      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${combFormat}</td>
+      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200); color: var(--color-critical);">$${perdidaFormat}</td>
     </tr>
   ` : '';
 
@@ -800,9 +792,6 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   ` : '';
 
   // 6. RECUADRO EDUCATIVO
-  const combFormat = combPerdidoGal.toLocaleString('en-US', {maximumFractionDigits: 0});
-  const perdidaFormat = perdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0});
-
   const recuadroEducativoHTML = equiposExcesoRalenti > 0 ? `
     <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-left: 4px solid var(--color-warning); border-radius: 4px;">
       <div style="display: flex; align-items: flex-start; margin-bottom: 10px;">
@@ -840,7 +829,7 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
     totalEquiposOperativos: equiposOperativos.length,
     equiposConExceso,
     equiposOptimos,
-    totalPerdidaUSD
+    totalPerdidaUSD: perdidaUSD  // ✅ Retornar el valor correcto
   };
 }
 
@@ -929,7 +918,7 @@ function renderPortada({ cliente = {}, periodo = {}, images = {}, meta = {} } = 
   
   // Normalización de datos
   const id = cliente.num_informe;
-  const titulo     = `Reporte de Gestión de Flota - ${id}`;
+  const titulo     = `Reporte de Gestión de Flota - Nº Informe:${id}`;
   const subtitulo  = meta.subtitulo || 'Centro de Soluciones Conectadas — IPESA';
   const razon      = cliente.razon_social || 'Cliente';
   const ruc        = cliente.ruc ? `RUC ${cliente.ruc}` : '';
@@ -1004,7 +993,7 @@ function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta =
   const toDataUrl = (b64, mime = 'image/png') =>
     b64 ? (b64.startsWith('data:') ? b64 : `data:${mime};base64,${b64}`) : '';
 
-  const titulo    = meta.titulo || 'Reporte de Gestión de Flota';
+  const titulo    = meta.titulo || 'Reporte de Gestión de Flota - Nº Informe: ';
   const subtitulo = meta.subtitulo || 'Centro de Soluciones Conectadas — IPESA';
   const razon     = cliente.razon_social || 'Cliente';
   const rucTxt    = cliente.ruc ? `RUC ${cliente.ruc}` : '';

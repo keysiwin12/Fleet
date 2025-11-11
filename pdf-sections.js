@@ -284,11 +284,7 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   // 1. EXTRAER MÉTRICAS NECESARIAS
   // ============================================
   const totales = metricas.totales || {};
-  const economico = metricas.economico || {};
-
   const equiposExcesoRalenti = safeInt(totales.equiposExcesoRalenti);
-  const combPerdidoGal = safeNum(totales.combPerdidoGal);
-  const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);
   
   // ============================================
   // 2. FILTRAR EQUIPOS PARA TABLA
@@ -345,7 +341,7 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
       totalHorasRalenti += horasRalentiEq;
       totalHorasTotales += horasTotales;
       totalCombPerdido += combPerdido;
-      totalPerdidaUSD += perdidaUSD;
+      // totalPerdidaUSD += perdidaUSD;  // ❌ NO sumar (tiene redondeos acumulados)
       
       // Determinar color según % ralentí
       let colorPct = '';
@@ -365,7 +361,7 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
       const horasRalentiFormat = horasRalentiEq.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1});
       const horasTotalesFormat = horasTotales.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1});
       const combPerdidoFormat = combPerdido.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      const perdidaUSDFormat = perdidaUSD.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+      const perdidaUSDFormat = perdidaUSD.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
       
       filasTabla += `
         <tr>
@@ -382,10 +378,19 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
         </tr>
       `;
     });
+    
+    // ✅ CALCULAR impacto económico total SIN redondeos acumulados
+    totalPerdidaUSD = totalCombPerdido * precioPorGalon;
   }
   
   // ============================================
-  // 4. GENERAR FOOTER DE TABLA
+  // 4. FORMATEAR TOTALES (usar los calculados)
+  // ============================================
+  const combFormat = totalCombPerdido.toLocaleString('en-US', {maximumFractionDigits: 0});
+  const perdidaFormat = totalPerdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0});
+  
+  // ============================================
+  // 5. GENERAR FOOTER DE TABLA
   // ============================================
   const footerTabla = equiposOperativos.length > 0 ? `
     <tfoot>
@@ -396,13 +401,13 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
         <td style="text-align:right; font-weight:700;">${totalHorasTotales.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
         <td style="text-align:right;">-</td>
         <td style="text-align:right; font-weight:700;">${totalCombPerdido.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
-        <td style="text-align:right; font-weight:700; color:#e53e3e;">$${totalPerdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0})}</td>
+        <td style="text-align:right; font-weight:700; color:#e53e3e;">$${perdidaFormat}</td>
       </tr>
     </tfoot>
   ` : '';
   
   // ============================================
-  // 5. GENERAR RESUMEN BAJO TABLA
+  // 6. GENERAR RESUMEN BAJO TABLA
   // ============================================
   const equiposConExceso = equiposOperativos.filter(eq => safeNum(eq.percent_ralent_horas) > 0.15).length;
   const equiposOptimos = equiposOperativos.length - equiposConExceso;
@@ -422,11 +427,8 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   ` : '';
   
   // ============================================
-  // 6. GENERAR RECUADRO EDUCATIVO (solo si hay exceso)
+  // 7. GENERAR RECUADRO EDUCATIVO (solo si hay exceso)
   // ============================================
-  const combFormat = combPerdidoGal.toLocaleString('en-US', {maximumFractionDigits: 0});
-  const perdidaFormat = perdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0});
-  
   const recuadroEducativo = equiposExcesoRalenti > 0 ? `
     <div class="educational-box">
       
@@ -458,7 +460,7 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   ` : '';
   
   // ============================================
-  // 7. ENSAMBLAR HTML COMPLETO
+  // 8. ENSAMBLAR HTML COMPLETO
   // ============================================
   return `
     <div class="page page-utilizacion">
@@ -509,7 +511,6 @@ function generarUtilizacion(equipos, metricas, periodo, precioPorGalon) {
     </div>
   `;
 }
-
 /**
  * Genera la sección de Códigos de Diagnóstico (DTC)
  * @param {Array} equipos - Array de equipos del cliente
@@ -2818,7 +2819,6 @@ function generarSeccionContactos(cliente, periodo) {
       <!-- Header de sección -->
       <div class="header">
         <h1>📞 CONTACTOS</h1>
-        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
       </div>
 
       <!-- TABLA DE CONTACTOS DEL CLIENTE -->

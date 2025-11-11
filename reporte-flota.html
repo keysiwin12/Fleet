@@ -450,12 +450,12 @@
     .page-promo-protect { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
     .protect-container { display:flex; gap:30px; align-items:flex-start; }
     .protect-text { flex:1; }
-    .protect-text h3 { margin:0 0 15px 0; color:#367c2b; font-size:18px; font-weight:700; }
-    .protect-text h4 { margin:25px 0 10px 0; color:#367c2b; font-size:15px; font-weight:700; }
+    .protect-text h3 { margin:0 0 15px 0; color:#FDD023; font-size:18px; font-weight:700; }
+    .protect-text h4 { margin:25px 0 10px 0; color:#FDD023; font-size:15px; font-weight:700; }
     .protect-text p { margin:0 0 12px 0; color:#424242; font-size:13px; line-height:1.6; }
     .protect-text ul { margin:0 0 15px 0; padding-left:20px; }
     .protect-text ul li { color:#424242; font-size:12px; line-height:1.7; margin-bottom:6px; }
-    .protect-image { width:550px; height:auto; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); flex-shrink:0; }
+    .protect-image { width:450px; height:auto; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); flex-shrink:0; }
 
     /* 🔧 Ajuste para el bloque que devuelven alert*Number() */
     .alert-number{
@@ -625,7 +625,8 @@
               </div>
             </div>
             <div class="economic-footer">
-              💵 $<?!= metricas.economico.precioPorGalon ?>/gal • ⛽ <?!= metricas.promediosPorEquipo.combPerdidoGal ?> gal/eq
+              <p>💵 Precio por galón: $<?!= metricas.economico.precioPorGalon ?> </p>
+              ⛽ Pérdida comb. por equipo: <?!= metricas.promediosPorEquipo.combPerdidoGal ?>
             </div>
           </div>
         </div>
@@ -634,7 +635,7 @@
   </div>
 
   <!-- PÁGINA 2: RECOMENDACIONES (fluye) -->
-  <div class="page">
+  <!-- <div class="page">
     <div class="header">
       <h1>RESUMEN - GESTIÓN DE FLOTA</h1>
       <div class="header-subtitle">Recomendaciones y Plan de Acción</div>
@@ -652,7 +653,7 @@
         </ul>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- PÁGINA 3: CONECTIVIDAD (fluye) -->
   <div class="page">

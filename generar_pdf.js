@@ -224,7 +224,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
       logoIpesa: toDataUrl(logosB64.logoIpesa, 'image/png')
     },
     meta: {
-      titulo: 'Reporte de Gestión de Flota' + " " + cliente.num_informe,
+      titulo: 'Reporte de Gestión de Flota - Nº Informe: ' + " " + cliente.num_informe,
       subtitulo: 'Centro de Soluciones Conectadas — IPESA'
     }
   });
@@ -460,20 +460,20 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
       }
     };
     
-    // // Agregar CC si hay asesores
-    // if (correosAsesores.length > 0) {
-    //   opcionesCorreo.cc = correosAsesores.join(',');
-    // }
+    // Agregar CC si hay asesores
+    if (correosAsesores.length > 0) {
+      opcionesCorreo.cc = correosAsesores.join(',');
+    }
 
-    // if (clienteData.es_cbd === true){
-    //   opcionesCorreo.cc = opcionesCorreo.cc ? opcionesCorreo.cc + ",solucionesintegradas@ipesa.com.pe" : "solucionesintegradas@ipesa.com.pe";
-    //   opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
-    // }
+    if (clienteData.es_cbd === true){
+      opcionesCorreo.cc = opcionesCorreo.cc ? opcionesCorreo.cc + ",solucionesintegradas@ipesa.com.pe" : "solucionesintegradas@ipesa.com.pe";
+      opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
+    }
     
     // Enviar el correo
     GmailApp.sendEmail(
-      //destinatarios,
-      "ksimbron@ipesa.com.pe",
+      destinatarios,
+      // "ksimbron@ipesa.com.pe",
       `Reporte de Gestión de Flota | ${fechahoy} | ${clienteData.razon_social}`,
       '',
       opcionesCorreo
