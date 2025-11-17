@@ -1001,6 +1001,8 @@ const ESTILOS_DTC = `
   }
 
   .section-header {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
     padding: 10px 15px;
     font-weight: bold;
     font-size: 11pt;
@@ -1008,18 +1010,21 @@ const ESTILOS_DTC = `
     color: #333;
   }
 
+  .section-header.high,
   .section-header-high {
-    border-left: 4px solid #dc3545;
+    border-left-color: #dc3545;
     background-color: #f8d7da;
   }
 
+  .section-header.medium,
   .section-header-medium {
-    border-left: 4px solid #ffc107;
+    border-left-color: #ffc107;
     background-color: #fff3cd;
   }
 
+  .section-header.low,
   .section-header-low {
-    border-left: 4px solid #28a745;
+    border-left-color: #28a745;
     background-color: #d4edda;
   }
 
@@ -1051,6 +1056,7 @@ const ESTILOS_DTC = `
 
   .dtc-table tbody tr {
     page-break-inside: avoid;
+    border-bottom: 1px solid #dee2e6;
   }
 
   .dtc-table tbody tr:nth-child(odd) {
@@ -1062,13 +1068,11 @@ const ESTILOS_DTC = `
   }
 
   .dtc-table tbody tr:hover {
-    background: #e9ecef;
+    background-color: #e9ecef;
   }
 
   .dtc-table td {
     padding: 8px 10px;
-    border-bottom: 1px solid #dee2e6;
-    color: #4a5568;
     vertical-align: top;
     font-size: 9pt;
   }

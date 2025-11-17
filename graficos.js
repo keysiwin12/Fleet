@@ -1223,14 +1223,14 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
     if (eq.totalCriticos) {
       html += `
         <div class="codes-section">
-          <div class="section-header section-header-high">🔴 CÓDIGOS DE PRIORIDAD ALTA (${eq.totalCriticos})</div>
+          <div class="section-header high">🔴 CÓDIGOS DE PRIORIDAD ALTA (${eq.totalCriticos})</div>
           ${tablaDTCs(eq.dtcsCriticos, eq.totalCriticos)}
         </div>`;
     }
     if (eq.totalAtencion) {
       html += `
         <div class="codes-section">
-          <div class="section-header section-header-medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${eq.totalAtencion})</div>
+          <div class="section-header medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${eq.totalAtencion})</div>
           ${tablaDTCs(eq.dtcsAtencion, eq.totalAtencion)}
         </div>`;
     }
