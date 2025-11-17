@@ -205,29 +205,274 @@
     /* Elimina cualquier contador de páginas que pudieras tener */
     .page-number{ display:none !important; }
 
-    /* ====== DTC ====== */
-    .page-dtc .section-header{ display:flex; align-items:center; gap:5px; }
-
-    .dtc-info-box {
-      background: #f0f7ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 16px; margin: 10px 0;
+    /* ====== DTC - ESTILOS EXACTOS DEL MODELO ====== */
+    /* Header de equipo */
+    .equipment-header {
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .dtc-info-title { font-size: 9pt; color: #1e40af; font-weight: 700; margin-bottom: 8px; line-height:1.4; }
-    .dtc-info-text { font-size: 8pt; color: #374151; line-height:1.5; }
+
+    .equipment-header-critico {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
+      border: 2px solid #e5a3ab;
+    }
+
+    .equipment-header-atencion {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+      border: 2px solid #ffc107;
+    }
+
+    .equipment-title {
+      font-size: 14pt;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .equipment-serie {
+      font-size: 9pt;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .codes-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 9pt;
+      font-weight: bold;
+      color: white;
+    }
+
+    .codes-badge-critico {
+      background-color: #721c24;
+    }
+
+    .codes-badge-atencion {
+      background-color: #ff8800;
+    }
+
+    /* Sección de códigos */
+    .codes-section {
+      margin-bottom: 25px;
+      page-break-inside: avoid;
+    }
+
+    .section-header {
+      background-color: #f8d7da;
+      border-left: 4px solid #dc3545;
+      padding: 10px 15px;
+      font-weight: bold;
+      font-size: 11pt;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .section-header.high {
+      border-left-color: #dc3545;
+      background-color: #f8d7da;
+    }
+
+    .section-header.medium {
+      border-left-color: #ffc107;
+      background-color: #fff3cd;
+    }
+
+    .section-header.low {
+      border-left-color: #28a745;
+      background-color: #d4edda;
+    }
+
+    /* Tablas DTC */
+    .dtc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .dtc-table thead {
+      background-color: #495057;
+      color: white;
+    }
+
+    .dtc-table th {
+      padding: 10px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .dtc-table th:nth-child(3),
+    .dtc-table th:nth-child(4) {
+      text-align: center;
+    }
+
+    .dtc-table tbody tr {
+      page-break-inside: avoid;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .dtc-table tbody tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    .dtc-table tbody tr:nth-child(even) {
+      background-color: #f5f5f5;
+    }
+
+    .dtc-table tbody tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .dtc-table td {
+      padding: 8px 10px;
+      vertical-align: top;
+      font-size: 9pt;
+    }
+
+    /* Columna código */
+    .dtc-table td:first-child {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      white-space: nowrap;
+      width: 15%;
+    }
+
+    /* Columna descripción */
+    .dtc-table td:nth-child(2) {
+      width: 60%;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    /* Columna frecuencia */
+    .dtc-table td:nth-child(3) {
+      text-align: center;
+      font-weight: bold;
+      width: 10%;
+    }
+
+    /* Columna severidad */
+    .dtc-table td:nth-child(4) {
+      text-align: center;
+      width: 15%;
+    }
+
+    /* Badges de severidad */
+    .severity-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 9pt;
+      color: white;
+      letter-spacing: 1px;
+    }
+
+    .severity-high {
+      background-color: #dc3545;
+    }
+
+    .severity-medium {
+      background-color: #ffc107;
+      color: #333;
+    }
+
+    .severity-low {
+      background-color: #28a745;
+    }
+
+    /* Mensaje cuando NO hay DTCs */
+    .dtc-info-box {
+      background: #fffbf0;
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .dtc-info-title {
+      font-size: 12pt;
+      color: #92400e;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .dtc-info-text {
+      font-size: 9pt;
+      line-height: 1.6;
+      color: #78350f;
+    }
 
     .dtc-status-positive {
-      background: #ffffff; border: 2px solid #10b981; border-radius: 8px; padding: 16px; margin: 10px 0; text-align: center;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      margin: 20px 0;
     }
-    .status-icon-large {
-      width: 28px; height: 28px; background: #10b981; color: white; font-size: 16px; font-weight: 700; border-radius: 50%;
-      display:flex; align-items:center; justify-content:center; margin: 0 auto 6px auto;
-    }
-    .status-title { font-size: 11pt; color: #065f46; font-weight: 700; margin-bottom: 6px; }
-    .status-message { font-size: 9pt; color: #047857; margin-bottom: 6px; font-weight: 600; }
-    .status-description { font-size: 8pt; color: #374151; margin-bottom: 6px; }
-    .status-benefits { list-style:none; padding:0; margin:8px auto 0 auto; max-width:120mm; text-align:left; }
-    .status-benefits li { font-size:8pt; color:#374151; padding:5px 8px; margin-bottom:5px; background:#f0fdf4; border-left:3px solid #10b981; border-radius:3px; }
-    .status-benefits li::before { content:"✓"; color:#10b981; font-weight:700; margin-right:6px; }
 
+    .status-icon-large {
+      font-size: 48pt;
+      color: #065f46;
+      margin-bottom: 15px;
+    }
+
+    .status-title {
+      font-size: 18pt;
+      color: #065f46;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .status-message {
+      font-size: 11pt;
+      color: #047857;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .status-description {
+      font-size: 9pt;
+      color: #047857;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .status-benefits {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .status-benefits li {
+      font-size: 9pt;
+      color: #047857;
+      padding: 6px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    .status-benefits li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+      font-size: 11pt;
+    }
+
+    /* Resumen box y estadísticas */
     .resumen-box-mejorado {
       background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; margin: 6px 0 10px 0;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -272,26 +517,6 @@
 
     .dtc-section-header { margin:10px 0 6px 0; }
     .dtc-section-title { font-size:10pt; color:#2d3748; font-weight:700; padding-bottom:6px; border-bottom:2px solid #e2e8f0; }
-
-    .dtc-card-critico, .dtc-card-atencion { border-radius:6px; padding:8px; margin:6px 0; }
-    .dtc-card-critico { border:2px solid #dc2626; background:#fee2e2; }
-    .dtc-card-atencion { border:2px solid #f59e0b; background:#fef3c7; }
-    .dtc-card-header { margin-bottom:6px; }
-    .dtc-card-title { font-size:9pt; color:#1a202c; font-weight:700; margin-bottom:4px; }
-    .dtc-card-info { display:flex; justify-content:space-between; align-items:center; font-size:7pt; }
-    .dtc-card-serie { color:#4a5568; }
-    .dtc-card-count { color:#2d3748; font-weight:600; }
-
-    .dtc-subsection { margin:8px 0 5px 0; }
-    .dtc-subsection-title { font-size:8pt; color:#2d3748; font-weight:700; margin-bottom:4px; }
-
-    .dtc-table { width:100%; border-collapse:collapse; font-size:7pt; margin:6px 0; background:white; }
-    .dtc-table thead { background:#2d3748; color:white; }
-    .dtc-table th { padding:6px 5px; text-align:left; font-weight:600; font-size:6.5pt; text-transform:uppercase; letter-spacing:.3px; }
-    .dtc-table td { padding:6px 5px; border-bottom:1px solid #e2e8f0; color:#4a5568; }
-    .dtc-table tbody tr:hover { background:#f7fafc; }
-
-    .dtc-additional { text-align:center; padding:6px; background:white; border-radius:4px; margin-top:5px; font-size:7pt; color:#718096; font-style:italic; }
 
     @media print{
       #dtc thead{ display:table-header-group; }
