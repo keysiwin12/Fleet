@@ -693,18 +693,28 @@ function previsualizarDTC() {
     return;
   }
   
-  // 3. Obtener equipos y métricas
-  const equipos = cliente.equipos || [];
-  const metricas = cliente.metricas || {};
+  // 3. Preparar equipos con formato correcto
+  const equiposDTC = (cliente.equipos || []).map(eq => ({
+    id_equipo: eq.id_equipo || eq.pin || eq.num_serie || eq.numero_serie,
+    pin: eq.pin || eq.num_serie || eq.numero_serie,
+    modelo: eq.modelo,
+    familia: eq.familia,
+    num_interno: eq.num_interno,
+    dtc: Array.isArray(eq.dtc) ? eq.dtc : []
+  }));
 
-  // 4. Obtener periodo
-  const periodo = {
-    inicio: modelo.periodo.inicio,
-    fin: modelo.periodo.fin
-  };  // ✅ Desde CONFIG
-
-  // 5. Generar HTML de DTC
-  const htmlDTC = generarDTC(equipos, metricas, periodo);
+  // 4. Generar HTML de DTC usando renderDTC
+  const { html: htmlDTC } = renderDTC({
+    equipos: equiposDTC,
+    periodo: {
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin,
+      ini: modelo.periodo.fecha_inicio,
+      fin: modelo.periodo.fecha_fin,
+      label: modelo.periodo.label
+    },
+    opciones: { ordenar: 'criticos' }
+  });
 
 
   

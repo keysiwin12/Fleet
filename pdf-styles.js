@@ -1051,7 +1051,6 @@ const ESTILOS_DTC = `
 
   .dtc-table tbody tr {
     page-break-inside: avoid;
-    border-bottom: 1px solid #dee2e6;
   }
 
   .dtc-table tbody tr:nth-child(odd) {
@@ -1063,11 +1062,13 @@ const ESTILOS_DTC = `
   }
 
   .dtc-table tbody tr:hover {
-    background-color: #e9ecef;
+    background: #e9ecef;
   }
 
   .dtc-table td {
     padding: 8px 10px;
+    border-bottom: 1px solid #dee2e6;
+    color: #4a5568;
     vertical-align: top;
     font-size: 9pt;
   }
