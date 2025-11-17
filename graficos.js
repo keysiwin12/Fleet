@@ -1208,43 +1208,42 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   }
 
   function tarjetaEquipo(eq, tipo) {
-    const claseHeader = (tipo==='critico') ? 'equipment-header-critico' : 'equipment-header-atencion';
-    const claseBadge = (tipo==='critico') ? 'codes-badge-critico' : 'codes-badge-atencion';
+    // Combinar todos los DTCs en una sola lista, ordenados por severidad
+    const todosDTCs = [];
+    if (eq.dtcsCriticos && eq.dtcsCriticos.length) {
+      todosDTCs.push(...eq.dtcsCriticos);
+    }
+    if (eq.dtcsAtencion && eq.dtcsAtencion.length) {
+      todosDTCs.push(...eq.dtcsAtencion);
+    }
 
     let html = `
-      <div class="equipment-header ${claseHeader}">
+      <div class="equipment-header">
         <div>
           <div class="equipment-title">${esc(eq.familia)} ${esc(eq.modelo)} - ${esc(eq.num_interno||'')}</div>
           <div class="equipment-serie">Serie: ${esc(eq.id_equipo)}</div>
         </div>
-        <div class="codes-badge ${claseBadge}">${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}</div>
+        <div class="codes-badge">${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}</div>
       </div>`;
 
-    if (eq.totalCriticos) {
+    if (todosDTCs.length > 0) {
       html += `
         <div class="codes-section">
-          <div class="section-header high">🔴 CÓDIGOS DE PRIORIDAD ALTA (${eq.totalCriticos})</div>
-          ${tablaDTCs(eq.dtcsCriticos, eq.totalCriticos)}
-        </div>`;
-    }
-    if (eq.totalAtencion) {
-      html += `
-        <div class="codes-section">
-          <div class="section-header medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${eq.totalAtencion})</div>
-          ${tablaDTCs(eq.dtcsAtencion, eq.totalAtencion)}
+          <div class="severity-legend">
+            <span class="severity-legend-item"><strong>A</strong> = Alta</span>
+            <span class="severity-legend-item"><strong>M</strong> = Mediana</span>
+          </div>
+          ${tablaDTCs(todosDTCs, todosDTCs.length)}
         </div>`;
     }
     return html;
   }
 
-  const bloqueCrit = equiposConCriticos.length
-    ? `<div class="dtc-section-header"><h3 class="dtc-section-title">🔴 EQUIPOS CON ALERTAS CRÍTICAS</h3></div>
-       ${equiposConCriticos.map(eq=>tarjetaEquipo(eq,'critico')).join('')}`
-    : '';
+  // Combinar todos los equipos ordenados por cantidad de códigos críticos (descendente)
+  const todosEquipos = [...equiposConCriticos, ...equiposSoloAtencion];
 
-  const bloqueAten = equiposSoloAtencion.length
-    ? `<div class="dtc-section-header"><h3 class="dtc-section-title">🟡 EQUIPOS CON ALERTAS DE ATENCIÓN</h3></div>
-       ${equiposSoloAtencion.map(eq=>tarjetaEquipo(eq,'atencion')).join('')}`
+  const bloqueEquipos = todosEquipos.length
+    ? todosEquipos.map(eq => tarjetaEquipo(eq, 'normal')).join('')
     : '';
 
   const html = `
@@ -1254,13 +1253,11 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
     </div>
 
     <div class="section">
-      <div class="section-header">Resumen ejecutivo</div>
+      <div class="section-header">Resumen</div>
       ${resumenHTML}
     </div>
 
-    ${bloqueCrit ? `<div class="section">${bloqueCrit}</div>` : ''}
-
-    ${bloqueAten ? `<div class="section">${bloqueAten}</div>` : ''}
+    ${bloqueEquipos ? `<div class="section">${bloqueEquipos}</div>` : ''}
 
   </section>`;
 

@@ -212,8 +212,8 @@
     /* Elimina cualquier contador de páginas que pudieras tener */
     .page-number{ display:none !important; }
 
-    /* ====== DTC - ESTILOS EXACTOS DEL MODELO ====== */
-    /* Header de equipo */
+    /* ====== DTC - ESTILOS SIMPLIFICADOS ====== */
+    /* Header de equipo - sin backgrounds de colores */
     .equipment-header {
       border-radius: 6px;
       padding: 10px 15px;
@@ -221,16 +221,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .equipment-header-critico {
-      background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
-      border: 2px solid #e5a3ab;
-    }
-
-    .equipment-header-atencion {
-      background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
-      border: 2px solid #ffc107;
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
     }
 
     .equipment-title {
@@ -251,15 +243,8 @@
       border-radius: 12px;
       font-size: 7pt;
       font-weight: bold;
+      background-color: #495057;
       color: white;
-    }
-
-    .codes-badge-critico {
-      background-color: #721c24;
-    }
-
-    .codes-badge-atencion {
-      background-color: #ff8800;
     }
 
     /* Sección de códigos - SIN page-break */
@@ -267,30 +252,20 @@
       margin-bottom: 15px;
     }
 
-    /* Section headers SOLO para DTC */
-    .page-dtc .section-header.high,
-    .page-dtc .section-header.medium,
-    .page-dtc .section-header.low {
-      padding: 8px 12px;
-      font-weight: bold;
-      font-size: 9pt;
-      margin-bottom: 8px;
-      color: #333;
+    /* Leyenda de severidad */
+    .severity-legend {
+      font-size: 6.5pt;
+      color: #718096;
+      margin-bottom: 6px;
+      padding: 4px 8px;
+      background: #f7fafc;
+      border-radius: 4px;
+      display: inline-block;
     }
 
-    .page-dtc .section-header.high {
-      border-left: 4px solid #dc3545;
-      background-color: #f8d7da;
-    }
-
-    .page-dtc .section-header.medium {
-      border-left: 4px solid #ffc107;
-      background-color: #fff3cd;
-    }
-
-    .page-dtc .section-header.low {
-      border-left: 4px solid #28a745;
-      background-color: #d4edda;
+    .severity-legend-item {
+      display: inline;
+      margin-right: 12px;
     }
 
     /* Tablas DTC */
