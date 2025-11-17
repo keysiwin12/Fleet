@@ -941,6 +941,201 @@ const ESTILOS_PROMOCIONALES = `
 `;
 
 // ============================================================================
+// ESTILOS ESPECÍFICOS: CÓDIGOS DE DIAGNÓSTICO (DTC)
+// ============================================================================
+
+const ESTILOS_DTC = `
+  /* Header de equipo */
+  .equipment-header {
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  .equipment-header-critico {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
+    border: 2px solid #e5a3ab;
+  }
+
+  .equipment-header-atencion {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+    border: 2px solid #ffc107;
+  }
+
+  .equipment-header-content {
+    display: table-cell;
+    vertical-align: middle;
+    width: 70%;
+  }
+
+  .equipment-header-badge {
+    display: table-cell;
+    vertical-align: middle;
+    width: 30%;
+    text-align: right;
+  }
+
+  .equipment-title {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .equipment-serie {
+    font-size: 9pt;
+    color: #555;
+  }
+
+  .codes-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 9pt;
+    font-weight: bold;
+    color: white;
+  }
+
+  .codes-badge-critico {
+    background-color: #721c24;
+  }
+
+  .codes-badge-atencion {
+    background-color: #ff8800;
+  }
+
+  /* Sección de códigos */
+  .codes-section {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+  }
+
+  .section-header {
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 11pt;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .section-header-high {
+    border-left: 4px solid #dc3545;
+    background-color: #f8d7da;
+  }
+
+  .section-header-medium {
+    border-left: 4px solid #ffc107;
+    background-color: #fff3cd;
+  }
+
+  .section-header-low {
+    border-left: 4px solid #28a745;
+    background-color: #d4edda;
+  }
+
+  /* Tablas DTC */
+  .dtc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  .dtc-table thead {
+    background-color: #495057;
+    color: white;
+  }
+
+  .dtc-table th {
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .dtc-table th:nth-child(3),
+  .dtc-table th:nth-child(4) {
+    text-align: center;
+  }
+
+  .dtc-table tbody tr {
+    page-break-inside: avoid;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .dtc-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+  }
+
+  .dtc-table tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+  }
+
+  .dtc-table td {
+    padding: 8px 10px;
+    vertical-align: top;
+    font-size: 9pt;
+  }
+
+  /* Columna código */
+  .dtc-table td:first-child {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    white-space: nowrap;
+    width: 15%;
+  }
+
+  /* Columna descripción */
+  .dtc-table td:nth-child(2) {
+    width: 60%;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  /* Columna frecuencia */
+  .dtc-table td:nth-child(3) {
+    text-align: center;
+    font-weight: bold;
+    width: 10%;
+  }
+
+  /* Columna severidad */
+  .dtc-table td:nth-child(4) {
+    text-align: center;
+    width: 15%;
+  }
+
+  /* Badges de severidad */
+  .severity-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 9pt;
+    color: white;
+    letter-spacing: 1px;
+  }
+
+  .severity-high {
+    background-color: #dc3545;
+  }
+
+  .severity-medium {
+    background-color: #ffc107;
+    color: #333;
+  }
+
+  .severity-low {
+    background-color: #28a745;
+  }
+`;
+
+// ============================================================================
 // ESTILOS ESPECÍFICOS: PÁGINAS DE SECCIONES
 // ============================================================================
 
@@ -1196,5 +1391,6 @@ function obtenerEstilosCompletos() {
          ESTILOS_PORTADA +
          ESTILOS_CONTENIDOS +
          ESTILOS_PROMOCIONALES +
+         ESTILOS_DTC +
          ESTILOS_SECCIONES;
 }

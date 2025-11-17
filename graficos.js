@@ -1182,14 +1182,14 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   function tablaDTCs(dtcs, totalCodigos) {
     // Mostrar TODOS los códigos sin límite
     const filas = dtcs.map(d => {
-      const colorSev = d.severidad === "Alta" ? "#c53030" : "#d69e2e";
+      const claseSev = d.severidad === "Alta" ? "severity-high" : "severity-medium";
       const letra = d.severidad === "Alta" ? "A" : "M";
       return `
         <tr>
-          <td style="font-weight:600;">${esc(d.codigo)}</td>
+          <td>${esc(d.codigo)}</td>
           <td>${esc(d.descripcion)}</td>
-          <td style="text-align:center;">${esc(d.repeticiones)}</td>
-          <td style="text-align:center; font-weight:700; color:${colorSev};">${letra}</td>
+          <td>${esc(d.repeticiones)}</td>
+          <td><span class="severity-badge ${claseSev}">${letra}</span></td>
         </tr>`;
     }).join('');
 
@@ -1197,10 +1197,10 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
       <table class="dtc-table">
         <thead>
           <tr>
-            <th style="width:12%;">Código</th>
-            <th style="width:68%;">Descripción</th>
-            <th style="width:12%;">Frecuencia</th>
-            <th style="width:8%;">Severidad</th>
+            <th>CÓDIGO</th>
+            <th>DESCRIPCIÓN</th>
+            <th>FREC</th>
+            <th>SEVERIDAD</th>
           </tr>
         </thead>
         <tbody>${filas}</tbody>
@@ -1208,34 +1208,34 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   }
 
   function tarjetaEquipo(eq, tipo) {
-    const clase = (tipo==='critico') ? 'dtc-card-critico' : 'dtc-card-atencion';
+    const claseHeader = (tipo==='critico') ? 'equipment-header-critico' : 'equipment-header-atencion';
+    const claseBadge = (tipo==='critico') ? 'codes-badge-critico' : 'codes-badge-atencion';
+
     let html = `
-      <div class="${clase}">
-        <div class="dtc-card-header">
-          <h4 class="dtc-card-title">${esc(eq.familia)} ${esc(eq.modelo)} - ${esc(eq.num_interno||'')}</h4>
-          <div class="dtc-card-info">
-            <span class="dtc-card-serie">Serie: ${esc(eq.id_equipo)}</span>
-            <span class="dtc-card-count">
-              ${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}
-              ${eq.totalCriticos ? `(${eq.totalCriticos} crítico${eq.totalCriticos>1?'s':''})` : ''}
-            </span>
-          </div>
-        </div>`;
+      <div class="equipment-header ${claseHeader}">
+        <div class="equipment-header-content">
+          <div class="equipment-title">${esc(eq.familia)} ${esc(eq.modelo)} - ${esc(eq.num_interno||'')}</div>
+          <div class="equipment-serie">Serie: ${esc(eq.id_equipo)}</div>
+        </div>
+        <div class="equipment-header-badge">
+          <span class="codes-badge ${claseBadge}">${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}</span>
+        </div>
+      </div>`;
 
     if (eq.totalCriticos) {
-      html += tablaDTCs(eq.dtcsCriticos, eq.totalCriticos);
-    }
-    if (tipo==='critico' && eq.totalAtencion) {
       html += `
-        <div class="dtc-subsection">
-          <h5 class="dtc-subsection-title">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${eq.totalAtencion})</h5>
+        <div class="codes-section">
+          <div class="section-header section-header-high">🔴 CÓDIGOS DE PRIORIDAD ALTA (${eq.totalCriticos})</div>
+          ${tablaDTCs(eq.dtcsCriticos, eq.totalCriticos)}
         </div>`;
-      html += tablaDTCs(eq.dtcsAtencion, eq.totalAtencion);
     }
-    if (tipo==='atencion' && eq.totalAtencion) {
-      html += tablaDTCs(eq.dtcsAtencion, eq.totalAtencion);
+    if (eq.totalAtencion) {
+      html += `
+        <div class="codes-section">
+          <div class="section-header section-header-medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${eq.totalAtencion})</div>
+          ${tablaDTCs(eq.dtcsAtencion, eq.totalAtencion)}
+        </div>`;
     }
-    html += `</div>`;
     return html;
   }
 

@@ -878,45 +878,42 @@ function generarResumenEjecutivoDTC(totalEquipos, equiposAfectados, pctAfectados
  * Genera la tarjeta HTML de un equipo con sus DTCs
  */
 function generarTarjetaEquipoDTC(equipo, tipo) {
-  const claseTarjeta = tipo === 'critico' ? 'dtc-card-critico' : 'dtc-card-atencion';
-  
-  // Header de la tarjeta
+  const claseHeader = tipo === 'critico' ? 'equipment-header-critico' : 'equipment-header-atencion';
+  const claseBadge = tipo === 'critico' ? 'codes-badge-critico' : 'codes-badge-atencion';
+
+  // Header del equipo con gradiente y badge
   let htmlTarjeta = `
-    <div class="${claseTarjeta}">
-      <div class="dtc-card-header">
-        <h4 class="dtc-card-title">${equipo.familia} ${equipo.modelo} - ${equipo.num_interno}</h4>
-        <div class="dtc-card-info">
-          <span class="dtc-card-serie">Serie: ${equipo.id_equipo}</span>
-          <span class="dtc-card-count">
-            ${equipo.totalDTCs} código${equipo.totalDTCs > 1 ? 's' : ''} activo${equipo.totalDTCs > 1 ? 's' : ''}
-            ${equipo.totalCriticos > 0 ? `(${equipo.totalCriticos} crítico${equipo.totalCriticos > 1 ? 's' : ''})` : ''}
-          </span>
-        </div>
+    <div class="equipment-header ${claseHeader}">
+      <div class="equipment-header-content">
+        <div class="equipment-title">${equipo.familia} ${equipo.modelo} - ${equipo.num_interno}</div>
+        <div class="equipment-serie">Serie: ${equipo.id_equipo}</div>
       </div>
+      <div class="equipment-header-badge">
+        <span class="codes-badge ${claseBadge}">${equipo.totalDTCs} código${equipo.totalDTCs > 1 ? 's' : ''} activo${equipo.totalDTCs > 1 ? 's' : ''}</span>
+      </div>
+    </div>
   `;
-  
-  // Sección de códigos críticos
+
+  // Sección de códigos ALTA prioridad
   if (equipo.totalCriticos > 0) {
-    htmlTarjeta += generarTablaDTCs(equipo.dtcsCriticos, 'critico', equipo.totalCriticos);
-  }
-  
-  // Sección de códigos de atención (si es un equipo mixto)
-  if (tipo === 'critico' && equipo.totalAtencion > 0) {
     htmlTarjeta += `
-      <div class="dtc-subsection">
-        <h5 class="dtc-subsection-title">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${equipo.totalAtencion})</h5>
+      <div class="codes-section">
+        <div class="section-header section-header-high">🔴 CÓDIGOS DE PRIORIDAD ALTA (${equipo.totalCriticos})</div>
+        ${generarTablaDTCs(equipo.dtcsCriticos, 'critico', equipo.totalCriticos)}
       </div>
     `;
-    htmlTarjeta += generarTablaDTCs(equipo.dtcsAtencion, 'atencion', equipo.totalAtencion);
   }
-  
-  // Sección de códigos de atención (si es equipo solo atención)
-  if (tipo === 'atencion' && equipo.totalAtencion > 0) {
-    htmlTarjeta += generarTablaDTCs(equipo.dtcsAtencion, 'atencion', equipo.totalAtencion);
+
+  // Sección de códigos MEDIANA prioridad
+  if (equipo.totalAtencion > 0) {
+    htmlTarjeta += `
+      <div class="codes-section">
+        <div class="section-header section-header-medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${equipo.totalAtencion})</div>
+        ${generarTablaDTCs(equipo.dtcsAtencion, 'atencion', equipo.totalAtencion)}
+      </div>
+    `;
   }
-  
-  htmlTarjeta += `</div>`;
-  
+
   return htmlTarjeta;
 }
 
@@ -929,10 +926,10 @@ function generarTablaDTCs(dtcs, tipo, totalCodigos) {
     <table class="dtc-table">
       <thead>
         <tr>
-          <th style="width:12%;">Código</th>
-          <th style="width:68%;">Descripción</th>
-          <th style="width:12%;">Frecuencia</th>
-          <th style="width:8%;">Severidad</th>
+          <th>CÓDIGO</th>
+          <th>DESCRIPCIÓN</th>
+          <th>FREC</th>
+          <th>SEVERIDAD</th>
         </tr>
       </thead>
       <tbody>
@@ -940,15 +937,15 @@ function generarTablaDTCs(dtcs, tipo, totalCodigos) {
 
   // Iterar sobre TODOS los códigos sin límite
   dtcs.forEach(dtc => {
-    const colorSeveridad = dtc.severidad === "Alta" ? "#c53030" : "#d69e2e";
+    const claseSeveridad = dtc.severidad === "Alta" ? "severity-high" : "severity-medium";
     const letraSeveridad = dtc.severidad === "Alta" ? "A" : "M";
 
     htmlTabla += `
       <tr>
-        <td style="font-weight:600;">${dtc.codigo}</td>
+        <td>${dtc.codigo}</td>
         <td>${dtc.descripcion}</td>
-        <td style="text-align:center;">${dtc.repeticiones}</td>
-        <td style="text-align:center; font-weight:700; color:${colorSeveridad};">${letraSeveridad}</td>
+        <td>${dtc.repeticiones}</td>
+        <td><span class="severity-badge ${claseSeveridad}">${letraSeveridad}</span></td>
       </tr>
     `;
   });
