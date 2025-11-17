@@ -349,7 +349,13 @@ function registrarEnvioLog(clienteData,numInforme) {
       numInforme,                    // num_informe
       clienteData.id_op_center,      // cliente (id_op_center)
       fechaHoraCompleta,             // fecha_envio
-      ""                             // sugerencias (vacío)
+      "",                            // sugerencias (vacío)
+      "",                            // id_cliente (vacío)
+      "",                            // razón_social (vacío)
+      clienteData.metricas.distribucionLineas.lineaCF, //número de flota cf
+      clienteData.metricas.distribucionLineas.lineaAF, //número de flota ag
+      clienteData.metricas.distribucionLineas.lineaW, //número de flota wg
+      clienteData.metricas.distribucionLineas.lineaOtros, //número de flota al
     ];
     
     // Insertar en la siguiente fila disponible
@@ -462,7 +468,7 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
     
     // Agregar CC si hay asesores
     if (correosAsesores.length > 0) {
-      opcionesCorreo.cc = correosAsesores.join(',');
+      opcionesCorreo.cc = correosAsesores.join(',')+ ',cgomezs@ipesa.com.pe';
     }
 
     if (clienteData.es_cbd === true){
