@@ -44,6 +44,13 @@
       position:relative;
     }
 
+    /* DTC fluye sin saltos de página forzados */
+    .page-dtc {
+      break-before:page;
+      break-inside:auto;
+      page-break-inside:auto;
+    }
+
     /* ====== PORTADA 2 PÁGINAS ====== */
     .page.portada{
       width:calc(297mm - 20mm);
@@ -208,9 +215,9 @@
     /* ====== DTC - ESTILOS EXACTOS DEL MODELO ====== */
     /* Header de equipo */
     .equipment-header {
-      border-radius: 8px;
-      padding: 15px 20px;
-      margin-bottom: 20px;
+      border-radius: 6px;
+      padding: 10px 15px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -227,22 +234,22 @@
     }
 
     .equipment-title {
-      font-size: 14pt;
+      font-size: 10pt;
       font-weight: bold;
       color: #333;
     }
 
     .equipment-serie {
-      font-size: 9pt;
+      font-size: 7pt;
       color: #555;
-      margin-top: 5px;
+      margin-top: 3px;
     }
 
     .codes-badge {
       display: inline-block;
-      padding: 6px 12px;
-      border-radius: 15px;
-      font-size: 9pt;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 7pt;
       font-weight: bold;
       color: white;
     }
@@ -255,34 +262,34 @@
       background-color: #ff8800;
     }
 
-    /* Sección de códigos */
+    /* Sección de códigos - SIN page-break */
     .codes-section {
-      margin-bottom: 25px;
-      page-break-inside: avoid;
+      margin-bottom: 15px;
     }
 
-    .section-header {
-      background-color: #f8d7da;
-      border-left: 4px solid #dc3545;
-      padding: 10px 15px;
+    /* Section headers SOLO para DTC */
+    .page-dtc .section-header.high,
+    .page-dtc .section-header.medium,
+    .page-dtc .section-header.low {
+      padding: 8px 12px;
       font-weight: bold;
-      font-size: 11pt;
-      margin-bottom: 10px;
+      font-size: 9pt;
+      margin-bottom: 8px;
       color: #333;
     }
 
-    .section-header.high {
-      border-left-color: #dc3545;
+    .page-dtc .section-header.high {
+      border-left: 4px solid #dc3545;
       background-color: #f8d7da;
     }
 
-    .section-header.medium {
-      border-left-color: #ffc107;
+    .page-dtc .section-header.medium {
+      border-left: 4px solid #ffc107;
       background-color: #fff3cd;
     }
 
-    .section-header.low {
-      border-left-color: #28a745;
+    .page-dtc .section-header.low {
+      border-left: 4px solid #28a745;
       background-color: #d4edda;
     }
 
@@ -290,7 +297,7 @@
     .dtc-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
 
     .dtc-table thead {
@@ -299,12 +306,12 @@
     }
 
     .dtc-table th {
-      padding: 10px;
+      padding: 6px 8px;
       text-align: left;
       font-weight: bold;
-      font-size: 9pt;
+      font-size: 7pt;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
 
     .dtc-table th:nth-child(3),
@@ -313,7 +320,6 @@
     }
 
     .dtc-table tbody tr {
-      page-break-inside: avoid;
       border-bottom: 1px solid #dee2e6;
     }
 
@@ -330,9 +336,9 @@
     }
 
     .dtc-table td {
-      padding: 8px 10px;
+      padding: 5px 8px;
       vertical-align: top;
-      font-size: 9pt;
+      font-size: 7pt;
     }
 
     /* Columna código */
@@ -346,7 +352,7 @@
     /* Columna descripción */
     .dtc-table td:nth-child(2) {
       width: 60%;
-      line-height: 1.4;
+      line-height: 1.3;
       word-wrap: break-word;
     }
 
@@ -366,12 +372,12 @@
     /* Badges de severidad */
     .severity-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 4px;
+      padding: 3px 8px;
+      border-radius: 3px;
       font-weight: bold;
-      font-size: 9pt;
+      font-size: 7pt;
       color: white;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
     .severity-high {
@@ -472,51 +478,51 @@
       font-size: 11pt;
     }
 
-    /* Resumen box y estadísticas */
+    /* Resumen box y estadísticas - Tamaños reducidos */
     .resumen-box-mejorado {
-      background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; margin: 6px 0 10px 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; margin: 4px 0 8px 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
-    .resumen-header { text-align:center; margin-bottom:8px; padding-bottom:6px; border-bottom:2px solid #367c2b; }
-    .resumen-title-mejorado { font-size: 10pt; color: #1a202c; font-weight: 700; }
+    .resumen-header { text-align:center; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #367c2b; }
+    .resumen-title-mejorado { font-size: 8pt; color: #1a202c; font-weight: 700; }
 
-    .stats-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:6px; margin-bottom:8px; }
-    .stat-card { background:#f7fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 6px; text-align:center; }
-    .stat-card.highlight { background:#fff5e6; border:2px solid #f59e0b; }
-    .stat-label { font-size:6pt; color:#718096; text-transform:uppercase; letter-spacing:.3px; margin-bottom:4px; font-weight:600; }
-    .stat-value-big { font-size:16pt; color:#1a202c; font-weight:700; line-height:1; }
-    .stat-percent { font-size:9pt; color:#4a5568; font-weight:600; }
+    .stats-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:4px; margin-bottom:6px; }
+    .stat-card { background:#f7fafc; border:1px solid #e2e8f0; border-radius:4px; padding:6px 4px; text-align:center; }
+    .stat-card.highlight { background:#fff5e6; border:1px solid #f59e0b; }
+    .stat-label { font-size:5.5pt; color:#718096; text-transform:uppercase; letter-spacing:.2px; margin-bottom:3px; font-weight:600; }
+    .stat-value-big { font-size:12pt; color:#1a202c; font-weight:700; line-height:1; }
+    .stat-percent { font-size:7pt; color:#4a5568; font-weight:600; }
 
-    .resumen-divider-mejorado { height:2px; background:linear-gradient(to right,#e2e8f0,#cbd5e0,#e2e8f0); margin:8px 0; }
+    .resumen-divider-mejorado { height:1px; background:linear-gradient(to right,#e2e8f0,#cbd5e0,#e2e8f0); margin:6px 0; }
 
-    .seccion-familias { margin: 6px 0; }
-    .seccion-title { font-size:8pt; color:#2d3748; font-weight:700; text-transform:uppercase; letter-spacing:.3px; margin-bottom:6px; }
-    .familias-grafico { display:flex; flex-direction:column; gap:6px; }
+    .seccion-familias { margin: 4px 0; }
+    .seccion-title { font-size:7pt; color:#2d3748; font-weight:700; text-transform:uppercase; letter-spacing:.2px; margin-bottom:4px; }
+    .familias-grafico { display:flex; flex-direction:column; gap:4px; }
 
     .familia-row-visual {
-      display:flex; gap:8px; align-items:center; padding:6px; background:#f7fafc; border-radius:6px; border:1px solid #e2e8f0;
+      display:flex; gap:6px; align-items:center; padding:4px; background:#f7fafc; border-radius:4px; border:1px solid #e2e8f0;
     }
-    .familia-info { min-width:40mm; }
-    .familia-nombre-visual { font-size:8pt; font-weight:700; color:#2d3748; margin-bottom:2px; }
-    .familia-numeros { font-size:7pt; color:#718096; font-weight:500; }
+    .familia-info { min-width:35mm; }
+    .familia-nombre-visual { font-size:7pt; font-weight:700; color:#2d3748; margin-bottom:2px; }
+    .familia-numeros { font-size:6pt; color:#718096; font-weight:500; }
     .familia-barra-visual { flex:1; }
     .barra-container-visual {
-      display:flex; height:10mm; background:#e2e8f0; border-radius:5px; overflow:hidden; margin-bottom:4px;
+      display:flex; height:7mm; background:#e2e8f0; border-radius:4px; overflow:hidden; margin-bottom:3px;
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
     }
     .barra-segmento {
-      display:flex; align-items:center; justify-content:center; color:white; font-size:9pt; font-weight:700; min-width:8mm;
+      display:flex; align-items:center; justify-content:center; color:white; font-size:7pt; font-weight:700; min-width:6mm;
     }
     .barra-segmento.critico { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
     .barra-segmento.atencion { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
-    .barra-leyenda { display:flex; gap:8px; font-size:7pt; padding-left:2px; }
+    .barra-leyenda { display:flex; gap:6px; font-size:6pt; padding-left:2px; }
     .leyenda-critico { color:#c53030; font-weight:600; }
-    .leyenda-critico::before { content:"●"; margin-right:3px; }
+    .leyenda-critico::before { content:"●"; margin-right:2px; }
     .leyenda-atencion { color:#d69e2e; font-weight:600; }
-    .leyenda-atencion::before { content:"●"; margin-right:3px; }
+    .leyenda-atencion::before { content:"●"; margin-right:2px; }
 
-    .dtc-section-header { margin:10px 0 6px 0; }
-    .dtc-section-title { font-size:10pt; color:#2d3748; font-weight:700; padding-bottom:6px; border-bottom:2px solid #e2e8f0; }
+    .dtc-section-header { margin:8px 0 4px 0; }
+    .dtc-section-title { font-size:8pt; color:#2d3748; font-weight:700; padding-bottom:4px; border-bottom:1px solid #e2e8f0; }
 
     @media print{
       #dtc thead{ display:table-header-group; }
