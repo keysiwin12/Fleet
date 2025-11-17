@@ -1124,6 +1124,91 @@ const ESTILOS_DTC = `
   .severity-low {
     background-color: #28a745;
   }
+
+  /* Mensaje cuando NO hay DTCs */
+  .dtc-info-box {
+    background: #fffbf0;
+    border: 1px solid #f59e0b;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  .dtc-info-title {
+    font-size: 12pt;
+    color: #92400e;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .dtc-info-text {
+    font-size: 9pt;
+    line-height: 1.6;
+    color: #78350f;
+  }
+
+  .dtc-status-positive {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 2px solid #10b981;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .status-icon-large {
+    font-size: 48pt;
+    color: #065f46;
+    margin-bottom: 15px;
+  }
+
+  .status-title {
+    font-size: 18pt;
+    color: #065f46;
+    margin-bottom: 15px;
+    font-weight: 700;
+  }
+
+  .status-message {
+    font-size: 11pt;
+    color: #047857;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .status-description {
+    font-size: 9pt;
+    color: #047857;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+
+  .status-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    text-align: left;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .status-benefits li {
+    font-size: 9pt;
+    color: #047857;
+    padding: 6px 0;
+    padding-left: 25px;
+    position: relative;
+  }
+
+  .status-benefits li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #10b981;
+    font-weight: bold;
+    font-size: 11pt;
+  }
 `;
 
 // ============================================================================
