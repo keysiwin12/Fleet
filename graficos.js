@@ -1229,10 +1229,6 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
     if (todosDTCs.length > 0) {
       html += `
         <div class="codes-section">
-          <div class="severity-legend">
-            <span class="severity-legend-item"><strong>A</strong> = Alta</span>
-            <span class="severity-legend-item"><strong>M</strong> = Mediana</span>
-          </div>
           ${tablaDTCs(todosDTCs, todosDTCs.length)}
         </div>`;
     }
@@ -1241,6 +1237,13 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
 
   // Combinar todos los equipos ordenados por cantidad de códigos críticos (descendente)
   const todosEquipos = [...equiposConCriticos, ...equiposSoloAtencion];
+
+  const leyendaGlobal = todosEquipos.length ? `
+    <div style="font-size: 7pt; color: #718096; margin: 10px 0 8px 0; padding: 6px 12px; background: #f8f9fa; border-left: 3px solid #367c2b; border-radius: 4px;">
+      <strong style="color: #212529;">Leyenda de severidad:</strong>
+      <span style="margin-left: 10px;"><span style="display: inline-block; padding: 2px 6px; background: #dc3545; color: white; border-radius: 3px; font-weight: bold; font-size: 6.5pt;">A</span> = Alta prioridad</span>
+      <span style="margin-left: 15px;"><span style="display: inline-block; padding: 2px 6px; background: #ffc107; color: #333; border-radius: 3px; font-weight: bold; font-size: 6.5pt;">M</span> = Mediana prioridad</span>
+    </div>` : '';
 
   const bloqueEquipos = todosEquipos.length
     ? todosEquipos.map(eq => tarjetaEquipo(eq, 'normal')).join('')
@@ -1257,6 +1260,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
       ${resumenHTML}
     </div>
 
+    ${leyendaGlobal}
     ${bloqueEquipos ? `<div class="section">${bloqueEquipos}</div>` : ''}
 
   </section>`;
