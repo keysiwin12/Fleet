@@ -33,18 +33,30 @@ function probarPDF4PaginasSinImagenesPesadas(clienteId = "7499") {
       return b64.startsWith('data:') ? b64 : `data:${mime};base64,${b64}`;
     };
 
-    // Generar solo portada simple (sin imágenes institucionales)
-    const portadaSimple = `
-      <div class="page portada">
-        <div style="padding:40px; text-align:center;">
-          <h1 style="font-size:24pt; margin-bottom:20px;">${cliente.razon_social || 'Cliente'}</h1>
-          <h2 style="font-size:18pt; color:#666;">Reporte de Gestión de Flota</h2>
-          <p style="margin-top:20px; font-size:12pt;">
-            Periodo: ${modelo.periodo.inicio} — ${modelo.periodo.fin}
-          </p>
-        </div>
-      </div>
-    `;
+    // Generar portada usando función centralizada (sin imágenes pesadas para mantener PDF ligero)
+    const portadaData = renderPortada2Paginas({
+      cliente: {
+        razon_social: cliente.razon_social,
+        ruc: cliente.ruc,
+        segmento: cliente.segmento
+      },
+      periodo: {
+        label: `${modelo.periodo.inicio} — ${modelo.periodo.fin}`,
+        inicioDate: modelo.periodo.inicio,
+        finDate: modelo.periodo.fin
+      },
+      images: {
+        fleetAssurance: logosMinimos.fleetAssurance,
+        imagenInstitucional: logosMinimos.imagenInstitucional,
+        logoCSC: logosMinimos.logoCSC,
+        logoIpesa: logosMinimos.logoIpesa
+      },
+      meta: {
+        titulo: 'Reporte de Gestión de Flota',
+        subtitulo: 'Centro de Soluciones Conectadas — IPESA'
+      }
+    });
+    const portadaSimple = portadaData.html;
 
     // Generar solo secciones livianas
     const dataResumen = renderGraficosResumen(cliente.metricas);

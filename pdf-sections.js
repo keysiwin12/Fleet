@@ -3192,50 +3192,6 @@ function generarAlertasYEconomicoResumen(metricas, data) {
 // ============================================================================
 
 
-/**
- * Genera las 2 páginas de portada (Principal + Imagen Institucional)
- * @param {Object} cliente - Objeto con {razon_social, nif}
- * @param {Object} periodo - {inicio: "01-10-25", fin: "28-10-25"}
- * @param {Object} logos - {fleetAssurance, logoCSC, logoIpesa, imagenInstitucional}
- * @returns {String} HTML de las 2 páginas de portada
- */
-function generarPortada(cliente, periodo, logos) {
-  const razonSocial = cliente.razon_social || 'N/A';
-
-  // Página 1: Portada Principal - Usando tabla HTML para compatibilidad PDF
-  const pagina1 = `
-    <div class="page-portada portada-1" style="position:relative;">
-      <table class="portada-header" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="portada-left-image">
-            <img src="data:image/png;base64,${logos.fleetAssurance}" style="width:100%; height:210mm; display:block;" alt="Fleet Assurance" />
-          </td>
-          <td class="portada-content">
-            <h1>Reporte de Gestión de Flota</h1>
-            <p class="csc-label">CSC</p>
-            <p class="cliente-info">${razonSocial}</p>
-            <p class="periodo-label">Periodo:</p>
-            <p class="periodo-dates">del ${periodo.inicio} al ${periodo.fin}</p>
-          </td>
-        </tr>
-      </table>
-
-      <img src="data:image/png;base64,${logos.logoCSC}" style="position:absolute; top:20px; right:20px; width:200px; z-index:10;" alt="Logo CSC" />
-      <img src="data:image/png;base64,${logos.logoIpesa}" style="position:absolute; bottom:20px; right:20px; width:200px; z-index:10;" alt="Logo IPESA" />
-    </div>
-  `;
-
-  // Página 2: Imagen Institucional
-  const pagina2 = `
-    <div class="page-portada portada-2">
-      <div class="portada-institucional">
-        <img src="data:image/png;base64,${logos.imagenInstitucional}" class="imagen-institucional-full" alt="IPESA Institucional" />
-      </div>
-    </div>
-  `;
-
-  return pagina1 + pagina2;
-}
 
 // ============================================================================
 // SECCIÓN: TABLA DE CONTENIDOS (PÁGINA 3)
