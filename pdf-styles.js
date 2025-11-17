@@ -950,10 +950,9 @@ const ESTILOS_DTC = `
     border-radius: 8px;
     padding: 15px 20px;
     margin-bottom: 20px;
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .equipment-header-critico {
@@ -966,29 +965,16 @@ const ESTILOS_DTC = `
     border: 2px solid #ffc107;
   }
 
-  .equipment-header-content {
-    display: table-cell;
-    vertical-align: middle;
-    width: 70%;
-  }
-
-  .equipment-header-badge {
-    display: table-cell;
-    vertical-align: middle;
-    width: 30%;
-    text-align: right;
-  }
-
   .equipment-title {
     font-size: 14pt;
     font-weight: bold;
     color: #333;
-    margin-bottom: 5px;
   }
 
   .equipment-serie {
     font-size: 9pt;
     color: #555;
+    margin-top: 5px;
   }
 
   .codes-badge {
@@ -1050,7 +1036,7 @@ const ESTILOS_DTC = `
   }
 
   .dtc-table th {
-    padding: 10px 8px;
+    padding: 10px;
     text-align: left;
     font-weight: bold;
     font-size: 9pt;
@@ -1074,6 +1060,10 @@ const ESTILOS_DTC = `
 
   .dtc-table tbody tr:nth-child(even) {
     background-color: #f5f5f5;
+  }
+
+  .dtc-table tbody tr:hover {
+    background-color: #e9ecef;
   }
 
   .dtc-table td {

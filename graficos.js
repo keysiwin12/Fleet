@@ -1213,13 +1213,11 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
 
     let html = `
       <div class="equipment-header ${claseHeader}">
-        <div class="equipment-header-content">
+        <div>
           <div class="equipment-title">${esc(eq.familia)} ${esc(eq.modelo)} - ${esc(eq.num_interno||'')}</div>
           <div class="equipment-serie">Serie: ${esc(eq.id_equipo)}</div>
         </div>
-        <div class="equipment-header-badge">
-          <span class="codes-badge ${claseBadge}">${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}</span>
-        </div>
+        <div class="codes-badge ${claseBadge}">${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}</div>
       </div>`;
 
     if (eq.totalCriticos) {

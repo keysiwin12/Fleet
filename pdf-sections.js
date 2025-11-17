@@ -884,13 +884,11 @@ function generarTarjetaEquipoDTC(equipo, tipo) {
   // Header del equipo con gradiente y badge
   let htmlTarjeta = `
     <div class="equipment-header ${claseHeader}">
-      <div class="equipment-header-content">
+      <div>
         <div class="equipment-title">${equipo.familia} ${equipo.modelo} - ${equipo.num_interno}</div>
         <div class="equipment-serie">Serie: ${equipo.id_equipo}</div>
       </div>
-      <div class="equipment-header-badge">
-        <span class="codes-badge ${claseBadge}">${equipo.totalDTCs} código${equipo.totalDTCs > 1 ? 's' : ''} activo${equipo.totalDTCs > 1 ? 's' : ''}</span>
-      </div>
+      <div class="codes-badge ${claseBadge}">${equipo.totalDTCs} código${equipo.totalDTCs > 1 ? 's' : ''} activo${equipo.totalDTCs > 1 ? 's' : ''}</div>
     </div>
   `;
 
