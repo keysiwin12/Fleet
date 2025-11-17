@@ -843,8 +843,9 @@ const ESTILOS_PROMOCIONALES = `
     max-height: 210mm;
     padding: 30px;
     background-color: white;
-    page-break-after: always;
-    page-break-inside: avoid;
+    page-break-before: always;  /* Siempre inicia en página nueva */
+    page-break-after: always;   /* Siempre salta después */
+    page-break-inside: avoid;   /* No se divide internamente */
     box-sizing: border-box;
     overflow: hidden;
   }
