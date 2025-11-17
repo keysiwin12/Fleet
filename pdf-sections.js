@@ -921,14 +921,10 @@ function generarTarjetaEquipoDTC(equipo, tipo) {
 }
 
 /**
- * Genera la tabla de DTCs (con límite de 10)
+ * Genera la tabla de DTCs (muestra todos los códigos sin límite)
  */
 function generarTablaDTCs(dtcs, tipo, totalCodigos) {
-  const LIMITE = 10;
-  const mostrarTodos = totalCodigos <= LIMITE;
-  const dtcsMostrar = mostrarTodos ? dtcs : dtcs.slice(0, LIMITE);
-  const codigosOcultos = totalCodigos - LIMITE;
-  
+  // Mostrar TODOS los códigos sin límite
   let htmlTabla = `
     <table class="dtc-table">
       <thead>
@@ -941,11 +937,12 @@ function generarTablaDTCs(dtcs, tipo, totalCodigos) {
       </thead>
       <tbody>
   `;
-  
-  dtcsMostrar.forEach(dtc => {
+
+  // Iterar sobre TODOS los códigos sin límite
+  dtcs.forEach(dtc => {
     const colorSeveridad = dtc.severidad === "Alta" ? "#c53030" : "#d69e2e";
     const letraSeveridad = dtc.severidad === "Alta" ? "A" : "M";
-    
+
     htmlTabla += `
       <tr>
         <td style="font-weight:600;">${dtc.codigo}</td>
@@ -955,21 +952,12 @@ function generarTablaDTCs(dtcs, tipo, totalCodigos) {
       </tr>
     `;
   });
-  
+
   htmlTabla += `
       </tbody>
     </table>
   `;
-  
-  // Mensaje de códigos adicionales
-  if (!mostrarTodos && codigosOcultos > 0) {
-    htmlTabla += `
-      <div class="dtc-additional">
-        + ${codigosOcultos} código${codigosOcultos > 1 ? 's' : ''} adicional${codigosOcultos > 1 ? 'es' : ''} con menor frecuencia
-      </div>
-    `;
-  }
-  
+
   return htmlTabla;
 }
 

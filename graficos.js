@@ -1180,12 +1180,8 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
     </div>`;
 
   function tablaDTCs(dtcs, totalCodigos) {
-    const LIM = 10;
-    const mostrarTodos = totalCodigos <= LIM;
-    const lista = mostrarTodos ? dtcs : dtcs.slice(0, LIM);
-    const ocultos = totalCodigos - LIM;
-
-    const filas = lista.map(d => {
+    // Mostrar TODOS los códigos sin límite
+    const filas = dtcs.map(d => {
       const colorSev = d.severidad === "Alta" ? "#c53030" : "#d69e2e";
       const letra = d.severidad === "Alta" ? "A" : "M";
       return `
@@ -1208,8 +1204,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
           </tr>
         </thead>
         <tbody>${filas}</tbody>
-      </table>
-      ${(!mostrarTodos && ocultos>0) ? `<div class="dtc-additional">+ ${ocultos} código${ocultos>1?'s':''} adicional${ocultos>1?'es':''} con menor frecuencia</div>` : ''}`;
+      </table>`;
   }
 
   function tarjetaEquipo(eq, tipo) {
