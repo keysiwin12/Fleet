@@ -1120,9 +1120,6 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   });
   const porFamilia = Object.values(famMap).sort((a,b)=>b.equipos-a.equipos);
 
-  const periodoTxt = periodo && periodo.inicio && periodo.fin
-    ? `Periodo: del ${periodo.inicio} al ${periodo.fin}`
-    : '';
 
   // resumen ejecutivo (igual a tu preview)
   const graficoFamilias = porFamilia.map(f=>{
