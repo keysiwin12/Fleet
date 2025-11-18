@@ -1487,12 +1487,11 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
 //EXPERT ALERT
 /**
  * ===========================================================
- * 📄 renderExpertAlerts (v3) - DEPRECATED
- * Ahora se usa generarEventosAlerta() de pdf-sections.js
+ * 📄 renderExpertAlerts_GRAFICOS (v3) - PARA COMPARACIÓN
+ * Versión alternativa de graficos.js
  * ===========================================================
  */
-/* FUNCIÓN COMENTADA - Se usa generarEventosAlerta() de pdf-sections.js
-function renderExpertAlerts({ equipos = [], periodo = { inicio: '', fin: '' } }) {
+function renderExpertAlerts_GRAFICOS({ equipos = [], periodo = { inicio: '', fin: '' } }) {
   const equiposConAlertas = equipos.filter(eq => Array.isArray(eq.ea) && eq.ea.length > 0);
 
   // 🧩 Formato de fecha
@@ -1618,7 +1617,6 @@ function renderExpertAlerts({ equipos = [], periodo = { inicio: '', fin: '' } })
   `;
   return { html };
 }
-*/
 
 /******************************************************
  * SECCIÓN: ACCIONES Y RECOMENDACIONES
