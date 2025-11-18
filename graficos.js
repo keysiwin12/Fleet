@@ -931,6 +931,12 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
     } catch(e){ return esc(String(d)); }
   };
 
+  // Normalizar periodo: convertir ini/fin a inicio/fin y formatear fechas
+  const periodoNormalizado = {
+    inicio: fmt(periodo.inicio || periodo.ini || periodo.fecha_inicio || ''),
+    fin: fmt(periodo.fin || periodo.fecha_fin || '')
+  };
+
   // === helpers basados en tu versión previa ===
   function extraerCodigoYDescripcion(descripcionCompleta) {
     if (!descripcionCompleta) return { codigo: "N/A", descripcionLimpia: "" };
@@ -993,7 +999,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   }).filter(eq => (eq.totalDTCs || 0) > 0);
 
   if (!equiposConDTC.length) {
-    const periodoTxt = `Periodo: del ${periodo.inicio} al ${periodo.fin}`;
+    const periodoTxt = `Periodo: del ${periodoNormalizado.inicio} al ${periodoNormalizado.fin}`;
     const htmlNo = `
     <section class="page page-dtc">
       <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
@@ -1179,7 +1185,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   const html = `
   <section class="page page-dtc" id="dtc">
     <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
-      <div class="header-subtitle">Periodo: del ${periodo.inicio || ''} al ${periodo.fin || ''}</div>
+      <div class="header-subtitle">Periodo: del ${periodoNormalizado.inicio} al ${periodoNormalizado.fin}</div>
     </div>
 
     <div class="section">
