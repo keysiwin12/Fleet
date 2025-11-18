@@ -2471,9 +2471,8 @@ function previsualizarEventosAlerta() {
     fin: modelo.periodo.fin
   };  // ✅ Desde CONFIG
 
-  // 6. Generar AMBAS versiones de Expert Alerts para comparar
-  const htmlEA_SECTIONS = generarEventosAlerta(equipos, periodo); // Versión pdf-sections.js
-  const htmlEA_GRAFICOS = renderExpertAlerts_GRAFICOS({ equipos, periodo }).html; // Versión graficos.js
+  // 6. Generar HTML de Expert Alerts
+  const htmlEA = generarEventosAlerta(equipos, periodo); // Versión única en graficos.js
 
   // 7. Crear HTML completo con estilos
   const htmlCompleto = `
@@ -2855,25 +2854,11 @@ function previsualizarEventosAlerta() {
     </head>
     <body>
       <div class="info-banner">
-        <strong>🧪 COMPARACIÓN DE VERSIONES</strong> - Cliente: ${cliente.razon_social || cliente.id_opcenter} |
+        <strong>🧪 MODO PREVIEW</strong> - Cliente: ${cliente.razon_social || cliente.id_opcenter} |
         Equipos con alertas: ${equiposConAlertas.length} de ${equipos.length}
       </div>
 
-      <div style="background: #fff3cd; border: 2px solid #f59e0b; padding: 15px; margin: 20px; border-radius: 8px;">
-        <h2 style="margin: 0 0 10px 0; color: #92400e;">📌 VERSIÓN 1: generarEventosAlerta() - pdf-sections.js</h2>
-        <p style="margin: 0; color: #78350f;">Esta es la versión actual que se está usando en producción</p>
-      </div>
-
-      ${htmlEA_SECTIONS}
-
-      <hr style="margin: 40px 0; border: none; border-top: 3px dashed #3182ce;">
-
-      <div style="background: #dbeafe; border: 2px solid #3b82f6; padding: 15px; margin: 20px; border-radius: 8px;">
-        <h2 style="margin: 0 0 10px 0; color: #1e40af;">📌 VERSIÓN 2: renderExpertAlerts_GRAFICOS() - graficos.js</h2>
-        <p style="margin: 0; color: #1e3a8a;">Esta es la versión alternativa que estaba comentada</p>
-      </div>
-
-      ${htmlEA_GRAFICOS}
+      ${htmlEA}
 
     </body>
     </html>
@@ -2881,12 +2866,12 @@ function previsualizarEventosAlerta() {
 
   // 8. Mostrar en modal
   const htmlOutput = HtmlService.createHtmlOutput(htmlCompleto)
-    .setWidth(1400)
-    .setHeight(900);
+    .setWidth(1200)
+    .setHeight(800);
 
   SpreadsheetApp.getUi().showModalDialog(
     htmlOutput,
-    '⚠️ Comparación - Expert Alerts (2 versiones)'
+    '⚠️ Preview - Expert Alerts'
   );
 }
 
