@@ -1274,93 +1274,6 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   };
 }
 
-/**
- * ============================================================
- * 🎨 renderAnalisisFluidosChart() - NO SE USA EN PDF
- * ============================================================
- * NOTA: Esta función NO se ejecuta al generar PDFs porque
- * Google Apps Script HtmlService.getAs(MimeType.PDF) NO ejecuta JavaScript.
- * Se mantiene comentada por si se necesita para previews en navegador.
- * ============================================================
- */
-/*
-function renderAnalisisFluidosChart(canvas, data) {
-  if (!canvas || !window.Chart) return null;
-
-  const total =
-    (data.anormal || 0) + (data.precaucion || 0) + (data.normal || 0);
-
-  const pctAnormal = total ? ((data.anormal / total) * 100).toFixed(1) : 0;
-  const pctPrecaucion = total ? ((data.precaucion / total) * 100).toFixed(1) : 0;
-  const pctNormal = total ? ((data.normal / total) * 100).toFixed(1) : 0;
-
-  const ctx = canvas.getContext("2d");
-
-  // Destruir gráfico previo si existe
-  if (canvas._chartInstance) {
-    canvas._chartInstance.destroy();
-  }
-
-  const chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: ["Anormal", "Precaución", "Normal"],
-      datasets: [
-        {
-          label: "% de muestras",
-          data: [pctAnormal, pctPrecaucion, pctNormal],
-          backgroundColor: ["#d32f2f", "#f57c00", "#388e3c"],
-          borderColor: ["#b71c1c", "#ef6c00", "#2e7d32"],
-          borderWidth: 1,
-          borderRadius: 8,
-        },
-      ],
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: { left: 10, right: 10, top: 10, bottom: 10 },
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              return `${context.parsed.x}%`;
-            },
-          },
-        },
-        title: {
-          display: true,
-          text: "Distribución de resultados de análisis de fluidos",
-          font: { size: 14, weight: "bold" },
-          color: "#212121",
-        },
-      },
-      scales: {
-        x: {
-          grid: { color: "rgba(0,0,0,0.05)" },
-          ticks: {
-            color: "#424242",
-            callback: (value) => value + "%",
-          },
-          min: 0,
-          max: 100,
-        },
-        y: {
-          grid: { display: false },
-          ticks: { color: "#212121", font: { weight: "bold" } },
-        },
-      },
-    },
-  });
-
-  canvas._chartInstance = chart;
-  return chart;
-}
-*/
 
 
 /**
@@ -1468,21 +1381,6 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
       </div>
     </section>
 
-    <!-- Script comentado: No se ejecuta en generación de PDF -->
-    <!--
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const canvas = document.getElementById('chartFluidos');
-        if (canvas) {
-          renderAnalisisFluidosChart(canvas, {
-            anormal: ${anormal},
-            precaucion: ${precaucion},
-            normal: ${normal}
-          });
-        }
-      });
-    </script>
-    -->
   `;
 }
 
@@ -2171,11 +2069,6 @@ function _acc_clasificarEquipoPorPrioridad(equipo) {
   // 9) DTC Alta NO repetitivos
   const dtcAltos = (equipo.dtc || []).filter(d => d.severidad === 'Alta' && (d.repeticiones||0) < 3);
   if (dtcAltos.length && !prioridad) prioridad = 'alta';
-  // acciones.push({
-  //   tipo:'dtc_alto', icono:'⚠️',
-  //   descripcion:`Monitorear código: ${d.descripcion_corta || d.codigo || 'Código'}`,
-  //   contexto:`Frecuencia: ${d.repeticiones || 0} ocurrencias`
-  // });
 
   // 10) EA Rendimiento
   const eaRend = (equipo.ea || []).filter(a => a.severidad === 'Alta-Rendimiento');
@@ -2201,11 +2094,6 @@ function _acc_clasificarEquipoPorPrioridad(equipo) {
   // 12) DTC Mediana
   const dtcMed = (equipo.dtc || []).filter(d => d.severidad === 'Mediana');
   if (dtcMed.length && !prioridad) prioridad = 'preventiva';
-  // dtcMed.forEach(d => acciones.push({
-  //   tipo:'dtc_mediano', icono:'⚠️',
-  //   descripcion:`Monitorear código: ${d.descripcion_corta || d.codigo || 'Código'}`,
-  //   contexto:`Frecuencia: ${d.repeticiones || 0} ocurrencias`
-  // }));
 
   if (!acciones.length || !prioridad) return null;
   return { prioridad, acciones };
