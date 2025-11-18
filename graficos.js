@@ -1254,7 +1254,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   const html = `
   <section class="page page-dtc" id="dtc">
     <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
-      <div class="header-subtitle">${esc(periodoTxt)}</div>
+      <div class="header-subtitle">Periodo: del ${periodo.inicio || ''} al ${periodo.fin || ''}</div>
     </div>
 
     <div class="section">
