@@ -164,3 +164,16 @@ function numinforme(idopcenter,hojalogs){
   });
   return `${idopcenter}-${contador + 1}`;
 }
+
+
+function _pickInt(o, keys) {
+  if (!o) return 0;
+  for (const k of keys) {
+    const n = Number(o[k]);
+    if (!isNaN(n) && n !== Infinity && n !== -Infinity) return Math.max(0, Math.floor(n));
+  }
+  return 0;
+}
+function _sumInt(vals) {
+  return vals.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+}

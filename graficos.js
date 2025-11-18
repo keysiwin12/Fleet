@@ -833,80 +833,8 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   };
 }
 
-/**
- * Renderiza la sección de Contactos con HTML pre-generado
- * @param {Object} cliente - Objeto del cliente con array de contactos
- * @returns {Object} - Objeto con HTML de tabla de contactos
- */
-function renderContactos(cliente) {
-  // 1. OBTENER CONTACTOS DEL CLIENTE
-  const contactos = cliente.contactos || [];
-
-  // 2. GENERAR FILAS DE TABLA
-  let filasContactosHTML = '';
-
-  if (contactos.length === 0) {
-    filasContactosHTML = `
-      <tr>
-        <td colspan="4" style="text-align:center; padding:30px; color:var(--gray-600); font-size:16px;">
-          ℹ️ No hay contactos registrados para este cliente
-        </td>
-      </tr>
-    `;
-  } else {
-    contactos.forEach(contacto => {
-      const cargo = contacto.cargo || '-';
-      const nombre = contacto.nombre || '-';
-
-      // Email con enlace mailto
-      const correo = contacto.correo
-        ? `<a href="mailto:${contacto.correo}" style="color:var(--color-info); text-decoration:none;">${contacto.correo}</a>`
-        : '-';
-
-      // Celular con enlace tel
-      const celular = contacto.celular
-        ? `<a href="tel:${contacto.celular}" style="color:var(--color-info); text-decoration:none;">${contacto.celular}</a>`
-        : '-';
-
-      filasContactosHTML += `
-        <tr>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 20%;">${cargo}</td>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 30%;">${nombre}</td>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 30%;">${correo}</td>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 20%;">${celular}</td>
-        </tr>
-      `;
-    });
-  }
-
-  return {
-    filasContactosHTML,
-    totalContactos: contactos.length
-  };
-}
 
 
-/**
- * renderPortada — Genera la portada (1 página) del Reporte de Gestión de Flota
- *
- * Contrato de entrada:
- *   {
- *     cliente: { razon_social: string, ruc?: string, segmento?: string },
- *     periodo: { ini: string|Date, fin: string|Date, label?: string },
- *     images: { logoBase64?: string, marca?: string }, // logoBase64 (PNG/JPG) recomendado
- *     meta?: { titulo?: string, subtitulo?: string }
- *   }
- *
- * Salida:
- *   { html: string }
- *
- * Notas de implementación:
- * - La función devuelve un bloque .page completo, sin forzar page-break-after
- *   (el control de salto de página lo maneja el layout global en reporte-flota.html).
- * - Usa clases semánticas: .page.portada, .portada-*, estiladas desde reporte-flota.html.
- * - Incluye ancla #portada para la Tabla de Contenidos.
- * - No asume fuentes/colores; eso vive en el CSS global de reporte-flota.html.
- */
 
 function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta = {} } = {}) {
   const esc = (s) => String(s == null ? '' : s)
@@ -1882,28 +1810,6 @@ function formatearFechaEA(fecha) {
   }
 }
 
-/******************************************************
- * SECCIÓN: ACCIONES Y RECOMENDACIONES
- ******************************************************/
-
-/**
- * Genera la sección completa de Acciones y Recomendaciones
- * @param {Array} equipos
- * @param {Object} periodo - {inicio:"dd-mm-aaaa", fin:"dd-mm-aaaa"} o {fecha_inicio, fecha_fin}
- * @returns {String} HTML
- */
 
 
-
-function _pickInt(o, keys) {
-  if (!o) return 0;
-  for (const k of keys) {
-    const n = Number(o[k]);
-    if (!isNaN(n) && n !== Infinity && n !== -Infinity) return Math.max(0, Math.floor(n));
-  }
-  return 0;
-}
-function _sumInt(vals) {
-  return vals.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
-}
 
