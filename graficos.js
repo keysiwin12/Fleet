@@ -1276,14 +1276,14 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
 
 /**
  * ============================================================
- * 🎨 renderAnalisisFluidosChart()
- * Genera un gráfico de barras horizontales con los porcentajes
- * de resultados de análisis de fluidos (Anormal / Precaución / Normal)
+ * 🎨 renderAnalisisFluidosChart() - NO SE USA EN PDF
  * ============================================================
- * @param {HTMLCanvasElement} canvas - Elemento <canvas> destino
- * @param {Object} data - { anormal, precaucion, normal }
- * @returns {Chart} instancia del gráfico
+ * NOTA: Esta función NO se ejecuta al generar PDFs porque
+ * Google Apps Script HtmlService.getAs(MimeType.PDF) NO ejecuta JavaScript.
+ * Se mantiene comentada por si se necesita para previews en navegador.
+ * ============================================================
  */
+/*
 function renderAnalisisFluidosChart(canvas, data) {
   if (!canvas || !window.Chart) return null;
 
@@ -1360,6 +1360,7 @@ function renderAnalisisFluidosChart(canvas, data) {
   canvas._chartInstance = chart;
   return chart;
 }
+*/
 
 
 /**
@@ -1467,6 +1468,8 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
       </div>
     </section>
 
+    <!-- Script comentado: No se ejecuta en generación de PDF -->
+    <!--
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const canvas = document.getElementById('chartFluidos');
@@ -1479,6 +1482,7 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
         }
       });
     </script>
+    -->
   `;
 }
 
