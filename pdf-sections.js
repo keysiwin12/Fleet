@@ -1151,6 +1151,118 @@ function generarPaginaJohnDeereProtect(imagenJDProtect) {
   `;
 }
 
+// ============================================================================
+// SECCIÓN: CONTACTOS
+// ============================================================================
+
+/**
+ * Genera la sección de Contactos
+ * @param {Object} cliente - Objeto cliente con contactos
+ * @param {Object} periodo - {inicio: "01-10-25", fin: "28-10-25"}
+ * @returns {String} HTML de la sección completa
+ */
+function generarSeccionContactos(cliente, periodo) {
+
+  // ============================================
+  // 1. OBTENER CONTACTOS DEL CLIENTE
+  // ============================================
+  const contactos = cliente.contactos || [];
+
+  // ============================================
+  // 2. GENERAR FILAS DE TABLA DE CONTACTOS
+  // ============================================
+  let filasContactos = '';
+
+  if (contactos.length === 0) {
+    filasContactos = `
+      <tr>
+        <td colspan="4" style="text-align:center; padding:30px; color:#718096; font-size:14px;">
+          ℹ️ No hay contactos registrados para este cliente
+        </td>
+      </tr>
+    `;
+  } else {
+    contactos.forEach(contacto => {
+      const cargo = contacto.cargo || '-';
+      const nombre = contacto.nombre || '-';
+
+      // Email con enlace mailto
+      const correo = contacto.correo
+        ? `<a href="mailto:${contacto.correo}" style="color:#4299e1; text-decoration:none;">${contacto.correo}</a>`
+        : '-';
+
+      // Celular con enlace tel
+      const celular = contacto.celular
+        ? `<a href="tel:${contacto.celular}" style="color:#4299e1; text-decoration:none;">${contacto.celular}</a>`
+        : '-';
+
+      filasContactos += `
+        <tr>
+          <td>${cargo}</td>
+          <td>${nombre}</td>
+          <td>${correo}</td>
+          <td>${celular}</td>
+        </tr>
+      `;
+    });
+  }
+
+  // ============================================
+  // 3. ENSAMBLAR HTML COMPLETO
+  // ============================================
+  return `
+    <div class="page page-contactos" id="contactos">
+
+      <!-- Header de sección -->
+      <div class="header">
+        <h1>📞 CONTACTOS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+      </div>
+
+      <!-- TABLA DE CONTACTOS DEL CLIENTE -->
+      <div class="table-section">
+        <h3 class="table-title">Contactos del Cliente</h3>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:20%;">Cargo</th>
+              <th style="width:30%;">Nombre</th>
+              <th style="width:30%;">Correo</th>
+              <th style="width:20%;">Celular</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filasContactos}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CONTACTOS IPESA -->
+      <div class="contacto-ipesa-box">
+        <h3 class="contacto-ipesa-title">📧 CONTACTO IPESA</h3>
+        <p class="contacto-ipesa-text">
+          CSC IPESA: <a href="mailto:solucionesintegradas@ipesa.com.pe" style="color:#1a202c; font-weight:700; text-decoration:none;">solucionesintegradas@ipesa.com.pe</a>
+        </p>
+      </div>
+
+      <!-- RECUADRO INFORMATIVO -->
+      <div class="info-box-blue">
+        <div class="info-icon">ℹ️</div>
+        <div class="info-content">
+          <h4 class="info-title">¿Los contactos actuales no son los correctos?</h4>
+          <p class="info-text">
+            Si los contactos proporcionados no corresponden al área de gestión de su flota,
+            no dude en ponerse en contacto con nosotros para actualizar la información y
+            asegurarnos que estos reportes lleguen a las personas adecuadas dentro de su empresa.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
 
 
 
