@@ -360,7 +360,7 @@ function registrarEnvioLog(clienteData,numInforme) {
     
     // Insertar en la siguiente fila disponible
     const ultimaFila = hojaSeguimiento.getLastRow() + 1;
-    hojaSeguimiento.getRange(ultimaFila, 1, 1, 4).setValues([nuevosDatos]);
+    hojaSeguimiento.getRange(ultimaFila, 1, 1, 10).setValues([nuevosDatos]);
     
     console.log(`Registro guardado en LOG: ${numInforme} - ${clienteData.razon_social}`);
     

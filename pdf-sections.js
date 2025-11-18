@@ -206,7 +206,7 @@ function generarDescripcionAccion(accion, equipo) {
     case 'mantenimiento':
       // "Programar mantenimiento (restan 11 horas)" → "Programar servicio (11 hrs)"
       const hrsMatch = accion.descripcion.match(/restan\s+(\d+)\s+horas?/);
-      return hrsMatch ? `Programar servicio (${hrsMatch[1]} hrs)` : `Programar servicio`;
+      return hrsMatch ? `Programar Próximo Mantenimiento ` : `Programar Mantenimiento`;
 
     default:
       return accion.descripcion;
@@ -474,7 +474,7 @@ function clasificarEquipoPorPrioridad(equipo) {
   // PRIORIDAD 9: DTC Alta Severidad (no repetitivos)
   // ============================================
   const dtcAltos = (equipo.dtc || []).filter(d => 
-    d.severidad === 'Alta' && (d.repeticiones || 0) < 3
+    d.severidad === 'Alta'
   );
   if (dtcAltos.length > 0 && !prioridad) {
     prioridad = 'alta';
@@ -518,7 +518,7 @@ function clasificarEquipoPorPrioridad(equipo) {
       tipo: 'mantenimiento',
       icono: '🔧',
       descripcion: `Programar mantenimiento (restan ${horasRestantes.toFixed(0)} horas)`,
-      contexto: `Próximo servicio: ${proximoServicio.toLocaleString('es-PE')} horas`
+      contexto: `Próximo servicio: ${proximoServicio.toLocaleString('es-PE')} horas restantes`
     });
   }
   
