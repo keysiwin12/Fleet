@@ -902,10 +902,10 @@ function renderContactos(cliente) {
  *
  * Notas de implementación:
  * - La función devuelve un bloque .page completo, sin forzar page-break-after
- *   (el control de salto de página lo maneja el layout global/pdf-styles.css).
- * - Usa clases semánticas: .page.portada, .portada-*, para ser estiladas desde pdf-styles.js.
+ *   (el control de salto de página lo maneja el layout global en reporte-flota.html).
+ * - Usa clases semánticas: .page.portada, .portada-*, estiladas desde reporte-flota.html.
  * - Incluye ancla #portada para la Tabla de Contenidos.
- * - No asume fuentes/colores; eso vive en el CSS global.
+ * - No asume fuentes/colores; eso vive en el CSS global de reporte-flota.html.
  */
 
 function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta = {} } = {}) {
