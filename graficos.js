@@ -122,17 +122,6 @@ function estadoPorValor(direccion, valorPct) {
 // ===============================
 // COMPONENTS HTML PEQUEÑOS
 // ===============================
-// function alertDTCNumber(dtc) {
-//   const tot = safeInt(dtc?.total_activos || 0);
-//   const alta = safeInt(dtc?.alta_prioridad || 0);
-//   return `
-// <div class="alert-number">
-//   <div class="alert-value">${tot}</div>
-//   <div class="alert-label">CÓDIGOS DTC</div>
-// </div>`;
-// }
-
-
 function alertDTCNumber(dtc) {
   // total_activos si existe; si no, suma por categorías
   const alta   = _pickInt(dtc, ["alta_prioridad", "alta"]);
@@ -147,160 +136,37 @@ function alertDTCNumber(dtc) {
 </div>`;
 }
 
-// function alertBarsDTCOnly(dtc) {
-//   const alta = safeInt(dtc?.alta_prioridad || 0);
-//   const media= safeInt(dtc?.mediana_prioridad || 0);
-//   const info = safeInt(dtc?.info || 0);
-
-//   // Porcentajes
-//   const total = alta + media + info;
-//   if (total === 0) {
-//     return `<div class="alert-bar-item"><span class="severity-label">Sin códigos</span><span class="severity-count">-</span></div>`;
-//   }
-
-//   const pA = ((alta / total) * 100).toFixed(1);
-//   const pM = ((media / total) * 100).toFixed(1);
-//   const pI = ((info / total) * 100).toFixed(1);
-
-//   return `
-// <div class="alert-bars">
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Alta ${alta}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-//     <span class="severity-count">${pA}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Media ${media}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pM}%"></div></div>
-//     <span class="severity-count">${pM}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Info ${info}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#4299e1;width:${pI}%"></div></div>
-//     <span class="severity-count">${pI}%</span>
-//   </div>
-// </div>`;
-// }
-
 function alertBarsDTCOnly(dtc) {
   const alta   = _pickInt(dtc, ["alta_prioridad", "alta"]);
   const media  = _pickInt(dtc, ["mediana_prioridad", "media", "moderada"]);
   const info   = _pickInt(dtc, ["info", "baja", "informativo"]);
   const total  = alta + media + info;
 
-  if (total === 0) {
-    return `<div class="alert-bar-item"><span class="severity-label">Sin códigos</span><span class="severity-count">-</span></div>`;
-  }
-
-  const pA = ((alta  / total) * 100).toFixed(1);
-  const pM = ((media / total) * 100).toFixed(1);
-  const pI = ((info  / total) * 100).toFixed(1);
+  const pA = total > 0 ? ((alta  / total) * 100).toFixed(1) : '0.0';
+  const pM = total > 0 ? ((media / total) * 100).toFixed(1) : '0.0';
+  const pI = total > 0 ? ((info  / total) * 100).toFixed(1) : '0.0';
 
   return `
-<div class="alert-bars">
   <div class="alert-bar-item">
-    <span class="severity-label">Alta ${alta}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-    <span class="severity-count">${pA}%</span>
+    <div class="alert-bar-label"><span>Alta</span><span>${alta}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="critical" style="width:${pA}%">${pA}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Media ${media}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pM}%"></div></div>
-    <span class="severity-count">${pM}%</span>
+    <div class="alert-bar-label"><span>Media</span><span>${media}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pM}%">${pM}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Info ${info}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#4299e1;width:${pI}%"></div></div>
-    <span class="severity-count">${pI}%</span>
+    <div class="alert-bar-label"><span>Info</span><span>${info}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="info" style="width:${pI}%">${pI}%</div>
+    </div>
   </div>
-</div>`;
+`;
 }
-
-// function alertEANumber(ea) {
-//   const tot = safeInt(ea?.total_activas || 0);
-//   return `
-// <div class="alert-number">
-//   <div class="alert-value">${tot}</div>
-//   <div class="alert-label">EXPERT ALERTS</div>
-// </div>`;
-// }
-
-// function alertBarsEAOnly(ea) {
-//   const crit = safeInt(ea?.critica || 0);
-//   const alta = safeInt(ea?.alta || 0);
-//   const rend = safeInt(ea?.rendimiento || 0);
-
-//   const total = crit + alta + rend;
-//   if (total === 0) {
-//     return `<div class="alert-bar-item"><span class="severity-label">Sin alertas</span><span class="severity-count">-</span></div>`;
-//   }
-
-//   const pC = ((crit / total) * 100).toFixed(1);
-//   const pH = ((alta / total) * 100).toFixed(1);
-//   const pR = ((rend / total) * 100).toFixed(1);
-
-//   return `
-// <div class="alert-bars">
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Crítica ${crit}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#9b1c1c;width:${pC}%"></div></div>
-//     <span class="severity-count">${pC}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Alta ${alta}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pH}%"></div></div>
-//     <span class="severity-count">${pH}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Rendimiento ${rend}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#f59e0b;width:${pR}%"></div></div>
-//     <span class="severity-count">${pR}%</span>
-//   </div>
-// </div>`;
-// }
-
-// function alertAceiteNumber(aceite) {
-//   const tot = safeInt(aceite?.total_analisis || 0);
-//   return `
-// <div class="alert-number">
-//   <div class="alert-value">${tot}</div>
-//   <div class="alert-label">ANÁLISIS DE ACEITE</div>
-// </div>`;
-// }
-
-// function alertBarsAceiteOnly(aceite) {
-//   const normal = safeInt(aceite?.normal || 0);
-//   const precaucion = safeInt(aceite?.precaucion || 0);
-//   const anormal = safeInt(aceite?.anormal || 0);
-
-//   const total = normal + precaucion + anormal;
-//   if (total === 0) {
-//     return `<div class="alert-bar-item"><span class="severity-label">Sin análisis</span><span class="severity-count">-</span></div>`;
-//   }
-
-//   const pN = ((normal / total) * 100).toFixed(1);
-//   const pP = ((precaucion / total) * 100).toFixed(1);
-//   const pA = ((anormal / total) * 100).toFixed(1);
-
-//   return `
-// <div class="alert-bars">
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Normal ${normal}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#38a169;width:${pN}%"></div></div>
-//     <span class="severity-count">${pN}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Precaución ${precaucion}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pP}%"></div></div>
-//     <span class="severity-count">${pP}%</span>
-//   </div>
-//   <div class="alert-bar-item">
-//     <span class="severity-label">Anormal ${anormal}</span>
-//     <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-//     <span class="severity-count">${pA}%</span>
-//   </div>
-// </div>`;
-// }
 
 /* ---------- EXPERT ALERTS ---------- */
 function alertEANumber(ea) {
@@ -322,32 +188,30 @@ function alertBarsEAOnly(ea) {
   const rend = _pickInt(ea, ["rendimiento"]);
   const total = crit + alta + rend;
 
-  if (total === 0) {
-    return `<div class="alert-bar-item"><span class="severity-label">Sin alertas</span><span class="severity-count">-</span></div>`;
-  }
-
-  const pC = ((crit / total) * 100).toFixed(1);
-  const pH = ((alta / total) * 100).toFixed(1);
-  const pR = ((rend / total) * 100).toFixed(1);
+  const pC = total > 0 ? ((crit / total) * 100).toFixed(1) : '0.0';
+  const pH = total > 0 ? ((alta / total) * 100).toFixed(1) : '0.0';
+  const pR = total > 0 ? ((rend / total) * 100).toFixed(1) : '0.0';
 
   return `
-<div class="alert-bars">
   <div class="alert-bar-item">
-    <span class="severity-label">Crítica ${crit}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#9b1c1c;width:${pC}%"></div></div>
-    <span class="severity-count">${pC}%</span>
+    <div class="alert-bar-label"><span>Crítica</span><span>${crit}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="critical" style="width:${pC}%">${pC}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Alta ${alta}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pH}%"></div></div>
-    <span class="severity-count">${pH}%</span>
+    <div class="alert-bar-label"><span>Alta</span><span>${alta}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pH}%">${pH}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Rendimiento ${rend}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#f59e0b;width:${pR}%"></div></div>
-    <span class="severity-count">${pR}%</span>
+    <div class="alert-bar-label"><span>Rendimiento</span><span>${rend}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pR}%">${pR}%</div>
+    </div>
   </div>
-</div>`;
+`;
 }
 
 /* ---------- ANÁLISIS DE ACEITE ---------- */
@@ -370,32 +234,30 @@ function alertBarsAceiteOnly(aceite) {
   const anormal    = _pickInt(aceite, ["anormal"]);
   const total      = normal + precaucion + anormal;
 
-  if (total === 0) {
-    return `<div class="alert-bar-item"><span class="severity-label">Sin análisis</span><span class="severity-count">-</span></div>`;
-  }
-
-  const pN = ((normal     / total) * 100).toFixed(1);
-  const pP = ((precaucion / total) * 100).toFixed(1);
-  const pA = ((anormal    / total) * 100).toFixed(1);
+  const pN = total > 0 ? ((normal     / total) * 100).toFixed(1) : '0.0';
+  const pP = total > 0 ? ((precaucion / total) * 100).toFixed(1) : '0.0';
+  const pA = total > 0 ? ((anormal    / total) * 100).toFixed(1) : '0.0';
 
   return `
-<div class="alert-bars">
   <div class="alert-bar-item">
-    <span class="severity-label">Normal ${normal}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#38a169;width:${pN}%"></div></div>
-    <span class="severity-count">${pN}%</span>
+    <div class="alert-bar-label"><span>Normal</span><span>${normal}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="info" style="width:${pN}%">${pN}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Precaución ${precaucion}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#ed8936;width:${pP}%"></div></div>
-    <span class="severity-count">${pP}%</span>
+    <div class="alert-bar-label"><span>Precaución</span><span>${precaucion}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="warning" style="width:${pP}%">${pP}%</div>
+    </div>
   </div>
   <div class="alert-bar-item">
-    <span class="severity-label">Anormal ${anormal}</span>
-    <div class="severity-bar"><div class="severity-fill" style="background:#e53e3e;width:${pA}%"></div></div>
-    <span class="severity-count">${pA}%</span>
+    <div class="alert-bar-label"><span>Anormal</span><span>${anormal}</span></div>
+    <div class="alert-bar-bg">
+      <div class="alert-bar-fill" data-severity="critical" style="width:${pA}%">${pA}%</div>
+    </div>
   </div>
-</div>`;
+`;
 }
 
 
@@ -535,12 +397,21 @@ function renderGraficosResumen(m) {
     stroke: 7
   });
 
-  // Estados exportados
+  // Estados exportados (con etiquetas y textos desglosados)
   const estados = {
     estadoConectividad: estadoCon,
     estadoMantenimiento: estadoMan,
     estadoExcesoRalenti: estadoExc,
-    estadoRalentiFlota: estadoRal
+    estadoRalentiFlota: estadoRal,
+    // Desglosados para el HTML
+    estadoConectividadEtiqueta: estadoCon.etq,
+    estadoConectividadTexto: estadoCon.txt,
+    estadoMantenimientoEtiqueta: estadoMan.etq,
+    estadoMantenimientoTexto: estadoMan.txt,
+    estadoExcesoEtiqueta: estadoExc.etq,
+    estadoExcesoTexto: estadoExc.txt,
+    estadoRalentiEtiqueta: estadoRal.etq,
+    estadoRalentiTexto: estadoRal.txt
   };
 
   return {
@@ -656,7 +527,7 @@ function renderGraficosConectividad(equipos, periodo) {
     .sort((a, b) => a.horas_restantes - b.horas_restantes);
 
   const equiposSinConexion = equipos
-    .filter(eq => !estaConectado(eq.ult_conexion, 15))
+    .filter(eq => !estaConectado(eq.ult_conexion, 1000))
     .sort((a, b) => {
       const fechaA = a.ult_conexion ? new Date(a.ult_conexion) : new Date(0);
       const fechaB = b.ult_conexion ? new Date(b.ult_conexion) : new Date(0);
@@ -726,7 +597,7 @@ function renderGraficosConectividad(equipos, periodo) {
     `;
   } else {
     // Mostrar máximo 15 equipos
-    equiposSinConexion.slice(0, 15).forEach(eq => {
+    equiposSinConexion.slice(0, 1000).forEach(eq => {
       const ubicacionLink = eq.latitud && eq.longitud
         ? `<a href="https://www.google.com/maps?q=${eq.latitud},${eq.longitud}" target="_blank" style="color:var(--color-info); text-decoration:none;">📍 Ver</a>`
         : '-';
@@ -751,16 +622,6 @@ function renderGraficosConectividad(equipos, periodo) {
       `;
     });
 
-    // Agregar fila indicando equipos adicionales
-    if (equiposSinConexion.length > 15) {
-      tablaSinConexionHTML += `
-        <tr>
-          <td colspan="6" style="text-align: center; padding: 8px; background: var(--gray-50); color: var(--gray-600); font-style: italic;">
-            ... y ${equiposSinConexion.length - 15} equipos más sin conexión
-          </td>
-        </tr>
-      `;
-    }
   }
 
   return {
@@ -794,7 +655,7 @@ function renderGraficosConectividad(equipos, periodo) {
  * @param {Object} periodo - {inicio: "01-10-25", fin: "28-10-25"}
  * @returns {Object} - Objeto con HTML de tabla, footer, resumen y recuadro educativo
  */
-function renderUtilizacion(equipos, metricas, periodo) {
+function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   // Helpers internos
   function safeNum(val) {
     const num = parseFloat(val);
@@ -809,11 +670,10 @@ function renderUtilizacion(equipos, metricas, periodo) {
   // 1. EXTRAER MÉTRICAS
   const totales = metricas.totales || {};
   const economico = metricas.economico || {};
-
+  
   const equiposExcesoRalenti = safeInt(totales.equiposExcesoRalenti);
-  const combPerdidoGal = safeNum(totales.combPerdidoGal);
-  const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);
-  const precioPorGalon = 4.2;
+  const combPerdidoGal = safeNum(totales.combPerdidoGal);  // ✅ Valor correcto del backend
+  const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);  // ✅ Valor correcto del backend
 
   // 2. FILTRAR EQUIPOS OPERATIVOS
   const UMBRAL_MINIMO_HORAS = 1;
@@ -829,7 +689,7 @@ function renderUtilizacion(equipos, metricas, periodo) {
     .sort((a, b) => {
       const pctA = safeNum(a.percent_ralent_horas);
       const pctB = safeNum(b.percent_ralent_horas);
-      return pctB - pctA; // Descendente
+      return pctB - pctA;
     });
 
   // 3. GENERAR FILAS DE TABLA
@@ -838,7 +698,6 @@ function renderUtilizacion(equipos, metricas, periodo) {
   let totalHorasRalenti = 0;
   let totalHorasTotales = 0;
   let totalCombPerdido = 0;
-  let totalPerdidaUSD = 0;
 
   if (equiposOperativos.length === 0) {
     filasTablaHTML = `
@@ -861,7 +720,6 @@ function renderUtilizacion(equipos, metricas, periodo) {
       totalHorasRalenti += horasRalentiEq;
       totalHorasTotales += horasTotales;
       totalCombPerdido += combPerdido;
-      totalPerdidaUSD += perdidaUSD_eq;
 
       // Color según % ralentí
       let colorPct = '';
@@ -898,6 +756,10 @@ function renderUtilizacion(equipos, metricas, periodo) {
     });
   }
 
+  // ✅ Usar valores de métricas (calculados correctamente en backend)
+  const combFormat = combPerdidoGal.toLocaleString('en-US', {maximumFractionDigits: 0});
+  const perdidaFormat = perdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0});
+
   // 4. GENERAR FOOTER
   const footerTablaHTML = equiposOperativos.length > 0 ? `
     <tr style="background: var(--gray-100); font-weight: 700;">
@@ -906,8 +768,8 @@ function renderUtilizacion(equipos, metricas, periodo) {
       <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${totalHorasRalenti.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
       <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${totalHorasTotales.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
       <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">-</td>
-      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${totalCombPerdido.toLocaleString('en-US', {maximumFractionDigits: 1})}</td>
-      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200); color: var(--color-critical);">$${totalPerdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0})}</td>
+      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200);">${combFormat}</td>
+      <td style="text-align: right; padding: 6px; border: 1px solid var(--gray-200); color: var(--color-critical);">$${perdidaFormat}</td>
     </tr>
   ` : '';
 
@@ -930,9 +792,6 @@ function renderUtilizacion(equipos, metricas, periodo) {
   ` : '';
 
   // 6. RECUADRO EDUCATIVO
-  const combFormat = combPerdidoGal.toLocaleString('en-US', {maximumFractionDigits: 0});
-  const perdidaFormat = perdidaUSD.toLocaleString('en-US', {maximumFractionDigits: 0});
-
   const recuadroEducativoHTML = equiposExcesoRalenti > 0 ? `
     <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-left: 4px solid var(--color-warning); border-radius: 4px;">
       <div style="display: flex; align-items: flex-start; margin-bottom: 10px;">
@@ -970,160 +829,12 @@ function renderUtilizacion(equipos, metricas, periodo) {
     totalEquiposOperativos: equiposOperativos.length,
     equiposConExceso,
     equiposOptimos,
-    totalPerdidaUSD
-  };
-}
-
-/**
- * Renderiza la sección de Contactos con HTML pre-generado
- * @param {Object} cliente - Objeto del cliente con array de contactos
- * @returns {Object} - Objeto con HTML de tabla de contactos
- */
-function renderContactos(cliente) {
-  // 1. OBTENER CONTACTOS DEL CLIENTE
-  const contactos = cliente.contactos || [];
-
-  // 2. GENERAR FILAS DE TABLA
-  let filasContactosHTML = '';
-
-  if (contactos.length === 0) {
-    filasContactosHTML = `
-      <tr>
-        <td colspan="4" style="text-align:center; padding:30px; color:var(--gray-600); font-size:16px;">
-          ℹ️ No hay contactos registrados para este cliente
-        </td>
-      </tr>
-    `;
-  } else {
-    contactos.forEach(contacto => {
-      const cargo = contacto.cargo || '-';
-      const nombre = contacto.nombre || '-';
-
-      // Email con enlace mailto
-      const correo = contacto.correo
-        ? `<a href="mailto:${contacto.correo}" style="color:var(--color-info); text-decoration:none;">${contacto.correo}</a>`
-        : '-';
-
-      // Celular con enlace tel
-      const celular = contacto.celular
-        ? `<a href="tel:${contacto.celular}" style="color:var(--color-info); text-decoration:none;">${contacto.celular}</a>`
-        : '-';
-
-      filasContactosHTML += `
-        <tr>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 20%;">${cargo}</td>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 30%;">${nombre}</td>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 30%;">${correo}</td>
-          <td style="padding: 8px; border: 1px solid var(--gray-200); width: 20%;">${celular}</td>
-        </tr>
-      `;
-    });
-  }
-
-  return {
-    filasContactosHTML,
-    totalContactos: contactos.length
+    totalPerdidaUSD: perdidaUSD  // ✅ Retornar el valor correcto
   };
 }
 
 
-/**
- * renderPortada — Genera la portada (1 página) del Reporte de Gestión de Flota
- *
- * Contrato de entrada:
- *   {
- *     cliente: { razon_social: string, ruc?: string, segmento?: string },
- *     periodo: { ini: string|Date, fin: string|Date, label?: string },
- *     images: { logoBase64?: string, marca?: string }, // logoBase64 (PNG/JPG) recomendado
- *     meta?: { titulo?: string, subtitulo?: string }
- *   }
- *
- * Salida:
- *   { html: string }
- *
- * Notas de implementación:
- * - La función devuelve un bloque .page completo, sin forzar page-break-after
- *   (el control de salto de página lo maneja el layout global/pdf-styles.css).
- * - Usa clases semánticas: .page.portada, .portada-*, para ser estiladas desde pdf-styles.js.
- * - Incluye ancla #portada para la Tabla de Contenidos.
- * - No asume fuentes/colores; eso vive en el CSS global.
- */
-function renderPortada({ cliente = {}, periodo = {}, images = {}, meta = {} } = {}) {
-  const esc = (s) => String(s == null ? '' : s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 
-  
-  // Normalización de datos
-  const id = cliente.num_informe;
-  const titulo     = `Reporte de Gestión de Flota - ${id}`;
-  const subtitulo  = meta.subtitulo || 'Centro de Soluciones Conectadas — IPESA';
-  const razon      = cliente.razon_social || 'Cliente';
-  const ruc        = cliente.ruc ? `RUC ${cliente.ruc}` : '';
-  const segmento   = cliente.segmento || '';
-
-  // Etiqueta de periodo
-  const fmt = (d) => {
-    if (!d) return '';
-    try {
-      const dd = (d instanceof Date) ? d : new Date(d);
-      // yyyy-mm-dd
-      const y = dd.getFullYear();
-      const m = String(dd.getMonth() + 1).padStart(2, '0');
-      const day = String(dd.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    } catch(e) { return esc(String(d)); }
-  };
-  const periodoTxt = periodo.label || `01-10-25 al 30-10-25`;
-
-  // Logo (opcional)
-  const logoHTML = images.logoBase64
-    ? `<img class="portada-logo" src="${esc(images.logoBase64)}" alt="Logo" />`
-    : '';
-
-  // Chips de metadata (segmento y ruc sólo si existen)
-  const chips = [
-    periodoTxt && `<span class="chip chip-periodo" aria-label="Periodo">${esc(periodoTxt)}</span>`,
-    segmento && `<span class="chip chip-segmento" aria-label="Segmento">${esc(segmento)}</span>`,
-    ruc && `<span class="chip chip-ruc" aria-label="RUC">${esc(ruc)}</span>`,
-  ].filter(Boolean).join('\n');
-
-  // Panel con datos del cliente
-  const clientePanel = `
-    <div class="portada-cliente-card" role="group" aria-label="Datos del cliente">
-      <div class="cliente-nombre" title="Razón social">${esc(razon)}</div>
-      <div class="cliente-meta">${chips}</div>
-    </div>`;
-
-  // Estructura principal de la página
-  const html = `
-  <section id="portada" class="page portada">
-    <div class="portada-wrap">
-      <header class="portada-header">
-        <div class="marca">
-          ${logoHTML}
-        </div>
-      </header>
-
-      <main class="portada-main">
-        <h1 class="portada-title">${esc(titulo)} - ${id}</h1>
-        <p class="portada-subtitle">${esc(subtitulo)}</p>
-        ${clientePanel}
-      </main>
-
-      <footer class="portada-footer">
-        <div class="nota-legal">
-          <span>Documento confidencial. Uso exclusivo del cliente y de IPESA.</span>
-        </div>
-      </footer>
-    </div>
-  </section>`;
-
-  return { html };
-}
 
 function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta = {} } = {}) {
   const esc = (s) => String(s == null ? '' : s)
@@ -1134,7 +845,7 @@ function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta =
   const toDataUrl = (b64, mime = 'image/png') =>
     b64 ? (b64.startsWith('data:') ? b64 : `data:${mime};base64,${b64}`) : '';
 
-  const titulo    = meta.titulo || 'Reporte de Gestión de Flota';
+  const titulo    = meta.titulo || 'Reporte de Gestión de Flota - Nº Informe: ';
   const subtitulo = meta.subtitulo || 'Centro de Soluciones Conectadas — IPESA';
   const razon     = cliente.razon_social || 'Cliente';
   const rucTxt    = cliente.ruc ? `RUC ${cliente.ruc}` : '';
@@ -1146,7 +857,7 @@ function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta =
     const y = dd.getFullYear(), m = String(dd.getMonth()+1).padStart(2,'0'), day = String(dd.getDate()).padStart(2,'0');
     return `${y}-${m}-${day}`;
   };
-  const periodoTxt = periodo.label || `${fmt(periodo.ini)} — ${fmt(periodo.fin)}`;
+  const periodoTxt = periodo.label || `${fmt(periodo.inicioDate)} — ${fmt(periodo.finDate)}`;
 
   const imgHero  = toDataUrl(images.fleetAssurance || images.hero);
   const imgInst  = toDataUrl(images.imagenInstitucional || images.institucional);
@@ -1167,7 +878,7 @@ function renderPortada2Paginas({ cliente = {}, periodo = {}, images = {}, meta =
           <div class="cliente">${esc(razon)}</div>
           <div class="chips">
             ${segmento ? `<span class="chip chip-segmento">${esc(segmento)}</span>` : ''}
-            <span class="chip chip-periodo">01/10/25 - 30/10/25</span>
+            <span class="chip chip-periodo">${esc(periodoTxt)}</span>
             ${rucTxt ? `<span class="chip chip-ruc">${esc(rucTxt)}</span>` : ''}
           </div>
         </div>
@@ -1218,6 +929,12 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
       const y = dd.getFullYear(), m = String(dd.getMonth()+1).padStart(2,'0'), day = String(dd.getDate()).padStart(2,'0');
       return `${y}-${m}-${day}`;
     } catch(e){ return esc(String(d)); }
+  };
+
+  // Normalizar periodo: convertir ini/fin a inicio/fin y formatear fechas
+  const periodoNormalizado = {
+    inicio: fmt(periodo.inicio || periodo.ini || periodo.fecha_inicio || ''),
+    fin: fmt(periodo.fin || periodo.fecha_fin || '')
   };
 
   // === helpers basados en tu versión previa ===
@@ -1282,7 +999,7 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   }).filter(eq => (eq.totalDTCs || 0) > 0);
 
   if (!equiposConDTC.length) {
-    const periodoTxt = periodo.label || `${fmt(periodo.ini)} — ${fmt(periodo.fin)}`;
+    const periodoTxt = `Periodo: del ${periodoNormalizado.inicio} al ${periodoNormalizado.fin}`;
     const htmlNo = `
     <section class="page page-dtc">
       <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
@@ -1337,7 +1054,6 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   });
   const porFamilia = Object.values(famMap).sort((a,b)=>b.equipos-a.equipos);
 
-  const periodoTxt = periodo.label || `${fmt(periodo.ini)} — ${fmt(periodo.fin)}`;
 
   // resumen ejecutivo (igual a tu preview)
   const graficoFamilias = porFamilia.map(f=>{
@@ -1397,20 +1113,16 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
     </div>`;
 
   function tablaDTCs(dtcs, totalCodigos) {
-    const LIM = 10;
-    const mostrarTodos = totalCodigos <= LIM;
-    const lista = mostrarTodos ? dtcs : dtcs.slice(0, LIM);
-    const ocultos = totalCodigos - LIM;
-
-    const filas = lista.map(d => {
-      const colorSev = d.severidad === "Alta" ? "#c53030" : "#d69e2e";
+    // Mostrar TODOS los códigos sin límite
+    const filas = dtcs.map(d => {
+      const claseSev = d.severidad === "Alta" ? "severity-high" : "severity-medium";
       const letra = d.severidad === "Alta" ? "A" : "M";
       return `
         <tr>
-          <td style="font-weight:600;">${esc(d.codigo)}</td>
+          <td>${esc(d.codigo)}</td>
           <td>${esc(d.descripcion)}</td>
-          <td style="text-align:center;">${esc(d.repeticiones)}</td>
-          <td style="text-align:center; font-weight:700; color:${colorSev};">${letra}</td>
+          <td>${esc(d.repeticiones)}</td>
+          <td><span class="severity-badge ${claseSev}">${letra}</span></td>
         </tr>`;
     }).join('');
 
@@ -1418,73 +1130,71 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
       <table class="dtc-table">
         <thead>
           <tr>
-            <th style="width:12%;">Código</th>
-            <th style="width:68%;">Descripción</th>
-            <th style="width:12%;">Frecuencia</th>
-            <th style="width:8%;">Severidad</th>
+            <th>CÓDIGO</th>
+            <th>DESCRIPCIÓN</th>
+            <th>FREC</th>
+            <th>SEVERIDAD</th>
           </tr>
         </thead>
         <tbody>${filas}</tbody>
-      </table>
-      ${(!mostrarTodos && ocultos>0) ? `<div class="dtc-additional">+ ${ocultos} código${ocultos>1?'s':''} adicional${ocultos>1?'es':''} con menor frecuencia</div>` : ''}`;
+      </table>`;
   }
 
   function tarjetaEquipo(eq, tipo) {
-    const clase = (tipo==='critico') ? 'dtc-card-critico' : 'dtc-card-atencion';
-    let html = `
-      <div class="${clase}">
-        <div class="dtc-card-header">
-          <h4 class="dtc-card-title">${esc(eq.familia)} ${esc(eq.modelo)} - ${esc(eq.num_interno||'')}</h4>
-          <div class="dtc-card-info">
-            <span class="dtc-card-serie">Serie: ${esc(eq.id_equipo)}</span>
-            <span class="dtc-card-count">
-              ${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}
-              ${eq.totalCriticos ? `(${eq.totalCriticos} crítico${eq.totalCriticos>1?'s':''})` : ''}
-            </span>
-          </div>
-        </div>`;
+    // Combinar todos los DTCs en una sola lista, ordenados por severidad
+    const todosDTCs = [];
+    if (eq.dtcsCriticos && eq.dtcsCriticos.length) {
+      todosDTCs.push(...eq.dtcsCriticos);
+    }
+    if (eq.dtcsAtencion && eq.dtcsAtencion.length) {
+      todosDTCs.push(...eq.dtcsAtencion);
+    }
 
-    if (eq.totalCriticos) {
-      html += tablaDTCs(eq.dtcsCriticos, eq.totalCriticos);
-    }
-    if (tipo==='critico' && eq.totalAtencion) {
+    let html = `
+      <div class="equipment-header">
+        <div>
+          <div class="equipment-title">${esc(eq.familia)} ${esc(eq.modelo)} - ${esc(eq.num_interno||'')}</div>
+          <div class="equipment-serie">Serie: ${esc(eq.id_equipo)}</div>
+        </div>
+        <div class="codes-badge">${eq.totalDTCs} código${eq.totalDTCs>1?'s':''} activo${eq.totalDTCs>1?'s':''}</div>
+      </div>`;
+
+    if (todosDTCs.length > 0) {
       html += `
-        <div class="dtc-subsection">
-          <h5 class="dtc-subsection-title">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (${eq.totalAtencion})</h5>
+        <div class="codes-section">
+          ${tablaDTCs(todosDTCs, todosDTCs.length)}
         </div>`;
-      html += tablaDTCs(eq.dtcsAtencion, eq.totalAtencion);
     }
-    if (tipo==='atencion' && eq.totalAtencion) {
-      html += tablaDTCs(eq.dtcsAtencion, eq.totalAtencion);
-    }
-    html += `</div>`;
     return html;
   }
 
-  const bloqueCrit = equiposConCriticos.length
-    ? `<div class="dtc-section-header"><h3 class="dtc-section-title">🔴 EQUIPOS CON ALERTAS CRÍTICAS</h3></div>
-       ${equiposConCriticos.map(eq=>tarjetaEquipo(eq,'critico')).join('')}`
-    : '';
+  // Combinar todos los equipos ordenados por cantidad de códigos críticos (descendente)
+  const todosEquipos = [...equiposConCriticos, ...equiposSoloAtencion];
 
-  const bloqueAten = equiposSoloAtencion.length
-    ? `<div class="dtc-section-header"><h3 class="dtc-section-title">🟡 EQUIPOS CON ALERTAS DE ATENCIÓN</h3></div>
-       ${equiposSoloAtencion.map(eq=>tarjetaEquipo(eq,'atencion')).join('')}`
+  const leyendaGlobal = todosEquipos.length ? `
+    <div style="font-size: 7pt; color: #718096; margin: 10px 0 8px 0; padding: 6px 12px; background: #f8f9fa; border-left: 3px solid #367c2b; border-radius: 4px;">
+      <strong style="color: #212529;">Leyenda de severidad:</strong>
+      <span style="margin-left: 10px;"><span style="display: inline-block; padding: 2px 6px; background: #dc3545; color: white; border-radius: 3px; font-weight: bold; font-size: 6.5pt;">A</span> = Alta prioridad</span>
+      <span style="margin-left: 15px;"><span style="display: inline-block; padding: 2px 6px; background: #ffc107; color: #333; border-radius: 3px; font-weight: bold; font-size: 6.5pt;">M</span> = Mediana prioridad</span>
+    </div>` : '';
+
+  const bloqueEquipos = todosEquipos.length
+    ? todosEquipos.map(eq => tarjetaEquipo(eq, 'normal')).join('')
     : '';
 
   const html = `
   <section class="page page-dtc" id="dtc">
     <div class="header"><h1>🛠️ CÓDIGOS DE DIAGNÓSTICO (DTC)</h1>
-      <div class="header-subtitle">${esc(periodoTxt)}</div>
+      <div class="header-subtitle">Periodo: del ${periodoNormalizado.inicio} al ${periodoNormalizado.fin}</div>
     </div>
 
     <div class="section">
-      <div class="section-header">Resumen ejecutivo</div>
+      <div class="section-header">Resumen</div>
       ${resumenHTML}
     </div>
 
-    ${bloqueCrit ? `<div class="section">${bloqueCrit}</div>` : ''}
-
-    ${bloqueAten ? `<div class="section">${bloqueAten}</div>` : ''}
+    ${leyendaGlobal}
+    ${bloqueEquipos ? `<div class="section">${bloqueEquipos}</div>` : ''}
 
   </section>`;
 
@@ -1498,92 +1208,6 @@ function renderDTC({ equipos = [], periodo = {}, opciones = {} } = {}) {
   };
 }
 
-/**
- * ============================================================
- * 🎨 renderAnalisisFluidosChart()
- * Genera un gráfico de barras horizontales con los porcentajes
- * de resultados de análisis de fluidos (Anormal / Precaución / Normal)
- * ============================================================
- * @param {HTMLCanvasElement} canvas - Elemento <canvas> destino
- * @param {Object} data - { anormal, precaucion, normal }
- * @returns {Chart} instancia del gráfico
- */
-function renderAnalisisFluidosChart(canvas, data) {
-  if (!canvas || !window.Chart) return null;
-
-  const total =
-    (data.anormal || 0) + (data.precaucion || 0) + (data.normal || 0);
-
-  const pctAnormal = total ? ((data.anormal / total) * 100).toFixed(1) : 0;
-  const pctPrecaucion = total ? ((data.precaucion / total) * 100).toFixed(1) : 0;
-  const pctNormal = total ? ((data.normal / total) * 100).toFixed(1) : 0;
-
-  const ctx = canvas.getContext("2d");
-
-  // Destruir gráfico previo si existe
-  if (canvas._chartInstance) {
-    canvas._chartInstance.destroy();
-  }
-
-  const chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: ["Anormal", "Precaución", "Normal"],
-      datasets: [
-        {
-          label: "% de muestras",
-          data: [pctAnormal, pctPrecaucion, pctNormal],
-          backgroundColor: ["#d32f2f", "#f57c00", "#388e3c"],
-          borderColor: ["#b71c1c", "#ef6c00", "#2e7d32"],
-          borderWidth: 1,
-          borderRadius: 8,
-        },
-      ],
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: { left: 10, right: 10, top: 10, bottom: 10 },
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              return `${context.parsed.x}%`;
-            },
-          },
-        },
-        title: {
-          display: true,
-          text: "Distribución de resultados de análisis de fluidos",
-          font: { size: 14, weight: "bold" },
-          color: "#212121",
-        },
-      },
-      scales: {
-        x: {
-          grid: { color: "rgba(0,0,0,0.05)" },
-          ticks: {
-            color: "#424242",
-            callback: (value) => value + "%",
-          },
-          min: 0,
-          max: 100,
-        },
-        y: {
-          grid: { display: false },
-          ticks: { color: "#212121", font: { weight: "bold" } },
-        },
-      },
-    },
-  });
-
-  canvas._chartInstance = chart;
-  return chart;
-}
 
 
 /**
@@ -1605,10 +1229,10 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
   if (equiposConAnalisis.length === 0) {
     return `
       <section id="fluidos" class="page page-fluidos">
-        <h2>ANÁLISIS DE FLUIDOS</h2>
-        <p class="periodo-text">
-          Periodo: <strong>${periodo.inicio}</strong> — <strong>${periodo.fin}</strong>
-        </p>
+        <div class="header">
+          <h1>🔬 ANÁLISIS DE FLUIDOS</h1>
+          <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+        </div>
 
         <div class="fluidos-mensaje-simple">
           <p class="mensaje-principal">
@@ -1651,12 +1275,10 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
   // 5️⃣ HTML de la sección
   return `
     <section id="fluidos" class="page page-fluidos">
-      <header class="section-header">
-        <h2>ANÁLISIS DE FLUIDOS</h2>
-      </header>
-      <p class="periodo-text">
-        Periodo: <strong>${periodo.inicio}</strong> — <strong>${periodo.fin}</strong>
-      </p>
+      <div class="header">
+        <h1>🔬 ANÁLISIS DE FLUIDOS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+      </div>
 
       <!-- 📊 Resumen gráfico -->
       <div class="fluidos-chart-container" style="height:220px; margin:20px 0;">
@@ -1693,563 +1315,528 @@ function generarAnalisisFluidosRenderizado(equipos, periodo, logos) {
       </div>
     </section>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const canvas = document.getElementById('chartFluidos');
-        if (canvas) {
-          renderAnalisisFluidosChart(canvas, {
-            anormal: ${anormal},
-            precaucion: ${precaucion},
-            normal: ${normal}
-          });
-        }
-      });
-    </script>
   `;
 }
 
 
 //EXPERT ALERT
 /**
- * ===========================================================
- * 📄 renderExpertAlerts (v3) - DEPRECATED
- * Ahora se usa generarEventosAlerta() de pdf-sections.js
- * ===========================================================
+ * ============================================
+ * SECCIÓN: EXPERT ALERTS (EA)
+ * ============================================
+ * Genera la sección completa de Expert Alerts
+ * @param {Array} equipos - Array de equipos del cliente
+ * @param {Object} periodo - {inicio: "01-10-25", fin: "28-10-25"}
+ * @returns {String} HTML de la sección completa
  */
-/* FUNCIÓN COMENTADA - Se usa generarEventosAlerta() de pdf-sections.js
-function renderExpertAlerts({ equipos = [], periodo = { inicio: '', fin: '' } }) {
-  const equiposConAlertas = equipos.filter(eq => Array.isArray(eq.ea) && eq.ea.length > 0);
+function generarEventosAlerta(equipos, periodo) {
 
-  // 🧩 Formato de fecha
-  const formatearFechaEA = (fecha) => {
-    if (!fecha) return '-';
-    try {
-      const d = new Date(fecha);
-      const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-      return `${String(d.getDate()).padStart(2, '0')}-${meses[d.getMonth()]}-${d.getFullYear()}`;
-    } catch {
-      return '-';
-    }
-  };
+  // ============================================
+  // 1. FILTRAR EQUIPOS CON EXPERT ALERTS
+  // ============================================
+  const equiposConAlertas = equipos.filter(eq => {
+    const alertas = eq.ea || [];
+    return alertas.length > 0;
+  });
 
-  // 🟠 Recuadro educativo
-  const recuadroEducativo = `
+  // Recuadro educativo siempre se muestra
+  const recuadroEducativo = generarRecuadroEducativoEA();
+
+  // Si no hay alertas, mostrar mensaje positivo
+  if (equiposConAlertas.length === 0) {
+    return generarMensajeSinAlertasEA(periodo, recuadroEducativo);
+  }
+
+  // ============================================
+  // 2. CLASIFICAR EQUIPOS POR SEVERIDAD MÁXIMA
+  // ============================================
+  const clasificados = clasificarEquiposPorSeveridadMaxima(equiposConAlertas);
+
+  // ============================================
+  // 3. CALCULAR ESTADÍSTICAS PARA RESUMEN
+  // ============================================
+  let totalCriticas = 0;
+  let totalAltas = 0;
+  let totalRendimiento = 0;
+
+  equiposConAlertas.forEach(eq => {
+    const alertas = eq.ea || [];
+    alertas.forEach(alerta => {
+      const sev = (alerta.severidad || '').toLowerCase().trim();
+
+      // Comparación flexible para manejar variaciones en los datos
+      if (sev.includes('crítica') || sev.includes('critica') || sev === 'critical') {
+        totalCriticas++;
+      } else if (sev.includes('rendimiento') || sev.includes('performance')) {
+        totalRendimiento++;
+      } else if (sev.includes('alta') || sev === 'high') {
+        totalAltas++;
+      }
+    });
+  });
+
+  const totalAlertas = totalCriticas + totalAltas + totalRendimiento;
+  const totalEquipos = equipos.length;
+  const equiposAfectados = equiposConAlertas.length;
+
+  // Si no hay alertas válidas (totalAlertas === 0), mostrar mensaje positivo
+  if (totalAlertas === 0) {
+    return generarMensajeSinAlertasEA(periodo, recuadroEducativo);
+  }
+
+  const pctCriticas = totalAlertas > 0 ? ((totalCriticas / totalAlertas) * 100).toFixed(0) : 0;
+  const pctAltas = totalAlertas > 0 ? ((totalAltas / totalAlertas) * 100).toFixed(0) : 0;
+  const pctRendimiento = totalAlertas > 0 ? ((totalRendimiento / totalAlertas) * 100).toFixed(0) : 0;
+
+  // ============================================
+  // 4. GENERAR RESUMEN EJECUTIVO
+  // ============================================
+  const resumen = generarResumenEjecutivoEA({
+    totalAlertas,
+    totalCriticas,
+    totalAltas,
+    totalRendimiento,
+    pctCriticas,
+    pctAltas,
+    pctRendimiento,
+    totalEquipos,
+    equiposAfectados
+  });
+
+  // ============================================
+  // 5. GENERAR SECCIONES POR SEVERIDAD
+  // ============================================
+  let seccionCriticas = '';
+  if (clasificados.criticas.length > 0) {
+    seccionCriticas = `
+      <div class="ea-section-header">
+        <h3 class="ea-section-title">🔴 ALERTAS CRÍTICAS (${clasificados.criticas.length} ${clasificados.criticas.length === 1 ? 'equipo' : 'equipos'})</h3>
+      </div>
+    `;
+
+    clasificados.criticas.forEach(equipo => {
+      seccionCriticas += generarTarjetaEquipoEA(equipo);
+    });
+  }
+
+  let seccionAltas = '';
+  if (clasificados.altas.length > 0) {
+    seccionAltas = `
+      <div class="ea-section-header">
+        <h3 class="ea-section-title">🟠 ALERTAS DE ALTA PRIORIDAD (${clasificados.altas.length} ${clasificados.altas.length === 1 ? 'equipo' : 'equipos'})</h3>
+      </div>
+    `;
+
+    clasificados.altas.forEach(equipo => {
+      seccionAltas += generarTarjetaEquipoEA(equipo);
+    });
+  }
+
+  let seccionRendimiento = '';
+  if (clasificados.rendimiento.length > 0) {
+    seccionRendimiento = `
+      <div class="ea-section-header">
+        <h3 class="ea-section-title">🟡 ALERTAS DE ALTA-RENDIMIENTO (${clasificados.rendimiento.length} ${clasificados.rendimiento.length === 1 ? 'equipo' : 'equipos'})</h3>
+      </div>
+    `;
+
+    clasificados.rendimiento.forEach(equipo => {
+      seccionRendimiento += generarTarjetaEquipoEA(equipo);
+    });
+  }
+
+  // ============================================
+  // 6. ENSAMBLAR HTML COMPLETO
+  // ============================================
+  return `
+    <div class="page page-ea">
+
+      <!-- Header de sección -->
+      <div class="header">
+        <h1>⚠️ EXPERT ALERTS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+      </div>
+
+      <!-- Recuadro educativo -->
+      ${recuadroEducativo}
+
+      <!-- Resumen ejecutivo -->
+      ${resumen}
+
+      <!-- Sección Críticas -->
+      ${seccionCriticas}
+
+      <!-- Sección Altas -->
+      ${seccionAltas}
+
+      <!-- Sección Rendimiento -->
+      ${seccionRendimiento}
+
+    </div>
+  `;
+}
+
+// ============================================
+// FUNCIONES AUXILIARES DE EXPERT ALERTS
+// ============================================
+
+/**
+ * Genera el recuadro educativo de Expert Alerts
+ */
+function generarRecuadroEducativoEA() {
+  return `
     <div class="ea-info-box">
       <h4 class="ea-info-title">
         📊 ¿Es posible anticiparse a una falla antes de que ocurra? Con John Deere, sí.
       </h4>
       <p class="ea-info-text">
-        Las <strong>Expert Alerts</strong> de John Deere son notificaciones inteligentes 
-        desarrolladas para advertir de forma proactiva sobre condiciones que podrían 
-        derivar en fallas futuras. Estas alertas permiten planificar mantenimientos 
-        preventivos, evitando paradas no programadas y extendiendo la vida útil de los equipos.
+        Las <strong>Expert Alerts</strong> de John Deere son notificaciones inteligentes
+        desarrolladas para advertir, de forma proactiva, sobre condiciones que podrían
+        derivar en fallas futuras. Estas alertas se generan mediante el análisis continuo
+        de datos operativos y el respaldo de conocimiento técnico especializado. Al recibir
+        una Expert Alert, los operadores y responsables de mantenimiento pueden intervenir
+        antes de que el problema se manifieste, extendiendo la vida útil de los equipos.
       </p>
     </div>
   `;
-
-  // 🟩 Sin alertas
-  if (equiposConAlertas.length === 0) {
-    return {
-      html: `
-        <section id="expert-alerts" class="page page-ea">
-          <div class="section-header">
-            <h2>EXPERT ALERTS</h2>
-          </div>
-          
-          ${recuadroEducativo}
-          <div class="ea-status-positive">
-            <div class="status-icon-large">✅</div>
-            <h3 class="status-title">Estado Óptimo de la Flota</h3>
-            <p class="status-message">No se generaron Expert Alerts en este periodo.</p>
-            <p class="status-description">Sus equipos operan sin alertas predictivas del sistema JDLink, lo que indica:</p>
-            <ul class="status-benefits">
-              <li>Operación dentro de parámetros normales</li>
-              <li>Bajo riesgo de fallas inesperadas</li>
-              <li>Mantenimiento preventivo efectivo</li>
-              <li>Reducción de tiempos de inactividad</li>
-            </ul>
-          </div>
-        </section>
-      `
-    };
-  }
-
-  // 📊 Contadores globales
-  let totalCriticas = 0, totalAltas = 0, totalRendimiento = 0;
-  equiposConAlertas.forEach(eq => {
-    (eq.ea || []).forEach(a => {
-      if (a.severidad === "Crítica") totalCriticas++;
-      else if (a.severidad === "Alta") totalAltas++;
-      else if (a.severidad === "Alta-Rendimiento") totalRendimiento++;
-    });
-  });
-  const totalAlertas = totalCriticas + totalAltas + totalRendimiento;
-  const pct = (v) => totalAlertas ? ((v / totalAlertas) * 100).toFixed(0) : 0;
-
-  // 📈 Resumen ejecutivo
-  const resumen = `
-    <div class="ea-resumen">
-      <h3 class="ea-resumen-titulo">📊 RESUMEN DE ALERTAS</h3>
-      <div class="ea-barras-container">
-        <div class="ea-barra-grupo">
-          <div class="ea-barra-header"><span class="ea-barra-label">CRÍTICAS</span><span class="ea-barra-valor">🔴 ${totalCriticas}</span></div>
-          <div class="ea-barra-bg"><div class="ea-barra-fill critica" style="width:${pct(totalCriticas)}%"></div></div>
-          <div class="ea-barra-pct">${pct(totalCriticas)}%</div>
-        </div>
-        <div class="ea-barra-grupo">
-          <div class="ea-barra-header"><span class="ea-barra-label">ALTAS</span><span class="ea-barra-valor">🟠 ${totalAltas}</span></div>
-          <div class="ea-barra-bg"><div class="ea-barra-fill alta" style="width:${pct(totalAltas)}%"></div></div>
-          <div class="ea-barra-pct">${pct(totalAltas)}%</div>
-        </div>
-        <div class="ea-barra-grupo">
-          <div class="ea-barra-header"><span class="ea-barra-label">RENDIMIENTO</span><span class="ea-barra-valor">🟡 ${totalRendimiento}</span></div>
-          <div class="ea-barra-bg"><div class="ea-barra-fill rendimiento" style="width:${pct(totalRendimiento)}%"></div></div>
-          <div class="ea-barra-pct">${pct(totalRendimiento)}%</div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // 🎴 Tarjetas por equipo
-  const tarjetas = equiposConAlertas.map(eq => {
-    const alertas = eq.ea.map(a => `
-      <div class="ea-alerta-item">
-        <div class="alerta-descripcion">• ${a.descripcion || "Descripción no disponible"}</div>
-        <div class="alerta-meta">${a.severidad} | ${a.estado || "-"} | ${formatearFechaEA(a.fecha)}</div>
-      </div>
-    `).join('');
-
-    return `
-      <div class="ea-tarjeta">
-        <div class="ea-tarjeta-header">
-          <h4 class="ea-equipo-titulo">${eq.familia || 'SIN CLASIFICAR'} - ${eq.modelo || '-'} (${eq.num_interno || '-'})</h4>
-        </div>
-        ${alertas}
-      </div>
-    `;
-  }).join('');
-
-  // 📃 Ensamblar sección completa
-  const html = `
-    <section id="expert-alerts" class="page page-ea">
-      <div class="section-header">
-        <h2>EXPERT ALERTS</h2>
-      </div>
-      <p class="periodo-text">Periodo: del <strong>${periodo.inicio}</strong> al <strong>${periodo.fin}</strong></p>
-      ${recuadroEducativo}
-      ${resumen}
-      ${tarjetas}
-    </section>
-  `;
-  return { html };
 }
-*/
-
-/******************************************************
- * SECCIÓN: ACCIONES Y RECOMENDACIONES
- ******************************************************/
 
 /**
- * Genera la sección completa de Acciones y Recomendaciones
- * @param {Array} equipos
- * @param {Object} periodo - {inicio:"dd-mm-aaaa", fin:"dd-mm-aaaa"} o {fecha_inicio, fecha_fin}
- * @returns {String} HTML
+ * Genera el resumen ejecutivo de Expert Alerts con estadísticas
  */
-function generarAccionesRecomendaciones(equipos, periodo) {
-  const p = _acc_normPeriodo(periodo);
+function generarResumenEjecutivoEA(stats) {
+  const {
+    totalAlertas,
+    totalCriticas,
+    totalAltas,
+    totalRendimiento,
+    pctCriticas,
+    pctAltas,
+    pctRendimiento,
+    totalEquipos,
+    equiposAfectados
+  } = stats;
 
-  // 1) Clasificar equipos por prioridad
-  const equiposConAcciones = [];
-  (equipos || []).forEach(equipo => {
-    const res = _acc_clasificarEquipoPorPrioridad(equipo);
-    if (res) equiposConAcciones.push({ equipo, prioridad: res.prioridad, acciones: res.acciones });
-  });
+  const pctEquiposAfectados = totalEquipos > 0
+    ? ((equiposAfectados / totalEquipos) * 100).toFixed(0)
+    : 0;
 
-  // 2) Si no hay acciones, mensaje positivo
-  if (!equiposConAcciones.length) {
-    return _acc_generarMensajeSinAcciones(p);
-  }
-
-  // 3) Separar por prioridad
-  const criticas    = equiposConAcciones.filter(e => e.prioridad === 'critica');
-  const altas       = equiposConAcciones.filter(e => e.prioridad === 'alta');
-  const preventivas = equiposConAcciones.filter(e => e.prioridad === 'preventiva');
-
-  // 4) Secciones
-  const seccionCriticas    = criticas.length    ? _acc_generarSeccionPrioridad(criticas, 'critica')      : '';
-  const seccionAltas       = altas.length       ? _acc_generarSeccionPrioridad(altas, 'alta')           : '';
-  const seccionPreventivas = preventivas.length ? _acc_generarSeccionPrioridad(preventivas, 'preventiva'): '';
-
-  // 5) Asesores
-  const asesoresUnicos = _acc_obtenerAsesoresUnicos(equiposConAcciones);
-  const tablaContactos = _acc_generarTablaContactosAsesores(asesoresUnicos);
-
-  // 6) HTML final (con CSS encapsulado)
   return `
-    <div class="page page-acciones">
-      <style>
-        .page-acciones { background:#fff; padding:50px 70px; page-break-after:always; font-family:Arial,sans-serif; box-sizing:border-box; }
-        .page-acciones .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
-        .page-acciones .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
-        .page-acciones .btn-volver { color:#3182ce; text-decoration:none; font-size:13px; font-weight:600; }
-        .page-acciones .periodo-text { font-size:13px; color:#666; margin:10px 0 18px; }
+    <div class="ea-resumen">
+      <h3 class="ea-resumen-titulo">📊 RESUMEN DE ALERTAS</h3>
 
-        .page-acciones .acciones-section-header { margin:26px 0 14px; }
-        .page-acciones .acciones-section-title { margin:0; padding:12px 16px; background:linear-gradient(135deg,#424242,#616161); color:#fff; font-size:15px; font-weight:700; border-radius:6px; text-transform:uppercase; letter-spacing:.5px; }
+      <!-- Barras de progreso por severidad -->
+      <div class="ea-barras-container">
 
-        .page-acciones .accion-tarjeta { background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:18px; margin-bottom:16px; box-shadow:0 2px 4px rgba(0,0,0,.05); page-break-inside:avoid; }
-        .page-acciones .accion-tarjeta-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #f0f0f0; padding-bottom:10px; margin-bottom:12px; }
-        .page-acciones .accion-equipo-titulo { margin:0; color:#212121; font-size:15px; font-weight:700; }
-        .page-acciones .accion-equipo-serie { color:#757575; font-size:12px; font-weight:600; }
-        .page-acciones .accion-subtitulo { margin:0 0 12px; color:#424242; font-size:13px; font-weight:700; }
-        .page-acciones .accion-item { margin-bottom:12px; }
-        .page-acciones .accion-descripcion { font-size:13px; color:#212121; line-height:1.55; margin-bottom:4px; }
-        .page-acciones .accion-contexto { font-size:12px; color:#757575; padding-left:22px; }
+        <!-- Críticas -->
+        <div class="ea-barra-grupo">
+          <div class="ea-barra-header">
+            <span class="ea-barra-label">CRÍTICAS</span>
+            <span class="ea-barra-valor">🔴 ${totalCriticas}</span>
+          </div>
+          <div class="ea-barra-bg">
+            <div class="ea-barra-fill critica" style="width: ${pctCriticas}%"></div>
+          </div>
+          <div class="ea-barra-pct">${pctCriticas}%</div>
+        </div>
 
-        .page-acciones .acciones-contactos { margin-top:26px; padding-top:20px; border-top:3px solid #e0e0e0; }
-        .page-acciones .contactos-titulo { margin:0 0 8px; color:#212121; font-size:16px; font-weight:700; }
-        .page-acciones .contactos-intro { font-size:13px; color:#424242; margin:0 0 14px; line-height:1.55; }
-        .page-acciones .contactos-tabla { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
-        .page-acciones .contacto-header-row { background:#f5f5f5; border-bottom:2px solid #e0e0e0; }
-        .page-acciones .contacto-th { padding:10px 12px; text-align:left; font-size:12px; font-weight:700; color:#424242; }
-        .page-acciones .contacto-fila { border-bottom:1px solid #f0f0f0; }
-        .page-acciones .contacto-fila:last-child { border-bottom:none; }
-        .page-acciones .contacto-fila td { padding:10px 12px; font-size:12px; color:#424242; }
-        .page-acciones .contacto-nombre { font-weight:600; color:#212121; }
+        <!-- Altas -->
+        <div class="ea-barra-grupo">
+          <div class="ea-barra-header">
+            <span class="ea-barra-label">ALTAS</span>
+            <span class="ea-barra-valor">🟠 ${totalAltas}</span>
+          </div>
+          <div class="ea-barra-bg">
+            <div class="ea-barra-fill alta" style="width: ${pctAltas}%"></div>
+          </div>
+          <div class="ea-barra-pct">${pctAltas}%</div>
+        </div>
 
-        .page-acciones .acciones-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:28px; text-align:center; margin-top:18px; }
-        .page-acciones .status-icon-large { font-size:44px; margin-bottom:12px; }
-        .page-acciones .status-title { margin:0 0 12px; color:#2e7d32; font-size:18px; font-weight:700; }
-        .page-acciones .status-message { font-size:14px; color:#424242; margin-bottom:14px; font-weight:600; }
-        .page-acciones .status-description { font-size:13px; color:#424242; margin-bottom:10px; }
-        .page-acciones .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:18px; }
-        .page-acciones .status-benefits li { font-size:13px; color:#424242; margin-bottom:6px; line-height:1.55; }
-      </style>
+        <!-- Alta-Rendimiento -->
+        <div class="ea-barra-grupo">
+          <div class="ea-barra-header">
+            <span class="ea-barra-label">ALTA-RENDIMIENTO</span>
+            <span class="ea-barra-valor">🟡 ${totalRendimiento}</span>
+          </div>
+          <div class="ea-barra-bg">
+            <div class="ea-barra-fill rendimiento" style="width: ${pctRendimiento}%"></div>
+          </div>
+          <div class="ea-barra-pct">${pctRendimiento}%</div>
+        </div>
 
-      <!-- Header -->
-      <div class="section-header">
-        <h2>ACCIONES Y RECOMENDACIONES</h2>
-        <a href="#contenido" class="btn-volver">🔼 Volver al Contenido</a>
       </div>
 
-      <!-- Periodo -->
-      <p class="periodo-text">Periodo: del <strong>${_acc_fmt(p.inicio)}</strong> al <strong>${_acc_fmt(p.fin)}</strong></p>
+      <!-- Leyenda -->
+      <div class="ea-leyenda">
+        <h4 class="leyenda-titulo">Leyenda:</h4>
+        <div class="leyenda-item">
+          <span class="leyenda-icon">🔴</span>
+          <span class="leyenda-text">
+            <strong>Crítica:</strong> Intervención necesaria. El asesor designado se comunicará con usted.
+          </span>
+        </div>
+        <div class="leyenda-item">
+          <span class="leyenda-icon">🟠</span>
+          <span class="leyenda-text">
+            <strong>Alta:</strong> Requiere monitoreo adicional y seguimiento continuo.
+          </span>
+        </div>
+        <div class="leyenda-item">
+          <span class="leyenda-icon">🟡</span>
+          <span class="leyenda-text">
+            <strong>Alta-Rendimiento:</strong> Afecta eficiencia operativa.
+          </span>
+        </div>
+      </div>
 
-      <!-- Secciones -->
-      ${seccionCriticas}
-      ${seccionAltas}
-      ${seccionPreventivas}
+      <!-- Estadísticas -->
+      <div class="ea-stats">
+        <div class="ea-stat-item">
+          <span class="stat-bullet">•</span>
+          <span class="stat-text">Total de alertas: <strong>${totalAlertas}</strong></span>
+        </div>
+        <div class="ea-stat-item">
+          <span class="stat-bullet">•</span>
+          <span class="stat-text">Equipos afectados: <strong>${equiposAfectados} de ${totalEquipos} (${pctEquiposAfectados}%)</strong></span>
+        </div>
+      </div>
 
-      <!-- Contactos -->
-      ${tablaContactos}
     </div>
   `;
 }
 
-/* ---------- Helpers internos ---------- */
+/**
+ * Genera una tarjeta individual de equipo con todas sus alertas
+ */
+function generarTarjetaEquipoEA(equipo) {
+  const alertas = equipo.ea || [];
 
-function _acc_normPeriodo(periodo) {
-  return {
-    inicio: (periodo && (periodo.inicio || periodo.fecha_inicio)) || '',
-    fin:    (periodo && (periodo.fin    || periodo.fecha_fin))    || ''
+  // Clasificar alertas por severidad
+  const criticas = alertas.filter(a => a.severidad === 'Crítica');
+  const altas = alertas.filter(a => a.severidad === 'Alta');
+  const rendimiento = alertas.filter(a => a.severidad === 'Alta-Rendimiento');
+
+  // Ordenar cada grupo por fecha (más reciente primero)
+  const ordenarPorFecha = (a, b) => {
+    const fechaA = a.fecha ? new Date(a.fecha) : new Date(0);
+    const fechaB = b.fecha ? new Date(b.fecha) : new Date(0);
+    return fechaB - fechaA; // Descendente
   };
-}
 
-function _acc_clasificarEquipoPorPrioridad(equipo) {
-  const acciones = [];
-  let prioridad = null;
+  criticas.sort(ordenarPorFecha);
+  altas.sort(ordenarPorFecha);
+  rendimiento.sort(ordenarPorFecha);
 
-  // 1) EA Críticas
-  const eaCriticas = (equipo.ea || []).filter(a => a.severidad === 'Crítica');
-  if (eaCriticas.length && !prioridad) prioridad = 'critica';
-  eaCriticas.forEach(a => acciones.push({
-    tipo:'ea_critica', icono:'🔴',
-    descripcion:`Atender alerta crítica: ${a.descripcion || 'Alerta crítica'}`,
-    contexto:`Estado: ${a.estado || 'Nueva'} | Fecha: ${_acc_fmtFecha(a.fecha)}`
-  }));
+  const totalAlertas = alertas.length;
 
-  // 2) Fluidos Anormales
-  const acAnormales = (equipo.ac || []).filter(a => a.resultado === 'Anormal');
-  if (acAnormales.length && !prioridad) prioridad = 'critica';
-  acAnormales.forEach(a => acciones.push({
-    tipo:'fluido_anormal', icono:'🧪',
-    descripcion:`Revisar resultado anormal en ${a.compartimiento || 'compartimiento'}`,
-    contexto:`Muestra: ${a.muestra || '-'}`
-  }));
+  // Generar contador con iconos
+  let contadorTexto = `${totalAlertas} ${totalAlertas === 1 ? 'alerta' : 'alertas'}`;
 
-  // 3) DTC Alta repetitivos (>=3)
-  const dtcCriticos = (equipo.dtc || []).filter(d => d.severidad === 'Alta' && (d.repeticiones||0) >= 3);
-  if (dtcCriticos.length && !prioridad) prioridad = 'critica';
-  acciones.push({
-    tipo:'dtc_critico', icono:'⚠️',
-    descripcion:`Revisar código de diagnóstico`
-  });
+  const partes = [];
+  if (criticas.length > 0) partes.push(`🔴 ${criticas.length} ${criticas.length === 1 ? 'crítica' : 'críticas'}`);
+  if (altas.length > 0) partes.push(`🟠 ${altas.length} ${altas.length === 1 ? 'alta' : 'altas'}`);
+  if (rendimiento.length > 0) partes.push(`🟡 ${rendimiento.length} ${rendimiento.length === 1 ? 'rend.' : 'rend.'}`);
 
-  // 4) Sin conexión >30d
-  const diasSC = _acc_diasSinConexion(equipo.ult_conexion);
-  if (diasSC > 30 && !prioridad) prioridad = 'critica';
-  if (diasSC > 30) acciones.push({
-    tipo:'conectividad_critica', icono:'📡',
-    descripcion:`Revisar conectividad (sin conexión hace ${diasSC} días)`,
-    contexto:`Última conexión: ${_acc_fmtFecha(equipo.ult_conexion)}`
-  });
+  contadorTexto += ` (${partes.join(', ')})`;
 
-  // 5) EA Altas
-  const eaAltas = (equipo.ea || []).filter(a => a.severidad === 'Alta');
-  if (eaAltas.length && !prioridad) prioridad = 'alta';
-  eaAltas.forEach(a => acciones.push({
-    tipo:'ea_alta', icono:'🟠',
-    descripcion:`Atender alerta alta: ${a.descripcion || 'Alerta alta'}`,
-    contexto:`Estado: ${a.estado || 'Nueva'} | Fecha: ${_acc_fmtFecha(a.fecha)}`
-  }));
-
-  // 6) Fluidos Precaución
-  const acPrec = (equipo.ac || []).filter(a => a.resultado === 'Precaución');
-  if (acPrec.length && !prioridad) prioridad = 'alta';
-  acPrec.forEach(a => acciones.push({
-    tipo:'fluido_precaucion', icono:'🧪',
-    descripcion:`Monitorear resultado en precaución en ${a.compartimiento || 'compartimiento'}`,
-    contexto:`Muestra: ${a.muestra || '-'}`
-  }));
-
-  // 7) Exceso de ralentí >10%
-  const excesoRalenti = equipo.percent_exces_ralent_horas || 0;
-  if (excesoRalenti > 0.10 && !prioridad) prioridad = 'alta';
-  if (excesoRalenti > 0.10) {
-    const impacto = _acc_calcularImpactoRalenti(equipo);
-    acciones.push({
-      tipo:'ralenti_critico', icono:'⚙️',
-      descripcion:`Reducir exceso de ralentí (actualmente ${(excesoRalenti*100).toFixed(0)}%)`,
-      contexto:`Impacto: $${impacto.toFixed(2)} en el periodo`
-    });
+  // Generar listas de alertas por severidad
+  let listasCriticas = '';
+  if (criticas.length > 0) {
+    listasCriticas = generarListaAlertasPorSeveridad(criticas, 'Crítica');
   }
 
-  // 8) Sin conexión 15–30d
-  if (diasSC >= 15 && diasSC <= 30 && !prioridad) prioridad = 'alta';
-  if (diasSC >= 15 && diasSC <= 30) acciones.push({
-    tipo:'conectividad_alta', icono:'📡',
-    descripcion:`Revisar conectividad (sin conexión hace ${diasSC} días)`,
-    contexto:`Última conexión: ${_acc_fmtFecha(equipo.ult_conexion)}`
-  });
-
-  // 9) DTC Alta NO repetitivos
-  const dtcAltos = (equipo.dtc || []).filter(d => d.severidad === 'Alta' && (d.repeticiones||0) < 3);
-  if (dtcAltos.length && !prioridad) prioridad = 'alta';
-  // acciones.push({
-  //   tipo:'dtc_alto', icono:'⚠️',
-  //   descripcion:`Monitorear código: ${d.descripcion_corta || d.codigo || 'Código'}`,
-  //   contexto:`Frecuencia: ${d.repeticiones || 0} ocurrencias`
-  // });
-
-  // 10) EA Rendimiento
-  const eaRend = (equipo.ea || []).filter(a => a.severidad === 'Alta-Rendimiento');
-  if (eaRend.length && !prioridad) prioridad = 'preventiva';
-  eaRend.forEach(a => acciones.push({
-    tipo:'ea_rendimiento', icono:'🟡',
-    descripcion:`Optimizar: ${a.descripcion || 'Alerta de rendimiento'}`,
-    contexto:`Estado: ${a.estado || 'Nueva'} | Fecha: ${_acc_fmtFecha(a.fecha)}`
-  }));
-
-  // 11) Mantenimiento próximo (<50 h)
-  const horasRest = equipo.horas_restantes || 0;
-  if (horasRest > 0 && horasRest < 50 && !prioridad) prioridad = 'preventiva';
-  if (horasRest > 0 && horasRest < 50) {
-    const ha = equipo.horas_actuales || 0;
-    acciones.push({
-      tipo:'mantenimiento', icono:'🔧',
-      descripcion:`Programar mantenimiento (restan ${horasRest.toFixed(0)} horas)`,
-      contexto:`Próximo servicio: ${(ha+horasRest).toLocaleString('es-PE')} horas`
-    });
+  let listasAltas = '';
+  if (altas.length > 0) {
+    listasAltas = generarListaAlertasPorSeveridad(altas, 'Alta');
   }
 
-  // 12) DTC Mediana
-  const dtcMed = (equipo.dtc || []).filter(d => d.severidad === 'Mediana');
-  if (dtcMed.length && !prioridad) prioridad = 'preventiva';
-  // dtcMed.forEach(d => acciones.push({
-  //   tipo:'dtc_mediano', icono:'⚠️',
-  //   descripcion:`Monitorear código: ${d.descripcion_corta || d.codigo || 'Código'}`,
-  //   contexto:`Frecuencia: ${d.repeticiones || 0} ocurrencias`
-  // }));
+  let listasRendimiento = '';
+  if (rendimiento.length > 0) {
+    listasRendimiento = generarListaAlertasPorSeveridad(rendimiento, 'Alta-Rendimiento');
+  }
 
-  if (!acciones.length || !prioridad) return null;
-  return { prioridad, acciones };
-}
+  return `
+    <div class="ea-tarjeta">
 
-function _acc_diasSinConexion(ult) {
-  if (!ult) return 999;
-  try {
-    const f = new Date(ult);
-    const hoy = new Date();
-    return Math.floor((hoy - f) / (1000*60*60*24));
-  } catch (e) { return 999; }
-}
+      <!-- Encabezado del equipo -->
+      <div class="ea-tarjeta-header">
+        <h4 class="ea-equipo-titulo">
+          ${equipo.familia || 'SIN CLASIFICAR'} - ${equipo.modelo || '-'} - ${equipo.num_interno || '-'}
+        </h4>
+      </div>
 
-function _acc_calcularImpactoRalenti(equipo) {
-  const horasTotales = equipo.horas_totales || 0;
-  const exceso = equipo.percent_exces_ralent_horas || 0;
-  const horasExceso = horasTotales * exceso;
-  const costoHora = 5.20;
-  return horasExceso * costoHora;
-}
+      <!-- Contador de alertas -->
+      <div class="ea-contador">
+        <span class="contador-icon">📊</span>
+        <span class="contador-text">Total: ${contadorTexto}</span>
+      </div>
 
-function _acc_generarSeccionPrioridad(items, prioridad) {
-  let titulo='', icono='';
-  if (prioridad==='critica')    { titulo='EQUIPOS QUE REQUIEREN ACCIONES INMEDIATAS'; icono='🔴'; }
-  else if (prioridad==='alta')  { titulo='EQUIPOS QUE REQUIEREN ATENCIÓN PRIORITARIA'; icono='🟠'; }
-  else                          { titulo='ACCIONES PREVENTIVAS RECOMENDADAS';         icono='🔵'; }
+      <!-- Alertas críticas -->
+      ${listasCriticas}
 
-  const count = items.length, eqTxt = count===1?'equipo':'equipos';
-  let html = `
-    <div class="acciones-section-header">
-      <h3 class="acciones-section-title">${icono} ${titulo} (${count} ${eqTxt})</h3>
+      <!-- Alertas altas -->
+      ${listasAltas}
+
+      <!-- Alertas rendimiento -->
+      ${listasRendimiento}
+
     </div>
   `;
-  items.forEach(it => { html += _acc_tarjetaAccion(it.equipo, it.acciones); });
+}
+
+/**
+ * Genera una lista de alertas de una severidad específica
+ */
+function generarListaAlertasPorSeveridad(alertas, severidad) {
+  let titulo = '';
+  let icono = '';
+
+  if (severidad === 'Crítica') {
+    titulo = 'ALERTAS CRÍTICAS';
+    icono = '🔴';
+  } else if (severidad === 'Alta') {
+    titulo = 'ALERTAS ALTAS';
+    icono = '🟠';
+  } else if (severidad === 'Alta-Rendimiento') {
+    titulo = 'ALERTAS ALTA-RENDIMIENTO';
+    icono = '🟡';
+  }
+
+  let html = `
+    <div class="ea-lista-seccion">
+      <h5 class="ea-lista-titulo">${icono} ${titulo}</h5>
+  `;
+
+  alertas.forEach(alerta => {
+    const descripcion = alerta.descripcion || 'Descripción no disponible';
+    const estado = alerta.estado || '-';
+    const fecha = alerta.fecha ? formatearFechaEA(alerta.fecha) : '-';
+
+    html += `
+      <div class="ea-alerta-item">
+        <div class="alerta-descripcion">• ${descripcion}</div>
+        <div class="alerta-meta">Estado: ${estado} | Fecha: ${fecha}</div>
+      </div>
+    `;
+  });
+
+  html += `
+    </div>
+  `;
+
   return html;
 }
 
-function _acc_tarjetaAccion(equipo, acciones) {
-  const familia = equipo.familia || 'SIN CLASIFICAR';
-  const modelo  = equipo.modelo || '-';
-  const numInt  = equipo.num_interno || '-';
-  const serie   = equipo.id_equipo || equipo.pin || '-';
-  const asesor  = equipo.asesor || 'Sin asignar';
-  const suc     = equipo.sucursal || '-';
-
-  const accionesHtml = (acciones||[]).map(a => `
-    <div class="accion-item">
-      <div class="accion-descripcion">${a.icono} • ${a.descripcion}</div>
-      <div class="accion-contexto">${a.contexto}</div>
-    </div>
-  `).join('');
-
+/**
+ * Genera el mensaje cuando no hay Expert Alerts
+ */
+function generarMensajeSinAlertasEA(periodo, recuadroEducativo) {
   return `
-    <div class="accion-tarjeta">
-      <div class="accion-tarjeta-header">
-        <h4 class="accion-equipo-titulo">${familia} - ${modelo} - ${numInt}</h4>
-        <span class="accion-equipo-serie">Serie: ${serie}</span>
-      </div>
-      <div class="accion-tarjeta-body">
-        <h5 class="accion-subtitulo">🚨 ACCIONES REQUERIDAS:</h5>
-        ${accionesHtml}
-      </div>
-      <div class="accion-tarjeta-footer">
-        <span class="accion-asesor">👤 Asesor: ${asesor} - ${suc}</span>
-      </div>
-    </div>
-  `;
-}
+    <div class="page page-ea">
 
-function _acc_obtenerAsesoresUnicos(items) {
-  const map = {};
-  (items || []).forEach(it => {
-    const eq = it.equipo || {};
-    const nombre = eq.asesor || 'Sin asignar';
-    if (!map[nombre]) {
-      map[nombre] = {
-        nombre,
-        correo: eq.asesor_correo || 'administrativo.sir@ipesa.com.pe',
-        celular: eq.asesor_celular || '-',
-        sucursal: eq.sucursal || '-'
-      };
-    }
-  });
-  return Object.values(map);
-}
-
-function _acc_generarTablaContactosAsesores(asesores) {
-  if (!asesores || !asesores.length) return '';
-  const filas = asesores.map(a => `
-    <tr class="contacto-fila">
-      <td class="contacto-nombre">${a.nombre}</td>
-      <td class="contacto-correo">${a.correo}</td>
-      <td class="contacto-celular">${a.celular}</td>
-      <td class="contacto-sucursal">${a.sucursal}</td>
-    </tr>
-  `).join('');
-  return `
-    <div class="acciones-contactos">
-      <h3 class="contactos-titulo">📞 DATOS DE CONTACTO DE ASESORES IPESA</h3>
-      <p class="contactos-intro">Para consultas sobre las acciones recomendadas, contacte directamente al asesor asignado:</p>
-      <table class="contactos-tabla">
-        <thead>
-          <tr class="contacto-header-row">
-            <th class="contacto-th">Asesor</th>
-            <th class="contacto-th">Correo</th>
-            <th class="contacto-th">Celular</th>
-            <th class="contacto-th">Sucursal</th>
-          </tr>
-        </thead>
-        <tbody>${filas}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-function _acc_generarMensajeSinAcciones(periodo) {
-  return `
-    <div class="page page-acciones">
-      <style>
-        .page-acciones{background:#fff;padding:50px 70px;page-break-after:always;font-family:Arial,sans-serif;box-sizing:border-box;}
-        .page-acciones .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:3px solid #f57c00;}
-        .page-acciones .section-header h2{margin:0;color:#f57c00;font-size:24px;font-weight:700;}
-        .page-acciones .btn-volver{color:#3182ce;text-decoration:none;font-size:13px;font-weight:600;}
-        .page-acciones .periodo-text{font-size:13px;color:#666;margin:10px 0 18px;}
-        .page-acciones .acciones-status-positive{background:#e8f5e9;border:2px solid #66bb6a;border-radius:8px;padding:28px;text-align:center;margin-top:18px;}
-        .page-acciones .status-icon-large{font-size:44px;margin-bottom:12px;}
-        .page-acciones .status-title{margin:0 0 12px;color:#2e7d32;font-size:18px;font-weight:700;}
-        .page-acciones .status-message{font-size:14px;color:#424242;margin-bottom:14px;font-weight:600;}
-        .page-acciones .status-description{font-size:13px;color:#424242;margin-bottom:10px;}
-        .page-acciones .status-benefits{text-align:left;display:inline-block;margin:0;padding-left:18px;}
-        .page-acciones .status-benefits li{font-size:13px;color:#424242;margin-bottom:6px;line-height:1.55;}
-      </style>
-      <div class="section-header">
-        <h2>ACCIONES Y RECOMENDACIONES</h2>
-        <a class="btn-volver" href="#contenido">🔼 Volver al Contenido</a>
+      <!-- Header de sección -->
+      <div class="header">
+        <h1>⚠️ EXPERT ALERTS</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
       </div>
-      <p class="periodo-text">Periodo: del <strong>${_acc_fmt(periodo.inicio)}</strong> al <strong>${_acc_fmt(periodo.fin)}</strong></p>
-      <div class="acciones-status-positive">
-        <div class="status-icon-large">✅</div>
-        <h3 class="status-title">Operación Óptima de la Flota</h3>
-        <p class="status-message">No se identificaron acciones correctivas o preventivas requeridas en este periodo.</p>
-        <p class="status-description">Su flota opera dentro de los parámetros esperados, lo que refleja:</p>
+
+      <!-- Recuadro educativo -->
+      ${recuadroEducativo}
+
+      <!-- Mensaje de estado positivo -->
+      <div class="ea-status-positive">
+        <h3 class="status-title">Estado Óptimo de la Flota</h3>
+        <p class="status-message">
+          No se generaron Expert Alerts en este periodo.
+        </p>
         <ul class="status-benefits">
-          <li>Conectividad estable en todos los equipos</li>
-          <li>Utilización eficiente del tiempo de operación</li>
-          <li>Sin códigos de diagnóstico críticos pendientes</li>
-          <li>Análisis de fluidos dentro de parámetros normales</li>
-          <li>Sin alertas predictivas activas</li>
+          <li>Operación dentro de parámetros normales</li>
+          <li>Bajo riesgo de fallas inesperadas</li>
+          <li>Reducción de tiempos de inactividad</li>
         </ul>
       </div>
+
     </div>
   `;
 }
 
-/* Formato fechas dd-Mes-aaaa */
-function _acc_fmtFecha(fecha) {
-  if (!fecha) return '-';
-  try {
-    const d = (typeof fecha === 'string') ? new Date(fecha) : fecha;
-    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    const dd = String(d.getDate()).padStart(2,'0');
-    return `${dd}-${meses[d.getMonth()]}-${d.getFullYear()}`;
-  } catch(e) { return '-'; }
-}
+/**
+ * Clasifica equipos por su severidad máxima
+ * Cada equipo aparece una sola vez en la sección de su alerta más crítica
+ */
+function clasificarEquiposPorSeveridadMaxima(equipos) {
+  const criticas = [];
+  const altas = [];
+  const rendimiento = [];
 
-/* Normaliza string ya dd-mm-aaaa (o vacío) */
-function _acc_fmt(s) { return s || '-'; }
-
-
-
-function _pickInt(o, keys) {
-  if (!o) return 0;
-  for (const k of keys) {
-    const n = Number(o[k]);
-    if (!isNaN(n) && n !== Infinity && n !== -Infinity) return Math.max(0, Math.floor(n));
+  // Función auxiliar para normalizar y verificar severidad
+  function esSeveridad(severidad, tipo) {
+    const sev = (severidad || '').toLowerCase().trim();
+    if (tipo === 'critica') {
+      return sev.includes('crítica') || sev.includes('critica') || sev === 'critical';
+    } else if (tipo === 'rendimiento') {
+      return sev.includes('rendimiento') || sev.includes('performance');
+    } else if (tipo === 'alta') {
+      return sev.includes('alta') || sev === 'high';
+    }
+    return false;
   }
-  return 0;
+
+  equipos.forEach(eq => {
+    const alertas = eq.ea || [];
+
+    // Verificar si tiene alertas críticas
+    const tieneCriticas = alertas.some(a => esSeveridad(a.severidad, 'critica'));
+    if (tieneCriticas) {
+      criticas.push(eq);
+      return;
+    }
+
+    // Si no tiene críticas, verificar si tiene rendimiento (más específico que "alta")
+    const tieneRendimiento = alertas.some(a => esSeveridad(a.severidad, 'rendimiento'));
+    if (tieneRendimiento) {
+      rendimiento.push(eq);
+      return;
+    }
+
+    // Si solo tiene altas
+    const tieneAltas = alertas.some(a => esSeveridad(a.severidad, 'alta'));
+    if (tieneAltas) {
+      altas.push(eq);
+    }
+  });
+
+  return {
+    criticas,
+    altas,
+    rendimiento
+  };
 }
-function _sumInt(vals) {
-  return vals.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+
+/**
+ * Formatea una fecha para Expert Alerts
+ * @param {String|Date} fecha - Fecha en formato ISO o Date object
+ * @returns {String} Fecha formateada como "21-Feb-2025"
+ */
+function formatearFechaEA(fecha) {
+  if (!fecha) return '-';
+
+  try {
+    const date = typeof fecha === 'string' ? new Date(fecha) : fecha;
+
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    const dia = String(date.getDate()).padStart(2, '0');
+    const mes = meses[date.getMonth()];
+    const anio = date.getFullYear();
+
+    return `${dia}-${mes}-${anio}`;
+  } catch (error) {
+    return '-';
+  }
 }
+
+
+
 

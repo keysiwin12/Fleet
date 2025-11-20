@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 10pt;
+    color: #333;
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  /* Header de equipo */
+  .equipment-header {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
+    border: 2px solid #e5a3ab;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .equipment-title {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .equipment-serie {
+    font-size: 9pt;
+    color: #555;
+    margin-top: 5px;
+  }
+  
+  .codes-badge {
+    background-color: #721c24;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 9pt;
+    font-weight: bold;
+  }
+  
+  /* Sección de códigos */
+  .codes-section {
+    margin-bottom: 25px;
+    page-break-inside: avoid;
+  }
+  
+  .section-header {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 11pt;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .section-header.high {
+    border-left-color: #dc3545;
+    background-color: #f8d7da;
+  }
+  
+  .section-header.medium {
+    border-left-color: #ffc107;
+    background-color: #fff3cd;
+  }
+  
+  .section-header.low {
+    border-left-color: #28a745;
+    background-color: #d4edda;
+  }
+  
+  /* Tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  thead {
+    background-color: #495057;
+    color: white;
+  }
+  
+  th {
+    padding: 10px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  th:nth-child(3), th:nth-child(4) {
+    text-align: center;
+  }
+  
+  tbody tr {
+    page-break-inside: avoid; /* Keep together */
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  /* Zebra striping */
+  tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+  }
+  
+  tbody tr:hover {
+    background-color: #e9ecef;
+  }
+  
+  td {
+    padding: 8px 10px;
+    vertical-align: top;
+    font-size: 9pt;
+  }
+  
+  /* Columna código */
+  td:first-child {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    white-space: nowrap;
+    width: 15%;
+  }
+  
+  /* Columna descripción */
+  td:nth-child(2) {
+    width: 60%;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  
+  /* Columna frecuencia */
+  td:nth-child(3) {
+    text-align: center;
+    font-weight: bold;
+    width: 10%;
+  }
+  
+  /* Columna severidad */
+  td:nth-child(4) {
+    text-align: center;
+    width: 15%;
+  }
+  
+  /* Badges de severidad */
+  .severity-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 9pt;
+    color: white;
+    letter-spacing: 1px;
+  }
+  
+  .severity-high {
+    background-color: #dc3545;
+  }
+  
+  .severity-medium {
+    background-color: #ffc107;
+    color: #333;
+  }
+  
+  .severity-low {
+    background-color: #28a745;
+  }
+  
+  /* Para impresión/PDF */
+  @media print {
+    body {
+      padding: 10px;
+      background-color: white;
+    }
+    
+    .container {
+      box-shadow: none;
+    }
+    
+    .codes-section {
+      page-break-inside: avoid;
+    }
+    
+    tbody tr {
+      page-break-inside: avoid;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- Header del equipo -->
+<div class="equipment-header">
+  <div>
+    <div class="equipment-title">
+      COSECHADORA CH870 - CG-675
+    </div>
+    <div class="equipment-serie">Serie: 11BC29100X91604431</div>
+  </div>
+  <div class="codes-badge">5 códigos activos</div>
+</div>
+
+<!-- Sección de códigos ALTA -->
+<div class="codes-section">
+  <div class="section-header high">🔴 CÓDIGOS DE PRIORIDAD ALTA (1)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>CÓDIGO</th>
+        <th>DESCRIPCIÓN</th>
+        <th>FREC</th>
+        <th>SEVERIDAD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PTP 524232.01</td>
+        <td>Presión de freno de estacionamiento extremadamente baja - Volver a la posición de estacionamiento para la recuperación</td>
+        <td>A</td>
+        <td><span class="severity-badge severity-high">A</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Sección de códigos MEDIANA -->
+<div class="codes-section">
+  <div class="section-header medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (4)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>CÓDIGO</th>
+        <th>DESCRIPCIÓN</th>
+        <th>FREC</th>
+        <th>SEVERIDAD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ECU 000237.02</td>
+        <td>Fallo del motor - Problema de identificación de NIV. Apagar el motor, esperar un minuto y volver a encenderlo. Se requiere localización de averías si el error persiste.</td>
+        <td>73</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>FCU 523515.31</td>
+        <td>Falla del sensor de velocidad del ventilador del extractor principal - Modo de alimentación inteligente desactivado. Se requiere localización de averías.</td>
+        <td>83</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>RCU 516701.01</td>
+        <td>Nivel de aceite hidráulico bajo - Añadir aceite hidráulico y buscar fugas.</td>
+        <td>18</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>CAR 516790.05</td>
+        <td>Columna de dirección - Control de bomba 2 - Corriente inferior a la normal o interrupción en el circuito. Consulte el procedimiento de diagnóstico y reparación.</td>
+        <td>1</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<!-- SEGUNDO EQUIPO -->
+<div class="container" style="margin-top: 30px;">
+
+<!-- Header del segundo equipo -->
+<div class="equipment-header" style="background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%); border-color: #ffc107;">
+  <div>
+    <div class="equipment-title">
+      COSECHADORA CH870 - CG-699
+    </div>
+    <div class="equipment-serie">Serie: 11BC29IRCT171152</div>
+  </div>
+  <div class="codes-badge" style="background-color: #ff8800;">7 códigos activos</div>
+</div>
+
+<!-- Solo códigos MEDIANA -->
+<div class="codes-section">
+  <div class="section-header medium">🟡 CÓDIGOS DE PRIORIDAD MEDIANA (7)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>CÓDIGO</th>
+        <th>DESCRIPCIÓN</th>
+        <th>FREC</th>
+        <th>SEVERIDAD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>RCU 402662.14</td>
+        <td>Nivel de aceite hidráulico muy bajo - Contactar de base desactivado. Añadir aceite hidráulico y buscar fugas.</td>
+        <td>A</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>ECU 000237.02</td>
+        <td>Fallo del motor - Problema de identificación de NIV. Apagar el motor, esperar un minuto y volver a encenderlo. Se requiere localización de averías.</td>
+        <td>115</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>RCU 516701.01</td>
+        <td>Nivel de aceite hidráulico bajo - Añadir aceite hidráulico y buscar fugas.</td>
+        <td>96</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>ECU 000237.02</td>
+        <td>Fallo del motor - Problema de identificación de NIV. Apagar el motor, esperar un minuto y volver a encenderlo. Se requiere localización de averías si el error persiste.</td>
+        <td>87</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>CAR 002346.05</td>
+        <td>Control de faros de tubo largo - Corriente inferior a la normal o interrupción en el circuito. Consulte el procedimiento de diagnóstico y reparación.</td>
+        <td>4</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>ECU 800651.07</td>
+        <td>Fallo del motor - Caudal demasiado bajo de combustible en el inyector n.º 1. Se requiere la localización de averías.</td>
+        <td>2</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+      <tr>
+        <td>ECU 000652.07</td>
+        <td>Fallo del motor - Caudal demasiado bajo de combustible en el inyector n.º 2. Se requiere la localización de averías.</td>
+        <td>1</td>
+        <td><span class="severity-badge severity-medium">M</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+</body>
+</html>

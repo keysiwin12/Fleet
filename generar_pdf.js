@@ -111,16 +111,15 @@ function probarPDF4PaginasTodos(opts = {}) {
     throw new Error("No hay clientes para procesar (clientes_por_opcenter vacío o filtros vaciaron la lista).");
   }
 
-  // Carpeta destino
-  const tz = Session.getScriptTimeZone() || "America/Lima";
-  const fechaCarpeta = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd_HH-mm");
-  let folder;
-  if (opts.folderId) {
-    folder = DriveApp.getFolderById(opts.folderId);
-  } else {
-    folder = DriveApp.createFolder(`TEST_4Paginas_Lote_${fechaCarpeta}`);
-  }
-  log("📂 Carpeta destino:", folder.getName(), folder.getId());
+  // Carpetas destino (clasificadas por tipo de cliente)
+  const carpetas = prepararCarpetasSemana(
+    modelo.periodo.fecha_inicio,
+    modelo.periodo.fecha_fin
+  );
+  log("📂 Carpetas creadas:");
+  log("  - Clientes:", carpetas.clientes.getName());
+  log("  - CBD:", carpetas.cbd.getName());
+  log("  - Signature:", carpetas.signature.getName());
 
   // =========================
   // 1) Pre-cargar assets/ayudas
@@ -148,7 +147,7 @@ function probarPDF4PaginasTodos(opts = {}) {
         modelo,
         logosB64,
         toDataUrl,
-        folder,
+        carpetas,
       });
 
       resultados.push({ clienteId, ok: true, url: r.url, nombre: r.nombre, size: r.tamaño });
@@ -169,7 +168,11 @@ function probarPDF4PaginasTodos(opts = {}) {
     fail,
     bytesTotales: totalBytes,
     tamañoTotalKB: (totalBytes / 1024).toFixed(2),
-    carpeta: { name: folder.getName(), id: folder.getId(), url: folder.getUrl() },
+    carpetas: {
+      clientes: { name: carpetas.clientes.getName(), url: carpetas.clientes.getUrl() },
+      cbd: { name: carpetas.cbd.getName(), url: carpetas.cbd.getUrl() },
+      signature: { name: carpetas.signature.getName(), url: carpetas.signature.getUrl() }
+    },
     duracionSeg: dt,
     resultados
   };
@@ -178,12 +181,13 @@ function probarPDF4PaginasTodos(opts = {}) {
   try {
     SpreadsheetApp.getUi().alert(
       '✅ Lote PDF 4 Páginas — Completado',
-      `Carpeta: ${folder.getName()}\n` +
+      `Periodo: ${carpetas.periodo.inicio} — ${carpetas.periodo.fin}\n` +
       `Total clientes: ${targetIds.length}\n` +
       `OK: ${ok} | Fallidos: ${fail}\n` +
       `Peso total: ${(totalBytes/1024).toFixed(2)} KB\n` +
       `Duración: ${dt.toFixed(1)} s\n\n` +
-      `Nota: revisa la carpeta para validar estilos/tablas.`,
+      `PDFs clasificados en carpetas:\n` +
+      `• Clientes • CBD • Signature`,
       SpreadsheetApp.getUi().ButtonSet.OK
     );
   } catch (_) {}
@@ -201,112 +205,10 @@ function probarPDF4PaginasTodos(opts = {}) {
  * @param {Object} ctx.modelo
  * @param {Object} ctx.logosB64
  * @param {Function} ctx.toDataUrl
- * @param {GoogleAppsScript.Drive.Folder} ctx.folder
- * @returns {{url:string, nombre:string, tamaño:number}}
+ * @param {Object} ctx.carpetas - Objeto con carpetas {clientes, cbd, signature}
+ * @returns {{url:string, nombre:string, tamaño:number, carpeta:string}}
  */
-// function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, folder }) {
-//   // 🔹 Portada (2 páginas)
-//   const { html: portadaHTML } = renderPortada2Paginas({
-//     cliente: {
-//       razon_social: cliente.razon_social || cliente.nombre || 'Cliente',
-//       ruc: cliente.ruc || cliente.nif || '',
-//       segmento: cliente.segmento || cliente.tipo || ''
-//     },
-//     periodo: modelo.periodo || { ini: '2025-10-01', fin: '2025-10-14' },
-//     images: {
-//       fleetAssurance: toDataUrl(logosB64.fleetAssurance, 'image/png'),
-//       imagenInstitucional: toDataUrl(logosB64.imagenInstitucional, 'image/png'),
-//       logoCSC: toDataUrl(logosB64.logoCSC, 'image/png'),
-//       logoIpesa: toDataUrl(logosB64.logoIpesa, 'image/png')
-//     },
-//     meta: {
-//       titulo: 'Reporte de Gestión de Flota' + " " + cliente.num_informe,
-//       subtitulo: 'Centro de Soluciones Conectadas — IPESA'
-//     }
-//   });
-
-//   // 🔹 Datos secciones
-//   const dataResumen = renderGraficosResumen(cliente.metricas || {});
-//   const recomendacionesHTML = buildRecomendaciones(cliente.metricas || {});
-//   const dataConectividad = renderGraficosConectividad(cliente.equipos || [], modelo.periodo);
-//   const dataUtilizacion = renderUtilizacion(cliente.equipos || [], cliente.metricas || {}, modelo.periodo);
-
-//   // 🔹 DTC
-//   const equiposDTC = (cliente.equipos || []).map(eq => ({
-//     id_equipo: eq.id_equipo || eq.pin || eq.num_serie || eq.numero_serie,
-//     pin: eq.pin || eq.num_serie || eq.numero_serie,
-//     modelo: eq.modelo,
-//     familia: eq.familia,
-//     num_interno: eq.num_interno,
-//     dtc: Array.isArray(eq.dtc) ? eq.dtc : []
-//   }));
-//   const { html: dtcHTML } = renderDTC({
-//     equipos: equiposDTC,
-//     periodo: { ini: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio, fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin, label: null },
-//     opciones: { ordenar: 'criticos' }
-//   });
-
-//   // 🔹 Fluidos
-//   const periodoFluidos = {
-//     inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "2025-10-01",
-//     fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || "2025-10-14"
-//   };
-//   const htmlFluidos = generarAnalisisFluidosRenderizado(
-//     cliente.equipos || [],
-//     periodoFluidos,
-//     logosB64
-//   );
-
-//   // 🔹 Expert Alerts
-//   const { html: expertAlertsHTML } = renderExpertAlerts({
-//     equipos: cliente.equipos || [],
-//     periodo: modelo.periodo
-//   });
-
-//   // 🔹 Acciones/Recomendaciones extendidas
-//   const accionesHTML = generarAccionesRecomendaciones(
-//     cliente.equipos || [],
-//     {
-//       inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "01-10-25",
-//       fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || "28-10-25"
-//     }
-//   );
-
-//   // 🔹 Template
-//   const htmlTemplate = HtmlService.createTemplateFromFile('reporte-flota-4paginas');
-//   htmlTemplate.portadaHTML = portadaHTML;
-//   htmlTemplate.htmlFluidos = htmlFluidos;
-//   htmlTemplate.expertAlertsHTML = expertAlertsHTML;
-//   htmlTemplate.metricas = cliente.metricas || {};
-//   htmlTemplate.data = dataResumen;
-//   htmlTemplate.accionesHTML = accionesHTML;
-//   htmlTemplate.recomendacionesHTML = recomendacionesHTML;
-//   htmlTemplate.dataConectividad = dataConectividad;
-//   htmlTemplate.dataUtilizacion = dataUtilizacion;
-//   htmlTemplate.dtcHTML = dtcHTML;
-//   htmlTemplate.cliente = cliente;
-//   htmlTemplate.periodo = modelo.periodo || { inicio: "01-10-25", fin: "14-10-25" };
-
-//   // 🔹 Render → PDF → Drive
-//   const htmlOutput = htmlTemplate.evaluate();
-//   const pdfBlob = htmlOutput.getAs(MimeType.PDF);
-
-//   const tz = Session.getScriptTimeZone() || "America/Lima";
-//   const marca = Utilities.formatDate(new Date(), tz, "yyyyMMdd_HHmmss");
-//   const nombreArchivo = `TEST_4Paginas_${(cliente.razon_social || cliente.nombre || "Cliente").replace(/[^\w\- ]+/g,'').slice(0,60)}_${marca}.pdf`;
-
-//   pdfBlob.setName(nombreArchivo);
-//   const file = folder.createFile(pdfBlob);
-
-//   return {
-//     url: file.getUrl(),
-//     nombre: nombreArchivo,
-//     tamaño: file.getSize()
-//   };
-// }
-
-
-function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, folder }) {
+function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, carpetas }) {
   // 🔹 Portada (2 páginas)
   const { html: portadaHTML } = renderPortada2Paginas({
     cliente: {
@@ -314,8 +216,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
       ruc: cliente.ruc || cliente.nif || '',
       segmento: cliente.segmento || cliente.tipo || ''
     },
-    // periodo: modelo.periodo || { ini: '2025-10-01', fin: '2025-10-30' },
-    periodo : { ini: '2025-10-01', fin: '2025-10-30' },
+    periodo: modelo.periodo,  // ✅ Desde CONFIG
     images: {
       fleetAssurance: toDataUrl(logosB64.fleetAssurance, 'image/png'),
       imagenInstitucional: toDataUrl(logosB64.imagenInstitucional, 'image/png'),
@@ -323,7 +224,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
       logoIpesa: toDataUrl(logosB64.logoIpesa, 'image/png')
     },
     meta: {
-      titulo: 'Reporte de Gestión de Flota' + " " + cliente.num_informe,
+      titulo: 'Reporte de Gestión de Flota - Nº Informe: ' + " " + cliente.num_informe,
       subtitulo: 'Centro de Soluciones Conectadas — IPESA'
     }
   });
@@ -332,7 +233,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   const dataResumen = renderGraficosResumen(cliente.metricas || {});
   const recomendacionesHTML = buildRecomendaciones(cliente.metricas || {});
   const dataConectividad = renderGraficosConectividad(cliente.equipos || [], modelo.periodo);
-  const dataUtilizacion = renderUtilizacion(cliente.equipos || [], cliente.metricas || {}, modelo.periodo);
+  const dataUtilizacion = renderUtilizacion(cliente.equipos || [], cliente.metricas || {}, modelo.periodo, modelo.config.precio_galon);  // ✅ Desde CONFIG
 
   // 🔹 DTC
   const equiposDTC = (cliente.equipos || []).map(eq => ({
@@ -345,15 +246,19 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   }));
   const { html: dtcHTML } = renderDTC({
     equipos: equiposDTC,
-    periodo: { ini: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio, fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin, label: null },
+    periodo: {
+      ini: modelo.periodo.fecha_inicio,
+      fin: modelo.periodo.fecha_fin,
+      label: modelo.periodo.label
+    },  // ✅ Desde CONFIG
     opciones: { ordenar: 'criticos' }
   });
 
   // 🔹 Fluidos
   const periodoFluidos = {
-    inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "2025-10-01",
-    fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || "2025-10-30"
-  };
+    inicio: modelo.periodo.inicio,
+    fin: modelo.periodo.fin
+  };  // ✅ Desde CONFIG
   const htmlFluidos = generarAnalisisFluidosRenderizado(
     cliente.equipos || [],
     periodoFluidos,
@@ -364,19 +269,31 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   const expertAlertsHTML = generarEventosAlerta(
     cliente.equipos || [],
     {
-      inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "01-10-25",
-      fin: modelo.periodo?.fin || modelo.periodo?.fecha_fin || "30-10-25"
-    }
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    }  // ✅ Desde CONFIG
   );
 
   // 🔹 Acciones/Recomendaciones extendidas
   const accionesHTML = generarAccionesRecomendaciones(
     cliente.equipos || [],
     {
-      inicio: modelo.periodo?.inicio || modelo.periodo?.fecha_inicio || "01-10-25",
-      fin:    modelo.periodo?.fin    || modelo.periodo?.fecha_fin    || "30-10-25"
-    }
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    }  // ✅ Desde CONFIG
   );
+
+  // 🔹 Contactos
+  const contactosHTML = generarSeccionContactos(
+    cliente,
+    {
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    }  // ✅ Desde CONFIG
+  );
+
+  // 🔹 John Deere Protect
+  const jdProtectHTML = generarPaginaJohnDeereProtect(logosB64.imagenPromoJDProtect);
 
   // 🔹 Template
   const htmlTemplate = HtmlService.createTemplateFromFile('reporte-flota');
@@ -390,8 +307,10 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   htmlTemplate.dataConectividad = dataConectividad;
   htmlTemplate.dataUtilizacion = dataUtilizacion;
   htmlTemplate.dtcHTML = dtcHTML;
+  htmlTemplate.contactosHTML = contactosHTML;
+  htmlTemplate.jdProtectHTML = jdProtectHTML;  // 🛡️ John Deere Protect
   htmlTemplate.cliente = cliente;
-  htmlTemplate.periodo = modelo.periodo || { inicio: "01-10-25", fin: "30-10-25" };
+  htmlTemplate.periodo = modelo.periodo;  // ✅ Desde CONFIG
 
   // 🔹 Render → PDF → Drive
   const htmlOutput = htmlTemplate.evaluate();
@@ -402,15 +321,18 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   const nombreArchivo = `Reporte_de_Flota_${(cliente.razon_social || cliente.nombre || "Cliente").replace(/[^\w\- ]+/g,'').slice(0,60)}_${marca}.pdf`;
 
   pdfBlob.setName(nombreArchivo);
-  const file = folder.createFile(pdfBlob);
-  const pdfFileId = file.getId();
+
+  // Guardar en carpeta correspondiente según tipo de cliente (CBD, Signature, Clientes)
+  const resultado = guardarPDFEnDrive(pdfBlob, cliente, carpetas);
+  const pdfFileId = resultado.fileId;
 
   enviarCorreoCliente(cliente, pdfFileId);
 
   return {
-    url: file.getUrl(),
-    nombre: nombreArchivo,
-    tamaño: file.getSize()
+    url: resultado.url,
+    nombre: resultado.nombre,
+    tamaño: DriveApp.getFileById(pdfFileId).getSize(),
+    carpeta: resultado.carpeta  // "CBD", "Signature" o "Estándar"
   };
 }
 
@@ -427,12 +349,18 @@ function registrarEnvioLog(clienteData,numInforme) {
       numInforme,                    // num_informe
       clienteData.id_op_center,      // cliente (id_op_center)
       fechaHoraCompleta,             // fecha_envio
-      ""                             // sugerencias (vacío)
+      "",                            // sugerencias (vacío)
+      "",                            // id_cliente (vacío)
+      "",                            // razón_social (vacío)
+      clienteData.metricas.distribucionLineas.lineaCF, //número de flota cf
+      clienteData.metricas.distribucionLineas.lineaAF, //número de flota ag
+      clienteData.metricas.distribucionLineas.lineaW, //número de flota wg
+      clienteData.metricas.distribucionLineas.lineaOtros, //número de flota al
     ];
     
     // Insertar en la siguiente fila disponible
     const ultimaFila = hojaSeguimiento.getLastRow() + 1;
-    hojaSeguimiento.getRange(ultimaFila, 1, 1, 4).setValues([nuevosDatos]);
+    hojaSeguimiento.getRange(ultimaFila, 1, 1, 10).setValues([nuevosDatos]);
     
     console.log(`Registro guardado en LOG: ${numInforme} - ${clienteData.razon_social}`);
     
@@ -538,20 +466,20 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
       }
     };
     
-    // // Agregar CC si hay asesores
-    // if (correosAsesores.length > 0) {
-    //   opcionesCorreo.cc = correosAsesores.join(',');
-    // }
+    // Agregar CC si hay asesores
+    if (correosAsesores.length > 0) {
+      opcionesCorreo.cc = correosAsesores.join(',')+ ',cgomezs@ipesa.com.pe';
+    }
 
-    // if (clienteData.es_cbd === true){
-    //   opcionesCorreo.cc = opcionesCorreo.cc ? opcionesCorreo.cc + ",solucionesintegradas@ipesa.com.pe" : "solucionesintegradas@ipesa.com.pe";
-    //   opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
-    // }
+    if (clienteData.es_cbd === true){
+      opcionesCorreo.cc = opcionesCorreo.cc ? opcionesCorreo.cc + ",solucionesintegradas@ipesa.com.pe" : "solucionesintegradas@ipesa.com.pe";
+      opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
+    }
     
     // Enviar el correo
     GmailApp.sendEmail(
-      //destinatarios,
-      "ksimbron@ipesa.com.pe",
+      destinatarios,
+      // "ksimbron@ipesa.com.pe",
       `Reporte de Gestión de Flota | ${fechahoy} | ${clienteData.razon_social}`,
       '',
       opcionesCorreo

@@ -44,6 +44,13 @@
       position:relative;
     }
 
+    /* DTC fluye sin saltos de página forzados */
+    .page-dtc {
+      break-before:page;
+      break-inside:auto;
+      page-break-inside:auto;
+    }
+
     /* ====== PORTADA 2 PÁGINAS ====== */
     .page.portada{
       width:calc(297mm - 20mm);
@@ -205,93 +212,324 @@
     /* Elimina cualquier contador de páginas que pudieras tener */
     .page-number{ display:none !important; }
 
-    /* ====== DTC ====== */
-    .page-dtc .section-header{ display:flex; align-items:center; gap:5px; }
-
-    .dtc-info-box {
-      background: #f0f7ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 16px; margin: 10px 0;
+    /* ====== DTC - ESTILOS SIMPLIFICADOS ====== */
+    /* Header de equipo - mejorado para distinguir mejor */
+    .equipment-header {
+      border-radius: 6px;
+      padding: 10px 15px;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: 2px solid #495057;
+      border-left: 5px solid #367c2b;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      page-break-inside: avoid;
+      page-break-after: avoid;
     }
-    .dtc-info-title { font-size: 9pt; color: #1e40af; font-weight: 700; margin-bottom: 8px; line-height:1.4; }
-    .dtc-info-text { font-size: 8pt; color: #374151; line-height:1.5; }
+
+    .equipment-title {
+      font-size: 10pt;
+      font-weight: bold;
+      color: #212529;
+    }
+
+    .equipment-serie {
+      font-size: 7pt;
+      color: #6c757d;
+      margin-top: 3px;
+    }
+
+    .codes-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 7pt;
+      font-weight: bold;
+      background-color: #495057;
+      color: white;
+    }
+
+    /* Sección de códigos */
+    .codes-section {
+      margin-bottom: 12px;
+    }
+
+    /* Tablas DTC */
+    .dtc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+      page-break-inside: auto;
+    }
+
+    .dtc-table thead {
+      background-color: #495057;
+      color: white;
+      display: table-header-group;
+    }
+
+    .dtc-table th {
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .dtc-table th:nth-child(3),
+    .dtc-table th:nth-child(4) {
+      text-align: center;
+    }
+
+    .dtc-table tbody tr {
+      border-bottom: 1px solid #dee2e6;
+      page-break-inside: avoid;
+    }
+
+    .dtc-table tbody tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    .dtc-table tbody tr:nth-child(even) {
+      background-color: #f5f5f5;
+    }
+
+    .dtc-table tbody tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .dtc-table td {
+      padding: 5px 8px;
+      vertical-align: top;
+      font-size: 7pt;
+    }
+
+    /* Columna código */
+    .dtc-table td:first-child {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      white-space: nowrap;
+      width: 15%;
+    }
+
+    /* Columna descripción */
+    .dtc-table td:nth-child(2) {
+      width: 60%;
+      line-height: 1.3;
+      word-wrap: break-word;
+    }
+
+    /* Columna frecuencia */
+    .dtc-table td:nth-child(3) {
+      text-align: center;
+      font-weight: bold;
+      width: 10%;
+    }
+
+    /* Columna severidad */
+    .dtc-table td:nth-child(4) {
+      text-align: center;
+      width: 15%;
+    }
+
+    /* Badges de severidad */
+    .severity-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 7pt;
+      color: white;
+      letter-spacing: 0.5px;
+    }
+
+    .severity-high {
+      background-color: #dc3545;
+    }
+
+    .severity-medium {
+      background-color: #ffc107;
+      color: #333;
+    }
+
+    .severity-low {
+      background-color: #28a745;
+    }
+
+    /* Mensaje cuando NO hay DTCs */
+    .dtc-info-box {
+      background: #fffbf0;
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .dtc-info-title {
+      font-size: 12pt;
+      color: #92400e;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .dtc-info-text {
+      font-size: 9pt;
+      line-height: 1.6;
+      color: #78350f;
+    }
 
     .dtc-status-positive {
-      background: #ffffff; border: 2px solid #10b981; border-radius: 8px; padding: 16px; margin: 10px 0; text-align: center;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      margin: 20px 0;
     }
+
     .status-icon-large {
-      width: 28px; height: 28px; background: #10b981; color: white; font-size: 16px; font-weight: 700; border-radius: 50%;
-      display:flex; align-items:center; justify-content:center; margin: 0 auto 6px auto;
+      font-size: 48pt;
+      color: #065f46;
+      margin-bottom: 15px;
     }
-    .status-title { font-size: 11pt; color: #065f46; font-weight: 700; margin-bottom: 6px; }
-    .status-message { font-size: 9pt; color: #047857; margin-bottom: 6px; font-weight: 600; }
-    .status-description { font-size: 8pt; color: #374151; margin-bottom: 6px; }
-    .status-benefits { list-style:none; padding:0; margin:8px auto 0 auto; max-width:120mm; text-align:left; }
-    .status-benefits li { font-size:8pt; color:#374151; padding:5px 8px; margin-bottom:5px; background:#f0fdf4; border-left:3px solid #10b981; border-radius:3px; }
-    .status-benefits li::before { content:"✓"; color:#10b981; font-weight:700; margin-right:6px; }
 
+    .status-title {
+      font-size: 18pt;
+      color: #065f46;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .status-message {
+      font-size: 11pt;
+      color: #047857;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .status-description {
+      font-size: 9pt;
+      color: #047857;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .status-benefits {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .status-benefits li {
+      font-size: 9pt;
+      color: #047857;
+      padding: 6px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    .status-benefits li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+      font-size: 11pt;
+    }
+
+    /* Resumen box y estadísticas - Tamaños reducidos */
     .resumen-box-mejorado {
-      background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; margin: 6px 0 10px 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; margin: 4px 0 8px 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
-    .resumen-header { text-align:center; margin-bottom:8px; padding-bottom:6px; border-bottom:2px solid #367c2b; }
-    .resumen-title-mejorado { font-size: 10pt; color: #1a202c; font-weight: 700; }
+    .resumen-header { text-align:center; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #367c2b; }
+    .resumen-title-mejorado { font-size: 8pt; color: #1a202c; font-weight: 700; }
 
-    .stats-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:6px; margin-bottom:8px; }
-    .stat-card { background:#f7fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 6px; text-align:center; }
-    .stat-card.highlight { background:#fff5e6; border:2px solid #f59e0b; }
-    .stat-label { font-size:6pt; color:#718096; text-transform:uppercase; letter-spacing:.3px; margin-bottom:4px; font-weight:600; }
-    .stat-value-big { font-size:16pt; color:#1a202c; font-weight:700; line-height:1; }
-    .stat-percent { font-size:9pt; color:#4a5568; font-weight:600; }
+    .stats-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:4px; margin-bottom:6px; }
+    .stat-card { background:#f7fafc; border:1px solid #e2e8f0; border-radius:4px; padding:6px 4px; text-align:center; }
+    .stat-card.highlight { background:#fff5e6; border:1px solid #f59e0b; }
+    .stat-label { font-size:5.5pt; color:#718096; text-transform:uppercase; letter-spacing:.2px; margin-bottom:3px; font-weight:600; }
+    .stat-value-big { font-size:12pt; color:#1a202c; font-weight:700; line-height:1; }
+    .stat-percent { font-size:7pt; color:#4a5568; font-weight:600; }
 
-    .resumen-divider-mejorado { height:2px; background:linear-gradient(to right,#e2e8f0,#cbd5e0,#e2e8f0); margin:8px 0; }
+    .resumen-divider-mejorado { height:1px; background:linear-gradient(to right,#e2e8f0,#cbd5e0,#e2e8f0); margin:6px 0; }
 
-    .seccion-familias { margin: 6px 0; }
-    .seccion-title { font-size:8pt; color:#2d3748; font-weight:700; text-transform:uppercase; letter-spacing:.3px; margin-bottom:6px; }
-    .familias-grafico { display:flex; flex-direction:column; gap:6px; }
+    /* Sección de prioridad */
+    .seccion-prioridad { margin: 4px 0; }
+    .prioridad-item { margin-bottom: 6px; }
+    .prioridad-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+      font-size: 7pt;
+    }
+    .prioridad-label {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .prioridad-label.critico { color: #dc3545; }
+    .prioridad-label.atencion { color: #f59e0b; }
+    .prioridad-value {
+      font-weight: 600;
+      color: #4a5568;
+    }
+    .prioridad-bar-container {
+      height: 6mm;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .prioridad-bar {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 7pt;
+      font-weight: 700;
+    }
+    .prioridad-bar.critico { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .prioridad-bar.atencion { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+
+    .seccion-familias { margin: 4px 0; }
+    .seccion-title { font-size:7pt; color:#2d3748; font-weight:700; text-transform:uppercase; letter-spacing:.2px; margin-bottom:4px; }
+    .familias-grafico { display:flex; flex-direction:column; gap:4px; }
 
     .familia-row-visual {
-      display:flex; gap:8px; align-items:center; padding:6px; background:#f7fafc; border-radius:6px; border:1px solid #e2e8f0;
+      display:flex; gap:6px; align-items:center; padding:4px; background:#f7fafc; border-radius:4px; border:1px solid #e2e8f0;
     }
-    .familia-info { min-width:40mm; }
-    .familia-nombre-visual { font-size:8pt; font-weight:700; color:#2d3748; margin-bottom:2px; }
-    .familia-numeros { font-size:7pt; color:#718096; font-weight:500; }
+    .familia-info { min-width:35mm; }
+    .familia-nombre-visual { font-size:7pt; font-weight:700; color:#2d3748; margin-bottom:2px; }
+    .familia-numeros { font-size:6pt; color:#718096; font-weight:500; }
     .familia-barra-visual { flex:1; }
     .barra-container-visual {
-      display:flex; height:10mm; background:#e2e8f0; border-radius:5px; overflow:hidden; margin-bottom:4px;
+      display:flex; height:7mm; background:#e2e8f0; border-radius:4px; overflow:hidden; margin-bottom:3px;
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
     }
     .barra-segmento {
-      display:flex; align-items:center; justify-content:center; color:white; font-size:9pt; font-weight:700; min-width:8mm;
+      display:flex; align-items:center; justify-content:center; color:white; font-size:7pt; font-weight:700; min-width:6mm;
     }
     .barra-segmento.critico { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
     .barra-segmento.atencion { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
-    .barra-leyenda { display:flex; gap:8px; font-size:7pt; padding-left:2px; }
+    .barra-leyenda { display:flex; gap:6px; font-size:6pt; padding-left:2px; }
     .leyenda-critico { color:#c53030; font-weight:600; }
-    .leyenda-critico::before { content:"●"; margin-right:3px; }
+    .leyenda-critico::before { content:"●"; margin-right:2px; }
     .leyenda-atencion { color:#d69e2e; font-weight:600; }
-    .leyenda-atencion::before { content:"●"; margin-right:3px; }
+    .leyenda-atencion::before { content:"●"; margin-right:2px; }
 
-    .dtc-section-header { margin:10px 0 6px 0; }
-    .dtc-section-title { font-size:10pt; color:#2d3748; font-weight:700; padding-bottom:6px; border-bottom:2px solid #e2e8f0; }
-
-    .dtc-card-critico, .dtc-card-atencion { border-radius:6px; padding:8px; margin:6px 0; }
-    .dtc-card-critico { border:2px solid #dc2626; background:#fee2e2; }
-    .dtc-card-atencion { border:2px solid #f59e0b; background:#fef3c7; }
-    .dtc-card-header { margin-bottom:6px; }
-    .dtc-card-title { font-size:9pt; color:#1a202c; font-weight:700; margin-bottom:4px; }
-    .dtc-card-info { display:flex; justify-content:space-between; align-items:center; font-size:7pt; }
-    .dtc-card-serie { color:#4a5568; }
-    .dtc-card-count { color:#2d3748; font-weight:600; }
-
-    .dtc-subsection { margin:8px 0 5px 0; }
-    .dtc-subsection-title { font-size:8pt; color:#2d3748; font-weight:700; margin-bottom:4px; }
-
-    .dtc-table { width:100%; border-collapse:collapse; font-size:7pt; margin:6px 0; background:white; }
-    .dtc-table thead { background:#2d3748; color:white; }
-    .dtc-table th { padding:6px 5px; text-align:left; font-weight:600; font-size:6.5pt; text-transform:uppercase; letter-spacing:.3px; }
-    .dtc-table td { padding:6px 5px; border-bottom:1px solid #e2e8f0; color:#4a5568; }
-    .dtc-table tbody tr:hover { background:#f7fafc; }
-
-    .dtc-additional { text-align:center; padding:6px; background:white; border-radius:4px; margin-top:5px; font-size:7pt; color:#718096; font-style:italic; }
+    .dtc-section-header { margin:8px 0 4px 0; }
+    .dtc-section-title { font-size:8pt; color:#2d3748; font-weight:700; padding-bottom:4px; border-bottom:1px solid #e2e8f0; }
 
     @media print{
       #dtc thead{ display:table-header-group; }
@@ -302,16 +540,6 @@
     /* ============================================
        💧 ANÁLISIS DE FLUIDOS - ESTILOS
        ============================================ */
-    .page-fluidos .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 3px solid #367c2b;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    .page-fluidos .section-header h2 { font-size: 22px; color: #1a202c; font-weight: 700; }
-    .page-fluidos .periodo-text { font-size: 14px; color: #616161; margin-bottom: 15px; }
     .fluidos-chart-container { background:#f9f9f9; border:1px solid #e0e0e0; border-radius:10px; padding:15px; margin-bottom:25px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
     .fluidos-legend { display:flex; justify-content:center; gap:30px; font-size:13px; font-weight:600; margin-bottom:20px; }
     .fluidos-legend p { margin:0; }
@@ -332,12 +560,8 @@
 
     /* 💧 ANÁLISIS DE FLUIDOS (solo sin datos) */
     .page-fluidos {
-      background:#ffffff; padding:40px 50px; font-family:'Segoe UI', Tahoma, sans-serif;
-      display:flex; flex-direction:column; justify-content:center; align-items:center;
-      min-height:90vh; max-height:250mm; box-sizing:border-box; page-break-after:always; overflow:hidden;
+      background:#ffffff; padding:50px 70px; font-family:'Segoe UI', Tahoma, sans-serif; box-sizing:border-box;
     }
-    .page-fluidos h2 { font-size:22px; color:#1b5e20; font-weight:700; margin-bottom:8px; text-align:center; }
-    .page-fluidos .periodo-text { font-size:13px; color:#555; margin-bottom:25px; text-align:center; }
     .fluidos-mensaje-simple { max-width:580px; background:#f9fcf8; border:2px dashed #a5d6a7; border-radius:10px; padding:25px 35px; text-align:justify; line-height:1.6; color:#424242; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.05); page-break-inside:avoid; }
     .fluidos-mensaje-simple p { font-size:13px; margin-bottom:12px; }
     .fluidos-mensaje-simple .mensaje-principal { font-weight:700; color:#1b5e20; font-size:14px; margin-bottom:15px; text-align:center; }
@@ -348,11 +572,8 @@
 
     /* 🎯 EXPERT ALERTS */
     .page-ea {
-      background:#ffffff; padding:50px 70px; page-break-after:always; font-family:'Arial', sans-serif; box-sizing:border-box;
+      background:#ffffff; padding:50px 70px; font-family:'Arial', sans-serif; box-sizing:border-box;
     }
-    .page-ea .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
-    .page-ea .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
-    .page-ea .periodo-text { font-size:13px; color:#666; margin-bottom:25px; }
     .page-ea .ea-info-box { background:#fff3e0; border-left:4px solid #f57c00; padding:25px 30px; margin-bottom:30px; border-radius:4px; }
     .page-ea .ea-info-title { margin:0 0 15px 0; color:#e65100; font-size:16px; font-weight:700; }
     .page-ea .ea-info-text { margin:0; color:#424242; font-size:14px; line-height:1.7; text-align:justify; }
@@ -375,46 +596,19 @@
     .page-ea .ea-alerta-item { margin-bottom:15px; padding-left:5px; }
     .page-ea .alerta-descripcion { font-size:14px; color:#212121; line-height:1.6; margin-bottom:5px; }
     .page-ea .alerta-meta { font-size:12px; color:#757575; padding-left:15px; }
-    .page-ea .ea-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:30px; text-align:center; margin-top:30px; }
-    .page-ea .status-icon-large { font-size:48px; margin-bottom:15px; }
-    .page-ea .status-title { margin:0 0 15px 0; color:#2e7d32; font-size:20px; font-weight:700; }
-    .page-ea .status-message { font-size:15px; color:#424242; margin-bottom:20px; font-weight:600; }
-    .page-ea .status-description { font-size:14px; color:#424242; margin-bottom:15px; }
-    .page-ea .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:20px; }
-    .page-ea .status-benefits li { font-size:14px; color:#424242; margin-bottom:8px; line-height:1.6; }
+    .page-ea .ea-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:15px 20px; margin-top:15px; text-align:center; }
+    .page-ea .status-title { margin:0 0 8px 0; color:#2e7d32; font-size:16px; font-weight:700; }
+    .page-ea .status-message { font-size:12px; color:#424242; margin:0 0 8px 0; line-height:1.5; }
+    .page-ea .status-benefits { margin:0; padding-left:20px; list-style-type:none; display:inline-block; text-align:left; }
+    .page-ea .status-benefits li { font-size:12px; color:#424242; margin-bottom:4px; line-height:1.4; position:relative; padding-left:15px; }
+    .page-ea .status-benefits li:before { content:"✓"; position:absolute; left:0; color:#2e7d32; font-weight:700; }
 
     /* ================================
-       ACCIONES Y RECOMENDACIONES
+       💡 ACCIONES Y RECOMENDACIONES
        ================================ */
-    .page-acciones { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:Arial, sans-serif; }
-    @media print { .page-acciones .accion-tarjeta { break-inside: avoid; } }
-    .page-acciones .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:3px solid #f57c00; }
-    .page-acciones .section-header h2 { margin:0; color:#f57c00; font-size:24px; font-weight:700; }
-    .page-acciones .btn-volver { color:#3182ce; text-decoration:none; font-size:13px; font-weight:600; }
-    .page-acciones .periodo-text { font-size:13px; color:#666; margin:10px 0 18px; }
-    .page-acciones .acciones-section-header { margin:26px 0 14px; }
-    .page-acciones .acciones-section-title { margin:0; padding:12px 16px; background:linear-gradient(135deg,#424242 0%,#616161 100%); color:#ffffff; font-size:15px; font-weight:700; border-radius:6px; text-transform:uppercase; letter-spacing:.5px; }
-    .page-acciones .accion-tarjeta { background:#ffffff; border:1px solid #e0e0e0; border-radius:8px; padding:18px; margin-bottom:16px; box-shadow:0 2px 4px rgba(0,0,0,0.05); }
-    .page-acciones .accion-tarjeta-header { display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #f0f0f0; padding-bottom:10px; margin-bottom:12px; }
-    .page-acciones .accion-equipo-titulo { margin:0; color:#212121; font-size:15px; font-weight:700; }
-    .page-acciones .accion-equipo-serie { color:#757575; font-size:12px; font-weight:600; }
-    .page-acciones .accion-tarjeta-body { margin-bottom:12px; }
-    .page-acciones .accion-subtitulo { margin:0 0 12px; color:#424242; font-size:13px; font-weight:700; }
-    .page-acciones .accion-item { margin-bottom:12px; }
-    .page-acciones .accion-descripcion { font-size:13px; color:#212121; line-height:1.55; margin-bottom:4px; }
-    .page-acciones .accion-contexto { font-size:12px; color:#757575; padding-left:22px; }
-    .page-acciones .accion-tarjeta-footer { border-top:1px solid #f0f0f0; padding-top:10px; }
-    .page-acciones .accion-asesor { font-size:13px; color:#424242; font-weight:600; }
-    .page-acciones .acciones-contactos { margin-top:26px; padding-top:20px; border-top:3px solid #e0e0e0; }
-    .page-acciones .contactos-titulo { margin:0 0 8px; color:#212121; font-size:16px; font-weight:700; }
-    .page-acciones .contactos-intro { font-size:13px; color:#424242; margin:0 0 14px; line-height:1.55; }
-    .page-acciones .contactos-tabla { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
-    .page-acciones .contacto-header-row { background:#f5f5f5; border-bottom:2px solid #e0e0e0; }
-    .page-acciones .contacto-th { padding:10px 12px; text-align:left; font-size:12px; font-weight:700; color:#424242; }
-    .page-acciones .contacto-fila { border-bottom:1px solid #f0f0f0; }
-    .page-acciones .contacto-fila:last-child { border-bottom:none; }
-    .page-acciones .contacto-fila td { padding:10px 12px; font-size:12px; color:#424242; }
-    .page-acciones .contacto-nombre { font-weight:600; color:#212121; }
+    .page-acciones { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+
+    /* Mensaje cuando no hay acciones */
     .page-acciones .acciones-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:28px; text-align:center; margin-top:18px; }
     .page-acciones .status-icon-large { font-size:44px; margin-bottom:12px; }
     .page-acciones .status-title { margin:0 0 12px; color:#2e7d32; font-size:18px; font-weight:700; }
@@ -422,6 +616,84 @@
     .page-acciones .status-description { font-size:13px; color:#424242; margin-bottom:10px; }
     .page-acciones .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:18px; }
     .page-acciones .status-benefits li { font-size:13px; color:#424242; margin-bottom:6px; line-height:1.55; }
+
+    /* Tabla consolidada de acciones */
+    .page-acciones .acciones-tabla-container { margin:20px 0; overflow-x:auto; }
+    .page-acciones .acciones-tabla { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; font-size:12px; }
+    @media print { .page-acciones .acciones-tabla { page-break-inside:auto; } }
+    @media print { .page-acciones .acciones-tabla thead { display:table-header-group; } }
+    @media print { .page-acciones .acciones-fila { break-inside:avoid; page-break-inside:avoid; } }
+
+    /* Header de tabla */
+    .page-acciones .acciones-header-row { background:#424242; color:#ffffff; }
+    .page-acciones .acciones-th { padding:10px 8px; text-align:left; font-size:11px; font-weight:700; color:#ffffff; text-transform:uppercase; letter-spacing:0.3px; border-right:1px solid #616161; }
+    .page-acciones .acciones-th:last-child { border-right:none; }
+    .page-acciones .acciones-th-prioridad { width:90px; }
+    .page-acciones .acciones-th-familia { width:80px; }
+    .page-acciones .acciones-th-num { width:70px; }
+    .page-acciones .acciones-th-modelo { width:120px; }
+    .page-acciones .acciones-th-acciones { width:auto; }
+
+    /* Filas de tabla */
+    .page-acciones .acciones-fila { border-bottom:1px solid #e0e0e0; }
+    .page-acciones .acciones-fila:last-child { border-bottom:none; }
+    .page-acciones .acciones-fila:hover { background:#f7fafc; }
+    .page-acciones .acciones-td { padding:12px 8px; vertical-align:top; color:#424242; border-right:1px solid #f0f0f0; }
+    .page-acciones .acciones-td:last-child { border-right:none; }
+
+    /* Columna PRIORIDAD */
+    .page-acciones .acciones-prioridad { font-weight:700; font-size:11px; text-align:center; }
+    .page-acciones .prioridad-critica { background:#fee; color:#c53030; }
+    .page-acciones .prioridad-alta { background:#fef3cd; color:#d69e2e; }
+    .page-acciones .prioridad-preventiva { background:#e7f3ff; color:#3182ce; }
+
+    /* Columna FAMILIA */
+    .page-acciones .acciones-familia { font-size:11px; color:#424242; font-weight:600; }
+
+    /* Columna N° INT. */
+    .page-acciones .acciones-num-interno { font-weight:700; color:#212121; font-size:12px; }
+
+    /* Columna MODELO/SERIE */
+    .page-acciones .acciones-modelo-serie { font-size:11px; color:#424242; line-height:1.5; }
+    .page-acciones .acciones-serie { color:#757575; font-size:10px; }
+
+    /* Columna ACCIONES REQUERIDAS */
+    .page-acciones .acciones-lista { font-size:12px; color:#212121; line-height:1.6; }
+    .page-acciones .accion-item-principal { margin-bottom:6px; color:#212121; font-weight:600; }
+    .page-acciones .accion-item-contexto { margin-bottom:6px; padding-left:12px; color:#757575; font-size:11px; line-height:1.5; }
+    /* ================================
+       📞 CONTACTOS
+       ================================ */
+    .page-contactos { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:Arial, sans-serif; }
+    .page-contactos .table-section { margin-bottom:30px; }
+    .page-contactos .table-title { margin:0 0 15px 0; color:#212121; font-size:16px; font-weight:700; }
+    .page-contactos .data-table { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; border-radius:6px; overflow:hidden; }
+    .page-contactos .data-table thead { background:#f5f5f5; }
+    .page-contactos .data-table th { text-align:left; padding:12px 15px; font-size:12px; font-weight:700; color:#424242; border-bottom:2px solid #e0e0e0; }
+    .page-contactos .data-table td { padding:12px 15px; font-size:12px; color:#424242; border-bottom:1px solid #f0f0f0; }
+    .page-contactos .data-table tbody tr:last-child td { border-bottom:none; }
+    .page-contactos .data-table tbody tr:hover { background:#f9f9f9; }
+    .page-contactos .contacto-ipesa-box { background:#fff3e0; border-left:4px solid #f57c00; padding:20px 25px; margin-bottom:25px; border-radius:4px; }
+    .page-contactos .contacto-ipesa-title { margin:0 0 10px 0; color:#e65100; font-size:15px; font-weight:700; }
+    .page-contactos .contacto-ipesa-text { margin:0; color:#424242; font-size:13px; line-height:1.6; }
+    .page-contactos .info-box-blue { background:#e3f2fd; border-left:4px solid #1976d2; padding:20px 25px; border-radius:4px; display:flex; gap:15px; align-items:flex-start; }
+    .page-contactos .info-icon { font-size:24px; flex-shrink:0; }
+    .page-contactos .info-content { flex:1; }
+    .page-contactos .info-title { margin:0 0 8px 0; color:#1565c0; font-size:14px; font-weight:700; }
+    .page-contactos .info-text { margin:0; color:#424242; font-size:12px; line-height:1.6; }
+
+    /* ================================
+       🛡️ JOHN DEERE PROTECT
+       ================================ */
+    .page-promo-protect { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+    .protect-container { display:flex; gap:30px; align-items:flex-start; }
+    .protect-text { flex:1; }
+    .protect-text h3 { margin:0 0 15px 0; color:#FDD023; font-size:18px; font-weight:700; }
+    .protect-text h4 { margin:25px 0 10px 0; color:#FDD023; font-size:15px; font-weight:700; }
+    .protect-text p { margin:0 0 12px 0; color:#424242; font-size:13px; line-height:1.6; }
+    .protect-text ul { margin:0 0 15px 0; padding-left:20px; }
+    .protect-text ul li { color:#424242; font-size:12px; line-height:1.7; margin-bottom:6px; }
+    .protect-image { width:450px; height:auto; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); flex-shrink:0; }
 
     /* 🔧 Ajuste para el bloque que devuelven alert*Number() */
     .alert-number{
@@ -591,7 +863,8 @@
               </div>
             </div>
             <div class="economic-footer">
-              💵 $<?!= metricas.economico.precioPorGalon ?>/gal • ⛽ <?!= metricas.promediosPorEquipo.combPerdidoGal ?> gal/eq
+              <p>💵 Precio por galón: $<?!= metricas.economico.precioPorGalon ?> </p>
+              ⛽ Pérdida comb. por equipo: <?!= metricas.promediosPorEquipo.combPerdidoGal ?>
             </div>
           </div>
         </div>
@@ -600,7 +873,7 @@
   </div>
 
   <!-- PÁGINA 2: RECOMENDACIONES (fluye) -->
-  <div class="page">
+  <!-- <div class="page">
     <div class="header">
       <h1>RESUMEN - GESTIÓN DE FLOTA</h1>
       <div class="header-subtitle">Recomendaciones y Plan de Acción</div>
@@ -618,13 +891,13 @@
         </ul>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- PÁGINA 3: CONECTIVIDAD (fluye) -->
   <div class="page">
     <div class="header">
       <h1>📡 CONECTIVIDAD DE EQUIPOS Y PRÓXIMO MANTENIMIENTO</h1>
-      <div class="header-subtitle">Conectividad y Mantenimiento Preventivo del <?!= periodo.inicio ?> al <?!= periodo.fin ?></div>
+      <div class="header-subtitle">Periodo: del <?!= periodo.inicio ?> al <?!= periodo.fin ?></div>
     </div>
 
     <div class="section">
@@ -712,7 +985,7 @@
   <div class="page">
     <div class="header">
       <h1>📊 ANÁLISIS DE UTILIZACIÓN Y GESTIÓN DE RALENTÍ</h1>
-      <div class="header-subtitle">Análisis de utilización del <?!= periodo.inicio ?> al <?!= periodo.fin ?></div>
+      <div class="header-subtitle">Periodo: del <?!= periodo.inicio ?> al <?!= periodo.fin ?></div>
     </div>
 
     <div class="section" id="utilizacion">
@@ -721,7 +994,7 @@
         UTILIZACIÓN DE EQUIPOS OPERATIVOS
       </div>
       <div class="section-intro" style="font-size:7pt; color:#718096; margin-bottom:5px;">
-        Equipos con actividad operativa en el periodo (ordenados por % de ralentí)
+        Equipos que registraron más de 1 hora de actividad en el período (ordenados por % de ralentí)
       </div>
 
       <table style="width:100%; border-collapse:collapse; font-size:7pt;">
@@ -762,6 +1035,12 @@
 
   <!-- PÁGINA 8: ACCIONES Y RECOMENDACIONES -->
   <?!= accionesHTML ?>
+
+  <!-- PÁGINA 9: CONTACTOS -->
+  <?!= contactosHTML ?>
+
+  <!-- PÁGINA 10: JOHN DEERE PROTECT -->
+  <?!= jdProtectHTML ?>
 
 </body>
 </html>
