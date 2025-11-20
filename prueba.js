@@ -92,6 +92,16 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
       }  // ✅ Desde CONFIG
     );
 
+    // 💡 ACCIONES Y RECOMENDACIONES
+    const accionesHTML = generarAccionesRecomendaciones(
+      cliente.equipos || [],
+      {
+        inicio: modelo.periodo.inicio,
+        fin: modelo.periodo.fin
+      },
+      modelo.config.precio_galon  // ✅ Desde CONFIG
+    );
+
     // 🔹 Contactos
     const contactosHTML = generarSeccionContactos(
       cliente,
@@ -111,6 +121,7 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
     htmlTemplate.portadaHTML = portadaHTML
     htmlTemplate.htmlFluidos = htmlFluidos; // 💧 Nueva sección de análisis de fluidos
     htmlTemplate.expertAlertsHTML = expertAlertsHTML;
+    htmlTemplate.accionesHTML = accionesHTML;  // 💡 Acciones y Recomendaciones
     htmlTemplate.metricas = cliente.metricas;
     htmlTemplate.data = data;
     htmlTemplate.dataConectividad = dataConectividad;

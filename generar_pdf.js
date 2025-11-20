@@ -196,6 +196,16 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
     }  // ✅ Desde CONFIG
   );
 
+  // 💡 Acciones y Recomendaciones
+  const accionesHTML = generarAccionesRecomendaciones(
+    cliente.equipos || [],
+    {
+      inicio: modelo.periodo.inicio,
+      fin: modelo.periodo.fin
+    },
+    modelo.config.precio_galon  // ✅ Desde CONFIG
+  );
+
   // 🔹 Contactos
   const contactosHTML = generarSeccionContactos(
     cliente,
@@ -213,6 +223,7 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   htmlTemplate.portadaHTML = portadaHTML;
   htmlTemplate.htmlFluidos = htmlFluidos;
   htmlTemplate.expertAlertsHTML = expertAlertsHTML;
+  htmlTemplate.accionesHTML = accionesHTML;  // 💡 Acciones y Recomendaciones
   htmlTemplate.metricas = cliente.metricas || {};
   htmlTemplate.data = dataResumen;
   htmlTemplate.dataConectividad = dataConectividad;
