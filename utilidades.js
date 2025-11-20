@@ -40,17 +40,6 @@ function readSheetAsObjects(sheetName, transformer = null) {
   return data;
 }
 
-// 🧹 Limpia nombres de archivo para evitar errores en Drive
-function sanitizeFilename(name) {
-  if (!name) return "reporte";
-  return String(name)
-    .replace(/[<>:"/\\|?*\x00-\x1F]/g, "") // quita caracteres ilegales
-    .replace(/\s+/g, "_")                   // reemplaza espacios por _
-    .trim()
-    .substring(0, 80);                      // limita longitud
-}
-
-
 function estaConectadoUltimosDias(fecha, dias = 15) {
   if (!fecha) return false;
 
@@ -136,21 +125,6 @@ function prepararCarpetasSemana(fechaInicio, fechaFin) {
       fin: fechaFinFmt
     }
   };
-}
-
-
-
-/**
- * Muestra un alert en UI si el script está ligado a una Hoja (container-bound),
- * y si no, solo loguea (para standalone con CLASP).
- */
-function safeAlert(title, msg) {
-  try {
-    const ui = SpreadsheetApp.getUi(); // falla en standalone
-    ui.alert(title, msg, ui.ButtonSet.OK);
-  } catch (e) {
-    Logger.log(`${title} :: ${msg}`);
-  }
 }
 
 function numinforme(idopcenter,hojalogs){

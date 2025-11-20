@@ -48,26 +48,5 @@ function guardarPDFEnDrive(pdfBlob, cliente, carpetas) {
 }
 
 
-// ============================================================================
-// UTILIDADES
-// ============================================================================
-
-/**
- * Sanitiza el nombre de archivo para evitar caracteres inválidos
- * @param {String} nombre - Nombre a sanitizar
- * @returns {String} Nombre sanitizado
- */
-function sanitizarNombreArchivo(nombre) {
-  return nombre
-    .replace(/[^a-zA-Z0-9\s\-\_]/g, '')  // Remover caracteres especiales
-    .replace(/\s+/g, '_')                 // Espacios → guión bajo
-    .substring(0, 50);                    // Limitar longitud
-}
-
-
-
-
-
-
 
 
