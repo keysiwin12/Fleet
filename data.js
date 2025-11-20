@@ -617,3 +617,11 @@ function generarModeloConMetricas() {
   return modeloMetricas;
 }
 
+
+function pruebaModeloConMetricas() {
+  const modelo = generarModeloConMetricas();
+  const json = JSON.stringify(modelo.relaciones.clientes_por_opcenter, null, 2);
+  const file = DriveApp.createFile("clientes_metricas.json", json, MimeType.PLAIN_TEXT);
+  Logger.log("📁 Archivo generado con métricas: " + file.getUrl());
+}
+

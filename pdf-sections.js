@@ -1,5 +1,34 @@
 
 // ============================================================================
+// SECCIÓN: PÁGINA PROMOCIONAL - MODEM M
+// ============================================================================
+
+/**
+ * Genera la página promocional del Modem M para equipos sin conectividad
+ * @param {String} imagenModemM - Imagen base64 de la promoción del Modem M
+ * @returns {String} HTML de la página promocional
+ */
+function generarPaginaModemM(imagenModemM) {
+  return `
+
+    <div class="page-promo-modem">
+      <div class="promo-container">
+        <div class="promo-text">
+          <h3>📡 ¿Sus equipos no están reportando?</h3>
+          <p>
+            La conectividad es crucial para la gestión eficiente de su flota. Si algunos de sus equipos no están reportando,
+            le recomendamos asegurar la conectividad de todas sus máquinas implementando el <strong>Modem M</strong>.
+            No se pierda de ninguna información vital para la operación y el mantenimiento de sus equipos,
+            manteniendo el control total sobre su flota.
+          </p>
+        </div>
+        <img src="data:image/png;base64,${imagenModemM}" alt="Promoción Modem M" class="promo-image" />
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
 // SECCIÓN: PÁGINA PROMOCIONAL - JOHN DEERE PROTECT
 // ============================================================================
 
