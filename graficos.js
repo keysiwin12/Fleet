@@ -2045,9 +2045,10 @@ function generarTablaAcciones(equiposConAcciones) {
   const filasHTML = equiposConAcciones.map((item, index) => {
     const { equipo, prioridad, acciones } = item;
 
-    const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || equipo.id_equipo || 'N/A');
+    const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || 'N/A');
     const familia = escapeHtml(equipo.familia || 'N/A');
     const modelo = escapeHtml(equipo.modelo || '');
+    const idEquipo = escapeHtml(equipo.id_equipo || 'N/A');
 
     // Efecto zebra ligero
     const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
@@ -2098,8 +2099,9 @@ function generarTablaAcciones(equiposConAcciones) {
           ${badgeHTML}
         </td>
         <td style="padding:12px 16px; vertical-align:top; width:180px;">
-          <div style="font-weight:700; font-size:12px; color:#1e293b; margin-bottom:3px;">${familia} - ${modelo}</div>
-          <div style="font-size:10px; color:#94a3b8;">${numInterno}</div>
+          <div style="font-weight:700; font-size:13px; color:#1e293b; margin-bottom:3px;">${numInterno}</div>
+          <div style="font-size:10px; color:#64748b; margin-bottom:2px;">${familia} - ${modelo}</div>
+          <div style="font-size:9px; color:#94a3b8;">${idEquipo}</div>
         </td>
         <td style="padding:12px 16px; vertical-align:top; width:250px;">
           ${accionesHTML}
