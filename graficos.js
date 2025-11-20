@@ -1877,8 +1877,8 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
     else if (severidades.some(s => s.includes('media') || s.includes('mediana'))) sevMasAlta = 'media';
 
     const metrica = cantidad === 1
-      ? `Sev. ${sevMasAlta}`
-      : `${cantidad} alertas - Sev. ${sevMasAlta}`;
+      ? `Severidad ${sevMasAlta}`
+      : `${cantidad} alertas - Severidad ${sevMasAlta}`;
 
     acciones.push({
       tipo: 'expert_alert',
@@ -1907,8 +1907,8 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
     else if (tieneBaja) rangoSev = 'baja';
 
     const metrica = cantidad === 1
-      ? `Sev. ${rangoSev}`
-      : `${cantidad} DTCs - Sev. ${rangoSev}`;
+      ? `Severidad ${rangoSev}`
+      : `${cantidad} DTCs - Severidad ${rangoSev}`;
 
     acciones.push({
       tipo: 'dtc',
@@ -1963,7 +1963,7 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
         icono: '⏱️',
         titulo: 'Reducir tiempo de ralentí',
         metrica: `${percentRalenti.toFixed(1)}% ralentí (${horasRalenti.toFixed(1)}h / ${horasMotor.toFixed(1)}h)`,
-        impacto: `$${impactoUSD.toFixed(2)}`,
+        impacto: `$${impactoUSD.toFixed(0)}`,
         impactoNumerico: impactoUSD,
         orden: 5
       });
@@ -2042,12 +2042,15 @@ function generarHeaderAcciones(periodo, contadores) {
  * Genera la tabla de acciones
  */
 function generarTablaAcciones(equiposConAcciones) {
-  const filasHTML = equiposConAcciones.map(item => {
+  const filasHTML = equiposConAcciones.map((item, index) => {
     const { equipo, prioridad, acciones } = item;
 
     const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || equipo.id_equipo || 'N/A');
     const familia = escapeHtml(equipo.familia || 'N/A');
     const modelo = escapeHtml(equipo.modelo || '');
+
+    // Efecto zebra ligero
+    const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
 
     // Badge de prioridad
     const badgeConfig = {
@@ -2090,14 +2093,13 @@ function generarTablaAcciones(equiposConAcciones) {
     }).join('');
 
     return `
-      <tr>
+      <tr style="background:${bgColor};">
         <td style="padding:12px 16px; text-align:center; vertical-align:top; width:90px;">
           ${badgeHTML}
         </td>
         <td style="padding:12px 16px; vertical-align:top; width:180px;">
-          <div style="font-weight:700; font-size:13px; color:#1e293b; margin-bottom:2px;">${numInterno}</div>
-          <div style="font-size:10px; color:#64748b;">${familia}</div>
-          <div style="font-size:10px; color:#94a3b8;">${modelo}</div>
+          <div style="font-weight:700; font-size:12px; color:#1e293b; margin-bottom:3px;">${familia} - ${modelo}</div>
+          <div style="font-size:10px; color:#94a3b8;">${numInterno}</div>
         </td>
         <td style="padding:12px 16px; vertical-align:top; width:250px;">
           ${accionesHTML}
