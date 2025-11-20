@@ -231,7 +231,6 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
 
   // 🔹 Datos secciones
   const dataResumen = renderGraficosResumen(cliente.metricas || {});
-  const recomendacionesHTML = buildRecomendaciones(cliente.metricas || {});
   const dataConectividad = renderGraficosConectividad(cliente.equipos || [], modelo.periodo);
   const dataUtilizacion = renderUtilizacion(cliente.equipos || [], cliente.metricas || {}, modelo.periodo, modelo.config.precio_galon);  // ✅ Desde CONFIG
 
@@ -274,15 +273,6 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
     }  // ✅ Desde CONFIG
   );
 
-  // 🔹 Acciones/Recomendaciones extendidas
-  const accionesHTML = generarAccionesRecomendaciones(
-    cliente.equipos || [],
-    {
-      inicio: modelo.periodo.inicio,
-      fin: modelo.periodo.fin
-    }  // ✅ Desde CONFIG
-  );
-
   // 🔹 Contactos
   const contactosHTML = generarSeccionContactos(
     cliente,
@@ -302,8 +292,6 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   htmlTemplate.expertAlertsHTML = expertAlertsHTML;
   htmlTemplate.metricas = cliente.metricas || {};
   htmlTemplate.data = dataResumen;
-  htmlTemplate.accionesHTML = accionesHTML;
-  htmlTemplate.recomendacionesHTML = recomendacionesHTML;
   htmlTemplate.dataConectividad = dataConectividad;
   htmlTemplate.dataUtilizacion = dataUtilizacion;
   htmlTemplate.dtcHTML = dtcHTML;

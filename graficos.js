@@ -261,51 +261,6 @@ function alertBarsAceiteOnly(aceite) {
 }
 
 
-// ===============================
-// BUILDERS DE ESTRUCTURA
-// ===============================
-
-/**
- * Genera una lista HTML de recomendaciones a partir del objeto metricas
- */
-function buildRecomendaciones(metricas) {
-  const items = [];
-
-  // Conectividad
-  const desconectados = safeInt(metricas?.totales?.equiposDesconectados || 0);
-  const totalEquipos = safeInt(metricas?.totales?.totalEquipos || 0);
-  const pctDesconectados = totalEquipos > 0 ? ((desconectados / totalEquipos) * 100) : 0;
-  if (pctDesconectados > 20) {
-    items.push(`<strong>CONECTIVIDAD:</strong> Revisar ${desconectados} equipos desconectados (${pctDesconectados.toFixed(0)}%) – Pérdida de visibilidad operativa`);
-  }
-
-  // DTC
-  const dtcAlta = safeInt(metricas?.dtc?.alta_prioridad || 0);
-  if (dtcAlta > 0) {
-    items.push(`<strong>DTC CRÍTICOS:</strong> Atender ${dtcAlta} códigos de diagnóstico de alta prioridad para evitar fallas mayores`);
-  }
-
-  // Expert Alerts
-  const eaCritica = safeInt(metricas?.expertAlerts?.critica || 0);
-  const eaAlta = safeInt(metricas?.expertAlerts?.alta || 0);
-  if (eaCritica > 0 || eaAlta > 0) {
-    items.push(`<strong>EXPERT ALERTS:</strong> Resolver ${eaCritica} alertas críticas y ${eaAlta} de alta prioridad detectadas por sistema experto`);
-  }
-
-  // Capacitación
-  const pctExceso = safeNum(metricas?.porcentajes?.excesoRalenti || 0);
-  if (pctExceso > 30) {
-    const perdidaAnual = safeNum(metricas?.economico?.perdidaUSD_por_combustible || 0) * 12;
-    items.push(`<strong>CAPACITACIÓN:</strong> Implementar programa de reducción de ralentí – ROI estimado: $${perdidaAnual.toLocaleString('en-US')}/año`);
-  }
-
-  if (items.length === 0) {
-    return '<li>✅ Sin recomendaciones críticas en este periodo</li>';
-  }
-
-  return items.map(i => `<li>${i}</li>`).join('\n');
-}
-
 /**
  * FUNCIÓN PRINCIPAL: Renderiza todos los gráficos del Resumen Ejecutivo
  * Retorna un objeto con SVGs/HTML listos para inyectar en el template

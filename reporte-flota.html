@@ -604,64 +604,6 @@
     .page-ea .status-benefits li:before { content:"✓"; position:absolute; left:0; color:#2e7d32; font-weight:700; }
 
     /* ================================
-       💡 ACCIONES Y RECOMENDACIONES
-       ================================ */
-    .page-acciones { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
-
-    /* Mensaje cuando no hay acciones */
-    .page-acciones .acciones-status-positive { background:#e8f5e9; border:2px solid #66bb6a; border-radius:8px; padding:28px; text-align:center; margin-top:18px; }
-    .page-acciones .status-icon-large { font-size:44px; margin-bottom:12px; }
-    .page-acciones .status-title { margin:0 0 12px; color:#2e7d32; font-size:18px; font-weight:700; }
-    .page-acciones .status-message { font-size:14px; color:#424242; margin-bottom:14px; font-weight:600; }
-    .page-acciones .status-description { font-size:13px; color:#424242; margin-bottom:10px; }
-    .page-acciones .status-benefits { text-align:left; display:inline-block; margin:0; padding-left:18px; }
-    .page-acciones .status-benefits li { font-size:13px; color:#424242; margin-bottom:6px; line-height:1.55; }
-
-    /* Tabla consolidada de acciones */
-    .page-acciones .acciones-tabla-container { margin:20px 0; overflow-x:auto; }
-    .page-acciones .acciones-tabla { width:100%; border-collapse:collapse; background:#ffffff; border:1px solid #e0e0e0; font-size:12px; }
-    @media print { .page-acciones .acciones-tabla { page-break-inside:auto; } }
-    @media print { .page-acciones .acciones-tabla thead { display:table-header-group; } }
-    @media print { .page-acciones .acciones-fila { break-inside:avoid; page-break-inside:avoid; } }
-
-    /* Header de tabla */
-    .page-acciones .acciones-header-row { background:#424242; color:#ffffff; }
-    .page-acciones .acciones-th { padding:10px 8px; text-align:left; font-size:11px; font-weight:700; color:#ffffff; text-transform:uppercase; letter-spacing:0.3px; border-right:1px solid #616161; }
-    .page-acciones .acciones-th:last-child { border-right:none; }
-    .page-acciones .acciones-th-prioridad { width:90px; }
-    .page-acciones .acciones-th-familia { width:80px; }
-    .page-acciones .acciones-th-num { width:70px; }
-    .page-acciones .acciones-th-modelo { width:120px; }
-    .page-acciones .acciones-th-acciones { width:auto; }
-
-    /* Filas de tabla */
-    .page-acciones .acciones-fila { border-bottom:1px solid #e0e0e0; }
-    .page-acciones .acciones-fila:last-child { border-bottom:none; }
-    .page-acciones .acciones-fila:hover { background:#f7fafc; }
-    .page-acciones .acciones-td { padding:12px 8px; vertical-align:top; color:#424242; border-right:1px solid #f0f0f0; }
-    .page-acciones .acciones-td:last-child { border-right:none; }
-
-    /* Columna PRIORIDAD */
-    .page-acciones .acciones-prioridad { font-weight:700; font-size:11px; text-align:center; }
-    .page-acciones .prioridad-critica { background:#fee; color:#c53030; }
-    .page-acciones .prioridad-alta { background:#fef3cd; color:#d69e2e; }
-    .page-acciones .prioridad-preventiva { background:#e7f3ff; color:#3182ce; }
-
-    /* Columna FAMILIA */
-    .page-acciones .acciones-familia { font-size:11px; color:#424242; font-weight:600; }
-
-    /* Columna N° INT. */
-    .page-acciones .acciones-num-interno { font-weight:700; color:#212121; font-size:12px; }
-
-    /* Columna MODELO/SERIE */
-    .page-acciones .acciones-modelo-serie { font-size:11px; color:#424242; line-height:1.5; }
-    .page-acciones .acciones-serie { color:#757575; font-size:10px; }
-
-    /* Columna ACCIONES REQUERIDAS */
-    .page-acciones .acciones-lista { font-size:12px; color:#212121; line-height:1.6; }
-    .page-acciones .accion-item-principal { margin-bottom:6px; color:#212121; font-weight:600; }
-    .page-acciones .accion-item-contexto { margin-bottom:6px; padding-left:12px; color:#757575; font-size:11px; line-height:1.5; }
-    /* ================================
        📞 CONTACTOS
        ================================ */
     .page-contactos { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:Arial, sans-serif; }
@@ -1033,13 +975,10 @@
   <!-- PÁGINA 7: EXPERT ALERTS -->
   <?!= expertAlertsHTML ?>
 
-  <!-- PÁGINA 8: ACCIONES Y RECOMENDACIONES -->
-  <?!= accionesHTML ?>
-
-  <!-- PÁGINA 9: CONTACTOS -->
+  <!-- PÁGINA 8: CONTACTOS -->
   <?!= contactosHTML ?>
 
-  <!-- PÁGINA 10: JOHN DEERE PROTECT -->
+  <!-- PÁGINA 9: JOHN DEERE PROTECT -->
   <?!= jdProtectHTML ?>
 
 </body>

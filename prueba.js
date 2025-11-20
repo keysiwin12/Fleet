@@ -45,7 +45,6 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
 
     // 3. Generar datos para RESUMEN
     const data = renderGraficosResumen(cliente.metricas);
-    const recomendacionesHTML = buildRecomendaciones(cliente.metricas);
 
     // 4. Generar datos para CONECTIVIDAD
     const dataConectividad = renderGraficosConectividad(cliente.equipos, modelo.periodo);
@@ -93,15 +92,6 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
       }  // ✅ Desde CONFIG
     );
 
-    //recomendaciones
-    const accionesHTML = generarAccionesRecomendaciones(
-      cliente.equipos || [],
-      {
-        inicio: modelo.periodo.inicio,
-        fin: modelo.periodo.fin
-      }  // ✅ Desde CONFIG
-    );
-
     // 🔹 Contactos
     const contactosHTML = generarSeccionContactos(
       cliente,
@@ -123,8 +113,6 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
     htmlTemplate.expertAlertsHTML = expertAlertsHTML;
     htmlTemplate.metricas = cliente.metricas;
     htmlTemplate.data = data;
-    htmlTemplate.accionesHTML = accionesHTML;
-    htmlTemplate.recomendacionesHTML = recomendacionesHTML;
     htmlTemplate.dataConectividad = dataConectividad;
     htmlTemplate.dataUtilizacion = dataUtilizacion;  // NUEVO
     htmlTemplate.dtcHTML = dtcHTML;
