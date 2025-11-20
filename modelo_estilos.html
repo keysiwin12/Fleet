@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla Acciones - Fleet Assurance</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background: #f3f4f6;
+    }
+    
+    .contenedor-tabla {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header-tabla {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .stats-header {
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+      font-weight: normal;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .stat-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    thead {
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #475569;
+      letter-spacing: 0.5px;
+    }
+    
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: all 0.2s ease;
+    }
+    
+    tbody tr:hover {
+      background: #f8fafc;
+      transform: scale(1.001);
+    }
+    
+    td {
+      padding: 12px 16px;
+      font-size: 12px;
+      vertical-align: top;
+    }
+    
+    /* Columna Prioridad */
+    .col-prioridad {
+      width: 80px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    
+    .prioridad-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 10px;
+    }
+    
+    .badge-critico {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 3px solid #dc2626;
+    }
+    
+    .badge-alto {
+      background: #fef3c7;
+      color: #92400e;
+      border-left: 3px solid #f59e0b;
+    }
+    
+    .badge-medio {
+      background: #d1fae5;
+      color: #065f46;
+      border-left: 3px solid #10b981;
+    }
+    
+    /* Columna Equipo */
+    .col-equipo {
+      width: 220px;
+    }
+    
+    .equipo-numero {
+      font-weight: bold;
+      font-size: 13px;
+      color: #1e293b;
+      margin-bottom: 2px;
+    }
+    
+    .equipo-info {
+      color: #64748b;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .equipo-familia {
+      font-weight: 500;
+    }
+    
+    .equipo-modelo {
+      color: #94a3b8;
+    }
+    
+    .separador {
+      color: #cbd5e1;
+    }
+    
+    /* Columna Acción */
+    .col-accion {
+      width: 280px;
+    }
+    
+    .accion-titulo {
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .accion-detalles {
+      color: #64748b;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    
+    /* Columna Métrica */
+    .col-metrica {
+      width: 180px;
+    }
+    
+    .metrica-principal {
+      font-weight: bold;
+      color: #0f172a;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+    
+    .metrica-secundaria {
+      color: #64748b;
+      font-size: 10px;
+    }
+    
+    /* Columna Impacto */
+    .col-impacto {
+      width: 140px;
+      text-align: right;
+    }
+    
+    .impacto-valor {
+      font-weight: bold;
+      font-size: 14px;
+      color: #059669;
+    }
+    
+    .impacto-label {
+      color: #64748b;
+      font-size: 9px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    
+    .alerta-icon {
+      font-size: 14px;
+    }
+    
+    /* Iconos de estado */
+    .estado-critico {
+      color: #dc2626;
+    }
+    
+    .estado-warning {
+      color: #f59e0b;
+    }
+    
+    .sin-datos {
+      color: #94a3b8;
+      font-style: italic;
+    }
+    
+    /* Footer de la tabla */
+    .tabla-footer {
+      background: #f8fafc;
+      padding: 12px 20px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 10px;
+      color: #64748b;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+<div class="contenedor-tabla">
+  <div class="header-tabla">
+    <span>ACCIONES PRIORITARIAS DE GESTIÓN</span>
+    <div class="stats-header">
+      <div class="stat-item">
+        🔴 <span class="stat-badge">2</span> Crítico
+      </div>
+      <div class="stat-item">
+        🟡 <span class="stat-badge">6</span> Alto
+      </div>
+      <div class="stat-item">
+        🟢 <span class="stat-badge">0</span> Medio
+      </div>
+    </div>
+  </div>
+  
+  <table>
+    <thead>
+      <tr>
+        <th class="col-prioridad">PRIORIDAD</th>
+        <th class="col-equipo">EQUIPO</th>
+        <th class="col-accion">ACCIÓN REQUERIDA</th>
+        <th class="col-metrica">MÉTRICA</th>
+        <th class="col-impacto">IMPACTO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- CRÍTICOS -->
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-critico">
+            🔴 CRÍTICO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-880</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">RETROEXCAVADORA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">310SL</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            📡 Restaurar conexión telemetría
+          </div>
+          <div class="accion-detalles">
+            Sin datos desde hace más de 2 años
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-critico">688 días</div>
+          <div class="metrica-secundaria">Última: 30-Dic-2023</div>
+        </td>
+        <td class="col-impacto">
+          <div class="sin-datos">Sin telemetría</div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-critico">
+            🔴 CRÍTICO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-885</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">RETROEXCAVADORA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">310SL</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            📡 Restaurar conexión telemetría
+          </div>
+          <div class="accion-detalles">
+            Sin datos desde hace más de 2 años
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-critico">957 días</div>
+          <div class="metrica-secundaria">Última: 14-Jul-2023</div>
+        </td>
+        <td class="col-impacto">
+          <div class="sin-datos">Sin telemetría</div>
+        </td>
+      </tr>
+      
+      <!-- ALTOS -->
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-alto">
+            🟡 ALTO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-673</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">COSECHADORA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">CH570</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            ⏱️ Reducir tiempo de ralentí
+          </div>
+          <div class="accion-detalles">
+            Ralentí excesivo detectado en el período
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-warning">45% ralentí</div>
+          <div class="metrica-secundaria">Análisis del período</div>
+        </td>
+        <td class="col-impacto">
+          <div class="impacto-valor">$0.00</div>
+          <div class="impacto-label">Ahorro potencial</div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-alto">
+            🟡 ALTO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-594</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">TRACTOR AGRÍCOLA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">615KU</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            ⏱️ Reducir tiempo de ralentí
+          </div>
+          <div class="accion-detalles">
+            Ralentí excesivo detectado en el período
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-warning">85% ralentí</div>
+          <div class="metrica-secundaria">Análisis del período</div>
+        </td>
+        <td class="col-impacto">
+          <div class="impacto-valor">$0.00</div>
+          <div class="impacto-label">Ahorro potencial</div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-alto">
+            🟡 ALTO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-598</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">COSECHADORA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">CH570</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            ⏱️ Reducir tiempo de ralentí
+          </div>
+          <div class="accion-detalles">
+            Ralentí excesivo detectado en el período
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-warning">57% ralentí</div>
+          <div class="metrica-secundaria">Análisis del período</div>
+        </td>
+        <td class="col-impacto">
+          <div class="impacto-valor">$0.00</div>
+          <div class="impacto-label">Ahorro potencial</div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-alto">
+            🟡 ALTO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-611</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">COSECHADORA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">CH670</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            ⏱️ Reducir tiempo de ralentí
+          </div>
+          <div class="accion-detalles">
+            Ralentí excesivo detectado en el período
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-warning">44% ralentí</div>
+          <div class="metrica-secundaria">Análisis del período</div>
+        </td>
+        <td class="col-impacto">
+          <div class="impacto-valor">$0.00</div>
+          <div class="impacto-label">Ahorro potencial</div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-alto">
+            🟡 ALTO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-638</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">CARGADOR FRONTAL</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">644K</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            ⏱️ Reducir tiempo de ralentí
+          </div>
+          <div class="accion-detalles">
+            Ralentí moderado detectado en el período
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal estado-warning">14% ralentí</div>
+          <div class="metrica-secundaria">Análisis del período</div>
+        </td>
+        <td class="col-impacto">
+          <div class="impacto-valor">—</div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="col-prioridad">
+          <span class="prioridad-badge badge-alto">
+            🟡 ALTO
+          </span>
+        </td>
+        <td class="col-equipo">
+          <div class="equipo-numero">CG-571</div>
+          <div class="equipo-info">
+            <span class="equipo-familia">COSECHADORA</span>
+            <span class="separador">•</span>
+            <span class="equipo-modelo">CH570</span>
+          </div>
+        </td>
+        <td class="col-accion">
+          <div class="accion-titulo">
+            🔔 Verificar Expert Alert
+          </div>
+          <div class="accion-detalles">
+            Servicio programado próximamente
+          </div>
+        </td>
+        <td class="col-metrica">
+          <div class="metrica-principal">11 hrs</div>
+          <div class="metrica-secundaria">Próximo: 11.45 horas</div>
+        </td>
+        <td class="col-impacto">
+          <div class="sin-datos">Programado</div>
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+  
+  <div class="tabla-footer">
+    8 acciones prioritarias identificadas en el período de análisis
+  </div>
+</div>
+
+</body>
+</html>
