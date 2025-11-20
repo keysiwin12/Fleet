@@ -1866,34 +1866,57 @@ function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon) {
 function procesarAccionesEquipo(equipo, precioPorGalon) {
   const acciones = [];
 
-  // 1. Expert Alerts
+  // 1. Expert Alerts (consolidado)
   if (equipo.ea && equipo.ea.length > 0) {
-    equipo.ea.forEach(ea => {
-      const severidad = escapeHtml(ea.severidad || 'N/A');
-      acciones.push({
-        tipo: 'expert_alert',
-        icono: '🔔',
-        titulo: 'Atender Expert Alert',
-        metrica: `Severidad: ${severidad}`,
-        impacto: 'Alta probabilidad de avería',
-        orden: 1
-      });
+    const cantidad = equipo.ea.length;
+    // Obtener severidad más alta
+    const severidades = equipo.ea.map(ea => (ea.severidad || '').toLowerCase());
+    let sevMasAlta = 'media';
+    if (severidades.some(s => s.includes('crít') || s.includes('crit'))) sevMasAlta = 'crítica';
+    else if (severidades.some(s => s.includes('alta') || s.includes('high'))) sevMasAlta = 'alta';
+    else if (severidades.some(s => s.includes('media') || s.includes('mediana'))) sevMasAlta = 'media';
+
+    const metrica = cantidad === 1
+      ? `Sev. ${sevMasAlta}`
+      : `${cantidad} alertas - Sev. ${sevMasAlta}`;
+
+    acciones.push({
+      tipo: 'expert_alert',
+      icono: '🔔',
+      titulo: cantidad === 1 ? 'Atender Expert Alert' : 'Atender Expert Alerts',
+      metrica: metrica,
+      impacto: 'Alta probabilidad de avería',
+      orden: 1
     });
   }
 
-  // 2. DTCs
+  // 2. DTCs (consolidado)
   if (equipo.dtc && equipo.dtc.length > 0) {
-    equipo.dtc.forEach(dtc => {
-      const codigo = escapeHtml(dtc.codigo || 'N/A');
-      const severidad = escapeHtml(dtc.severidad || 'N/A');
-      acciones.push({
-        tipo: 'dtc',
-        icono: '⚠️',
-        titulo: 'Diagnosticar código DTC',
-        metrica: `DTC ${codigo} - Sev. ${severidad}`,
-        impacto: 'Posible falla en componente crítico',
-        orden: 2
-      });
+    const cantidad = equipo.dtc.length;
+    // Obtener rango de severidades
+    const severidades = equipo.dtc.map(d => (d.severidad || '').toLowerCase());
+    const tieneAlta = severidades.some(s => s.includes('alta') || s.includes('high'));
+    const tieneMedia = severidades.some(s => s.includes('media') || s.includes('mediana'));
+    const tieneBaja = severidades.some(s => s.includes('baja') || s.includes('low'));
+
+    let rangoSev = 'media';
+    if (tieneAlta && tieneMedia) rangoSev = 'media - alta';
+    else if (tieneAlta && tieneBaja) rangoSev = 'baja - alta';
+    else if (tieneMedia && tieneBaja) rangoSev = 'baja - media';
+    else if (tieneAlta) rangoSev = 'alta';
+    else if (tieneBaja) rangoSev = 'baja';
+
+    const metrica = cantidad === 1
+      ? `Sev. ${rangoSev}`
+      : `${cantidad} DTCs - Sev. ${rangoSev}`;
+
+    acciones.push({
+      tipo: 'dtc',
+      icono: '⚠️',
+      titulo: cantidad === 1 ? 'Diagnosticar código de diagnóstico' : 'Diagnosticar códigos de diagnóstico',
+      metrica: metrica,
+      impacto: 'Posible falla en componente crítico',
+      orden: 2
     });
   }
 
@@ -1912,7 +1935,7 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
   }
 
   // 4. Mantenimiento
-  const horasFaltantes = equipo.horas_faltantes_mant || equipo.horas_faltantes || 0;
+  const horasFaltantes = equipo.horas_restantes || 0;  // ✅ Campo correcto
   if (horasFaltantes > 0 && horasFaltantes < 50) {
     acciones.push({
       tipo: 'mantenimiento',
@@ -1925,9 +1948,9 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
   }
 
   // 5. Ralentí (ECONÓMICO)
-  const horasMotor = equipo.horas_motor || equipo.horasMotor || 0;
-  const horasRalenti = equipo.horas_ralenti || equipo.horasRalenti || 0;
-  const percentRalenti = horasMotor > 0 ? (horasRalenti / horasMotor) * 100 : 0;
+  const horasMotor = equipo.horas_funcionamiento_general || 0;  // ✅ Campo correcto
+  const horasRalenti = equipo.horas_ralenti_general || 0;  // ✅ Campo correcto
+  const percentRalenti = (equipo.percent_ralent_horas || 0) * 100;  // ✅ Ya viene como decimal
 
   if (percentRalenti > 15) {
     const combustiblePerdido = horasRalenti * 0.6;
@@ -1945,7 +1968,7 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
   }
 
   // 6. Reconexión
-  const fechaTelemetria = equipo.fecha_telemetria || equipo.ultima_fecha_telemetria || equipo.fecha_ultima_telemetria;
+  const fechaTelemetria = equipo.ult_conexion;  // ✅ Campo correcto
   if (!estaConectadoUltimosDias(fechaTelemetria, 30)) {
     const diasSinDatos = calcularDiasSinDatos(fechaTelemetria);
     acciones.push({
