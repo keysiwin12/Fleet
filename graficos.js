@@ -1362,12 +1362,15 @@ function generarEventosAlerta(equipos, periodo) {
   equiposConAlertas.forEach(eq => {
     const alertas = eq.ea || [];
     alertas.forEach(alerta => {
-      if (alerta.severidad === 'Crítica') {
+      const sev = (alerta.severidad || '').toLowerCase().trim();
+
+      // Comparación flexible para manejar variaciones en los datos
+      if (sev.includes('crítica') || sev.includes('critica') || sev === 'critical') {
         totalCriticas++;
-      } else if (alerta.severidad === 'Alta') {
-        totalAltas++;
-      } else if (alerta.severidad === 'Alta-Rendimiento') {
+      } else if (sev.includes('rendimiento') || sev.includes('performance')) {
         totalRendimiento++;
+      } else if (sev.includes('alta') || sev === 'high') {
+        totalAltas++;
       }
     });
   });
@@ -1375,6 +1378,11 @@ function generarEventosAlerta(equipos, periodo) {
   const totalAlertas = totalCriticas + totalAltas + totalRendimiento;
   const totalEquipos = equipos.length;
   const equiposAfectados = equiposConAlertas.length;
+
+  // Si no hay alertas válidas (totalAlertas === 0), mostrar mensaje positivo
+  if (totalAlertas === 0) {
+    return generarMensajeSinAlertasEA(periodo, recuadroEducativo);
+  }
 
   const pctCriticas = totalAlertas > 0 ? ((totalCriticas / totalAlertas) * 100).toFixed(0) : 0;
   const pctAltas = totalAlertas > 0 ? ((totalAltas / totalAlertas) * 100).toFixed(0) : 0;
@@ -1761,27 +1769,40 @@ function clasificarEquiposPorSeveridadMaxima(equipos) {
   const altas = [];
   const rendimiento = [];
 
+  // Función auxiliar para normalizar y verificar severidad
+  function esSeveridad(severidad, tipo) {
+    const sev = (severidad || '').toLowerCase().trim();
+    if (tipo === 'critica') {
+      return sev.includes('crítica') || sev.includes('critica') || sev === 'critical';
+    } else if (tipo === 'rendimiento') {
+      return sev.includes('rendimiento') || sev.includes('performance');
+    } else if (tipo === 'alta') {
+      return sev.includes('alta') || sev === 'high';
+    }
+    return false;
+  }
+
   equipos.forEach(eq => {
     const alertas = eq.ea || [];
 
     // Verificar si tiene alertas críticas
-    const tieneCriticas = alertas.some(a => a.severidad === 'Crítica');
+    const tieneCriticas = alertas.some(a => esSeveridad(a.severidad, 'critica'));
     if (tieneCriticas) {
       criticas.push(eq);
       return;
     }
 
-    // Si no tiene críticas, verificar si tiene altas
-    const tieneAltas = alertas.some(a => a.severidad === 'Alta');
-    if (tieneAltas) {
-      altas.push(eq);
+    // Si no tiene críticas, verificar si tiene rendimiento (más específico que "alta")
+    const tieneRendimiento = alertas.some(a => esSeveridad(a.severidad, 'rendimiento'));
+    if (tieneRendimiento) {
+      rendimiento.push(eq);
       return;
     }
 
-    // Si solo tiene rendimiento
-    const tieneRendimiento = alertas.some(a => a.severidad === 'Alta-Rendimiento');
-    if (tieneRendimiento) {
-      rendimiento.push(eq);
+    // Si solo tiene altas
+    const tieneAltas = alertas.some(a => esSeveridad(a.severidad, 'alta'));
+    if (tieneAltas) {
+      altas.push(eq);
     }
   });
 
