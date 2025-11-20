@@ -1792,6 +1792,339 @@ function formatearFechaEA(fecha) {
   }
 }
 
+// ============================================================================
+// ACCIONES Y RECOMENDACIONES
+// ============================================================================
 
+/**
+ * Genera la sección de Acciones y Recomendaciones
+ * @param {Array} equipos - Lista de equipos con datos
+ * @param {Object} periodo - {inicio: "01-11-25", fin: "15-11-25"}
+ * @param {Number} precioPorGalon - Precio del combustible por galón
+ * @returns {String} HTML de la sección completa
+ */
+function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon) {
+  if (!Array.isArray(equipos) || equipos.length === 0) {
+    return generarMensajeSinAcciones(periodo);
+  }
 
+  // Procesar todos los equipos y generar acciones
+  const equiposConAcciones = [];
 
+  equipos.forEach(equipo => {
+    const acciones = procesarAccionesEquipo(equipo, precioPorGalon);
+
+    if (acciones.length > 0) {
+      const prioridad = clasificarPrioridadEquipo(acciones);
+      const impactoEconomico = acciones
+        .filter(a => a.impactoNumerico)
+        .reduce((sum, a) => sum + a.impactoNumerico, 0);
+
+      equiposConAcciones.push({
+        equipo: equipo,
+        prioridad: prioridad,
+        nivelPrioridad: prioridad === 'CRITICO' ? 1 : prioridad === 'ALTO' ? 2 : 3,
+        acciones: acciones,
+        impactoEconomico: impactoEconomico
+      });
+    }
+  });
+
+  if (equiposConAcciones.length === 0) {
+    return generarMensajeSinAcciones(periodo);
+  }
+
+  // Ordenar equipos: Prioridad (CRITICO→ALTO→MEDIO) y luego por impacto económico
+  equiposConAcciones.sort((a, b) => {
+    if (a.nivelPrioridad !== b.nivelPrioridad) {
+      return a.nivelPrioridad - b.nivelPrioridad;
+    }
+    return b.impactoEconomico - a.impactoEconomico;
+  });
+
+  // Contar por prioridad
+  const contadores = {
+    CRITICO: equiposConAcciones.filter(e => e.prioridad === 'CRITICO').length,
+    ALTO: equiposConAcciones.filter(e => e.prioridad === 'ALTO').length,
+    MEDIO: equiposConAcciones.filter(e => e.prioridad === 'MEDIO').length
+  };
+
+  // Generar HTML
+  const headerHTML = generarHeaderAcciones(periodo, contadores);
+  const tablaHTML = generarTablaAcciones(equiposConAcciones);
+
+  return `
+    <div class="page">
+      ${headerHTML}
+      ${tablaHTML}
+    </div>`;
+}
+
+/**
+ * Procesa y genera todas las acciones para un equipo
+ */
+function procesarAccionesEquipo(equipo, precioPorGalon) {
+  const acciones = [];
+
+  // 1. Expert Alerts
+  if (equipo.ea && equipo.ea.length > 0) {
+    equipo.ea.forEach(ea => {
+      const severidad = escapeHtml(ea.severidad || 'N/A');
+      acciones.push({
+        tipo: 'expert_alert',
+        icono: '🔔',
+        titulo: 'Atender Expert Alert',
+        metrica: `Severidad: ${severidad}`,
+        impacto: 'Alta probabilidad de avería',
+        orden: 1
+      });
+    });
+  }
+
+  // 2. DTCs
+  if (equipo.dtc && equipo.dtc.length > 0) {
+    equipo.dtc.forEach(dtc => {
+      const codigo = escapeHtml(dtc.codigo || 'N/A');
+      const severidad = escapeHtml(dtc.severidad || 'N/A');
+      acciones.push({
+        tipo: 'dtc',
+        icono: '⚠️',
+        titulo: 'Diagnosticar código DTC',
+        metrica: `DTC ${codigo} - Sev. ${severidad}`,
+        impacto: 'Posible falla en componente crítico',
+        orden: 2
+      });
+    });
+  }
+
+  // 3. Aceite
+  if (equipo.ac && equipo.ac.some(a => a.estado && a.estado.toLowerCase() !== 'normal')) {
+    const anormal = equipo.ac.find(a => a.estado && a.estado.toLowerCase() !== 'normal');
+    const estado = escapeHtml(anormal.estado || 'N/A');
+    acciones.push({
+      tipo: 'aceite',
+      icono: '🛢️',
+      titulo: 'Analizar muestra de aceite',
+      metrica: `Estado: ${estado}`,
+      impacto: 'Probable contaminación interna',
+      orden: 3
+    });
+  }
+
+  // 4. Mantenimiento
+  const horasFaltantes = equipo.horas_faltantes_mant || equipo.horas_faltantes || 0;
+  if (horasFaltantes > 0 && horasFaltantes < 50) {
+    acciones.push({
+      tipo: 'mantenimiento',
+      icono: '🔧',
+      titulo: 'Programar mantenimiento',
+      metrica: `${horasFaltantes.toFixed(1)}h restantes`,
+      impacto: 'Atención requerida',
+      orden: 4
+    });
+  }
+
+  // 5. Ralentí (ECONÓMICO)
+  const horasMotor = equipo.horas_motor || equipo.horasMotor || 0;
+  const horasRalenti = equipo.horas_ralenti || equipo.horasRalenti || 0;
+  const percentRalenti = horasMotor > 0 ? (horasRalenti / horasMotor) * 100 : 0;
+
+  if (percentRalenti > 15) {
+    const combustiblePerdido = horasRalenti * 0.6;
+    const impactoUSD = combustiblePerdido * (precioPorGalon || 0);
+
+    acciones.push({
+      tipo: 'ralenti',
+      icono: '⏱️',
+      titulo: 'Reducir tiempo de ralentí',
+      metrica: `${percentRalenti.toFixed(1)}% ralentí (${horasRalenti.toFixed(1)}h / ${horasMotor.toFixed(1)}h)`,
+      impacto: `$${impactoUSD.toFixed(2)} USD`,
+      impactoNumerico: impactoUSD,
+      orden: 5
+    });
+  }
+
+  // 6. Reconexión
+  const fechaTelemetria = equipo.fecha_telemetria || equipo.ultima_fecha_telemetria || equipo.fecha_ultima_telemetria;
+  if (!estaConectadoUltimosDias(fechaTelemetria, 30)) {
+    const diasSinDatos = calcularDiasSinDatos(fechaTelemetria);
+    acciones.push({
+      tipo: 'reconexion',
+      icono: '📡',
+      titulo: 'Revisar conectividad',
+      metrica: `${diasSinDatos} días sin datos`,
+      impacto: 'Sin telemetría',
+      orden: 6
+    });
+  }
+
+  return acciones;
+}
+
+/**
+ * Clasifica la prioridad de un equipo basado en sus acciones
+ */
+function clasificarPrioridadEquipo(acciones) {
+  const tieneEA = acciones.some(a => a.tipo === 'expert_alert');
+  const tieneDTC = acciones.some(a => a.tipo === 'dtc');
+  const tieneAceite = acciones.some(a => a.tipo === 'aceite');
+  const tieneMtto = acciones.some(a => a.tipo === 'mantenimiento');
+
+  if (tieneEA || tieneDTC) return 'CRITICO';
+  if (tieneAceite || tieneMtto) return 'ALTO';
+  return 'MEDIO';
+}
+
+/**
+ * Calcula días sin datos desde última fecha de telemetría
+ */
+function calcularDiasSinDatos(fecha) {
+  if (!fecha) return 999;
+
+  try {
+    const fechaEquipo = new Date(fecha);
+    const hoy = new Date();
+    const diffTime = Math.abs(hoy - fechaEquipo);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  } catch (error) {
+    return 999;
+  }
+}
+
+/**
+ * Genera el header con estadísticas
+ */
+function generarHeaderAcciones(periodo, contadores) {
+  return `
+    <div class="header" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1>💡 ACCIONES Y RECOMENDACIONES</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+      </div>
+      <div style="font-size:11px; font-weight:600; display:flex; gap:12px;">
+        <span>🔴 ${contadores.CRITICO} Crítico</span>
+        <span>|</span>
+        <span>🟡 ${contadores.ALTO} Alto</span>
+        <span>|</span>
+        <span>🟢 ${contadores.MEDIO} Medio</span>
+      </div>
+    </div>`;
+}
+
+/**
+ * Genera la tabla de acciones
+ */
+function generarTablaAcciones(equiposConAcciones) {
+  const filasHTML = equiposConAcciones.map(item => {
+    const { equipo, prioridad, acciones } = item;
+
+    const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || equipo.id_equipo || 'N/A');
+    const familia = escapeHtml(equipo.familia || 'N/A');
+    const modelo = escapeHtml(equipo.modelo || '');
+
+    // Badge de prioridad
+    const badgeConfig = {
+      CRITICO: { icono: '🔴', bg: '#fee2e2', color: '#991b1b', border: '#dc2626' },
+      ALTO: { icono: '🟡', bg: '#fef3c7', color: '#92400e', border: '#f59e0b' },
+      MEDIO: { icono: '🟢', bg: '#d1fae5', color: '#065f46', border: '#10b981' }
+    };
+    const cfg = badgeConfig[prioridad];
+
+    const badgeHTML = `
+      <div style="display:inline-flex; flex-direction:column; align-items:center; padding:6px 10px; background:${cfg.bg}; color:${cfg.color}; border-left:3px solid ${cfg.border}; border-radius:4px; font-size:10px; font-weight:600; min-width:80px;">
+        <div style="font-size:16px; margin-bottom:2px;">${cfg.icono}</div>
+        <div>${prioridad}</div>
+      </div>`;
+
+    // Acciones (múltiples filas)
+    const accionesHTML = acciones.map(accion => `
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px; font-size:12px; font-weight:600; color:#334155;">
+        <span>${accion.icono}</span>
+        <span>${escapeHtml(accion.titulo)}</span>
+      </div>`).join('');
+
+    // Métricas (múltiples filas)
+    const metricasHTML = acciones.map(accion => `
+      <div style="margin-bottom:6px; font-size:11px; color:#64748b;">
+        ${escapeHtml(accion.metrica)}
+      </div>`).join('');
+
+    // Impactos (múltiples filas)
+    const impactosHTML = acciones.map(accion => {
+      const esEconomico = accion.impactoNumerico !== undefined;
+      const estilo = esEconomico
+        ? 'font-weight:700; font-size:13px; color:#059669;'
+        : 'font-size:11px; color:#64748b;';
+
+      return `
+        <div style="margin-bottom:6px; ${estilo}">
+          ${escapeHtml(accion.impacto)}
+        </div>`;
+    }).join('');
+
+    return `
+      <tr>
+        <td style="padding:12px 16px; text-align:center; vertical-align:top; width:95px;">
+          ${badgeHTML}
+        </td>
+        <td style="padding:12px 16px; vertical-align:top; width:190px;">
+          <div style="font-weight:700; font-size:13px; color:#1e293b; margin-bottom:2px;">${numInterno}</div>
+          <div style="font-size:10px; color:#64748b;">${familia}</div>
+          <div style="font-size:10px; color:#94a3b8;">${modelo}</div>
+        </td>
+        <td style="padding:12px 16px; vertical-align:top; width:260px;">
+          ${accionesHTML}
+        </td>
+        <td style="padding:12px 16px; vertical-align:top; width:210px;">
+          ${metricasHTML}
+        </td>
+        <td style="padding:12px 16px; vertical-align:top; text-align:left; width:185px;">
+          ${impactosHTML}
+        </td>
+      </tr>`;
+  }).join('');
+
+  return `
+    <div style="margin-top:10px;">
+      <table style="width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <thead style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
+          <tr>
+            <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">PRIORIDAD</th>
+            <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">EQUIPO</th>
+            <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">ACCIÓN REQUERIDA</th>
+            <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">MÉTRICA</th>
+            <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">IMPACTO</th>
+          </tr>
+        </thead>
+        <tbody style="border-top:1px solid #f1f5f9;">
+          ${filasHTML}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/**
+ * Mensaje cuando no hay acciones
+ */
+function generarMensajeSinAcciones(periodo) {
+  return `
+    <div class="page">
+      <div class="header">
+        <h1>💡 ACCIONES Y RECOMENDACIONES</h1>
+        <div class="header-subtitle">Periodo: del ${periodo.inicio} al ${periodo.fin}</div>
+      </div>
+
+      <div style="padding:40px; text-align:center; background:#f0fdf4; border-left:4px solid #38a169; border-radius:6px; margin-top:20px;">
+        <div style="font-size:48px; margin-bottom:12px;">✅</div>
+        <div style="font-size:16px; font-weight:700; color:#065f46; margin-bottom:8px;">
+          ¡Excelente gestión de la flota!
+        </div>
+        <div style="font-size:12px; color:#16a34a; line-height:1.6;">
+          No se identificaron acciones prioritarias durante el período analizado.
+          La flota se encuentra operando en condiciones óptimas sin alertas críticas,
+          códigos DTC de alta severidad ni problemas en los análisis de fluidos.
+        </div>
+      </div>
+    </div>`;
+}
