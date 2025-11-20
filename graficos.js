@@ -1913,7 +1913,7 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
     acciones.push({
       tipo: 'dtc',
       icono: '⚠️',
-      titulo: cantidad === 1 ? 'Diagnosticar código de diagnóstico' : 'Diagnosticar códigos de diagnóstico',
+      titulo: cantidad === 1 ? 'Revisar código de diagnóstico' : 'Revisar códigos de diagnóstico',
       metrica: metrica,
       impacto: 'Posible falla en componente crítico',
       orden: 2
@@ -1953,18 +1953,21 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
   const percentRalenti = (equipo.percent_ralent_horas || 0) * 100;  // ✅ Ya viene como decimal
 
   if (percentRalenti > 15) {
-    const combustiblePerdido = horasRalenti * 0.6;
-    const impactoUSD = combustiblePerdido * (precioPorGalon || 0);
+    // ✅ Usar valor del modelo (tiene tasas específicas por modelo de equipo)
+    const impactoUSD = equipo.impacto_economico_ral || 0;
 
-    acciones.push({
-      tipo: 'ralenti',
-      icono: '⏱️',
-      titulo: 'Reducir tiempo de ralentí',
-      metrica: `${percentRalenti.toFixed(1)}% ralentí (${horasRalenti.toFixed(1)}h / ${horasMotor.toFixed(1)}h)`,
-      impacto: `$${impactoUSD.toFixed(2)} USD`,
-      impactoNumerico: impactoUSD,
-      orden: 5
-    });
+    // Solo agregar si hay impacto calculado
+    if (impactoUSD > 0) {
+      acciones.push({
+        tipo: 'ralenti',
+        icono: '⏱️',
+        titulo: 'Reducir tiempo de ralentí',
+        metrica: `${percentRalenti.toFixed(1)}% ralentí (${horasRalenti.toFixed(1)}h / ${horasMotor.toFixed(1)}h)`,
+        impacto: `$${impactoUSD.toFixed(2)}`,
+        impactoNumerico: impactoUSD,
+        orden: 5
+      });
+    }
   }
 
   // 6. Reconexión
@@ -2088,21 +2091,21 @@ function generarTablaAcciones(equiposConAcciones) {
 
     return `
       <tr>
-        <td style="padding:12px 16px; text-align:center; vertical-align:top; width:95px;">
+        <td style="padding:12px 16px; text-align:center; vertical-align:top; width:90px;">
           ${badgeHTML}
         </td>
-        <td style="padding:12px 16px; vertical-align:top; width:190px;">
+        <td style="padding:12px 16px; vertical-align:top; width:180px;">
           <div style="font-weight:700; font-size:13px; color:#1e293b; margin-bottom:2px;">${numInterno}</div>
           <div style="font-size:10px; color:#64748b;">${familia}</div>
           <div style="font-size:10px; color:#94a3b8;">${modelo}</div>
         </td>
-        <td style="padding:12px 16px; vertical-align:top; width:260px;">
+        <td style="padding:12px 16px; vertical-align:top; width:250px;">
           ${accionesHTML}
         </td>
-        <td style="padding:12px 16px; vertical-align:top; width:210px;">
+        <td style="padding:12px 16px; vertical-align:top; width:200px;">
           ${metricasHTML}
         </td>
-        <td style="padding:12px 16px; vertical-align:top; text-align:left; width:185px;">
+        <td style="padding:12px 16px; vertical-align:top; text-align:left; width:220px;">
           ${impactosHTML}
         </td>
       </tr>`;
