@@ -185,7 +185,7 @@ function alertEANumber(ea) {
 function alertBarsEAOnly(ea) {
   const crit = _pickInt(ea, ["critica"]);
   const alta = _pickInt(ea, ["alta"]);
-  const rend = _pickInt(ea, ["rendimiento"]);
+  const rend = _pickInt(ea, ["alta_rendimiento"]);
   const total = crit + alta + rend;
 
   const pC = total > 0 ? ((crit / total) * 100).toFixed(1) : '0.0';
@@ -206,7 +206,7 @@ function alertBarsEAOnly(ea) {
     </div>
   </div>
   <div class="alert-bar-item">
-    <div class="alert-bar-label"><span>Rendimiento</span><span>${rend}</span></div>
+    <div class="alert-bar-label"><span>Alta-Rendimiento</span><span>${rend}</span></div>
     <div class="alert-bar-bg">
       <div class="alert-bar-fill" data-severity="warning" style="width:${pR}%">${pR}%</div>
     </div>
