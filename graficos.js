@@ -482,7 +482,7 @@ function renderGraficosConectividad(equipos, periodo) {
     .sort((a, b) => a.horas_restantes - b.horas_restantes);
 
   const equiposSinConexion = equipos
-    .filter(eq => !estaConectado(eq.ult_conexion, 1000))
+    .filter(eq => !estaConectado(eq.ult_conexion, 15))  // ✅ 15 días
     .sort((a, b) => {
       const fechaA = a.ult_conexion ? new Date(a.ult_conexion) : new Date(0);
       const fechaB = b.ult_conexion ? new Date(b.ult_conexion) : new Date(0);
