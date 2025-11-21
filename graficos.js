@@ -1852,11 +1852,13 @@ function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon) {
   // Generar HTML
   const headerHTML = generarHeaderAcciones(periodo, contadores);
   const tablaHTML = generarTablaAcciones(equiposConAcciones);
+  const tablaAsesoresHTML = generarTablaAsesores(equiposConAcciones);
 
   return `
     <div class="page">
       ${headerHTML}
       ${tablaHTML}
+      ${tablaAsesoresHTML}
     </div>`;
 }
 
@@ -2125,6 +2127,59 @@ function generarTablaAcciones(equiposConAcciones) {
             <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">ACCIÓN REQUERIDA</th>
             <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">MÉTRICA</th>
             <th style="padding:12px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">IMPACTO</th>
+          </tr>
+        </thead>
+        <tbody style="border-top:1px solid #f1f5f9;">
+          ${filasHTML}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/**
+ * Genera tabla de asesores responsables por equipo
+ */
+function generarTablaAsesores(equiposConAcciones) {
+  const filasHTML = equiposConAcciones.map((item, index) => {
+    const { equipo } = item;
+
+    const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || 'N/A');
+    const familia = escapeHtml(equipo.familia || 'N/A');
+    const modelo = escapeHtml(equipo.modelo || '');
+    const asesor = escapeHtml(equipo.asesor || 'Sin asignar');
+
+    // Efecto zebra ligero
+    const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
+
+    return `
+      <tr style="background:${bgColor};">
+        <td style="padding:10px 16px; vertical-align:middle; width:250px;">
+          <div style="font-weight:700; font-size:12px; color:#1e293b;">${numInterno}</div>
+        </td>
+        <td style="padding:10px 16px; vertical-align:middle; width:300px;">
+          <div style="font-size:11px; color:#64748b;">${familia} - ${modelo}</div>
+        </td>
+        <td style="padding:10px 16px; vertical-align:middle; width:390px;">
+          <div style="font-size:11px; color:#475569;">
+            <span style="font-weight:600;">👤</span> ${asesor}
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+
+  return `
+    <div style="margin-top:24px;">
+      <div style="margin-bottom:12px; padding-left:4px;">
+        <h3 style="font-size:13px; font-weight:700; color:#1e293b; text-transform:uppercase; letter-spacing:0.5px;">
+          📋 ASESORES RESPONSABLES
+        </h3>
+      </div>
+      <table style="width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <thead style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
+          <tr>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">EQUIPO</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">TIPO</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">ASESOR RESPONSABLE</th>
           </tr>
         </thead>
         <tbody style="border-top:1px solid #f1f5f9;">
