@@ -2137,50 +2137,73 @@ function generarTablaAcciones(equiposConAcciones) {
 }
 
 /**
- * Genera tabla de asesores responsables por equipo
+ * Genera tabla de asesores responsables (agrupados, sin repetir)
  */
 function generarTablaAsesores(equiposConAcciones) {
-  const filasHTML = equiposConAcciones.map((item, index) => {
+  // Agrupar equipos por asesor
+  const asesoresMap = {};
+
+  equiposConAcciones.forEach(item => {
     const { equipo } = item;
+    const asesorNombre = equipo.asesor || 'Sin asignar';
 
-    const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || 'N/A');
-    const familia = escapeHtml(equipo.familia || 'N/A');
-    const modelo = escapeHtml(equipo.modelo || '');
-    const idEquipo = escapeHtml(equipo.id_equipo || 'N/A');
+    if (!asesoresMap[asesorNombre]) {
+      asesoresMap[asesorNombre] = {
+        asesor: asesorNombre,
+        email: equipo.asesor_email || '-',
+        celular: equipo.asesor_celular || '-',
+        sucursal: equipo.asesor_sucursal || equipo.sucursal || '-',
+        equipos: []
+      };
+    }
 
-    const asesor = escapeHtml(equipo.asesor || 'Sin asignar');
-    const email = escapeHtml(equipo.asesor_email || '-');
-    const celular = escapeHtml(equipo.asesor_celular || '-');
-    const sucursal = escapeHtml(equipo.asesor_sucursal || '-');
+    const numInterno = equipo.num_interno || equipo.numero_interno || 'N/A';
+    asesoresMap[asesorNombre].equipos.push(numInterno);
+  });
+
+  // Convertir a array y ordenar
+  const asesoresArray = Object.values(asesoresMap).sort((a, b) => {
+    if (a.asesor === 'Sin asignar') return 1;
+    if (b.asesor === 'Sin asignar') return -1;
+    return a.asesor.localeCompare(b.asesor);
+  });
+
+  const filasHTML = asesoresArray.map((asesorData, index) => {
+    const asesor = escapeHtml(asesorData.asesor);
+    const email = escapeHtml(asesorData.email);
+    const celular = escapeHtml(asesorData.celular);
+    const sucursal = escapeHtml(asesorData.sucursal);
+    const equipos = asesorData.equipos.map(eq => escapeHtml(eq)).join(', ');
+    const cantidadEquipos = asesorData.equipos.length;
 
     // Efecto zebra ligero
     const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
 
     return `
       <tr style="background:${bgColor};">
-        <td style="padding:10px 16px; vertical-align:top; width:180px;">
-          <div style="font-weight:700; font-size:12px; color:#1e293b; margin-bottom:3px;">${numInterno}</div>
-          <div style="font-size:10px; color:#64748b; margin-bottom:2px;">${familia} - ${modelo}</div>
-          <div style="font-size:9px; color:#94a3b8;">${idEquipo}</div>
-        </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:200px;">
+        <td style="padding:10px 16px; vertical-align:middle; width:180px;">
           <div style="font-size:11px; color:#1e293b; font-weight:600;">
             👤 ${asesor}
           </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:220px;">
+        <td style="padding:10px 16px; vertical-align:middle; width:200px;">
           <div style="font-size:10px; color:#64748b;">
             📧 ${email}
           </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:140px;">
+        <td style="padding:10px 16px; vertical-align:middle; width:130px;">
           <div style="font-size:10px; color:#64748b;">
             📱 ${celular}
           </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:200px;">
+        <td style="padding:10px 16px; vertical-align:middle; width:120px;">
           <div style="font-size:10px; color:#64748b;">
             🏢 ${sucursal}
+          </div>
+        </td>
+        <td style="padding:10px 16px; vertical-align:middle; width:310px;">
+          <div style="font-size:10px; color:#475569;">
+            <span style="font-weight:600; color:#1e293b;">${cantidadEquipos} equipo${cantidadEquipos > 1 ? 's' : ''}:</span> ${equipos}
           </div>
         </td>
       </tr>`;
@@ -2196,11 +2219,11 @@ function generarTablaAsesores(equiposConAcciones) {
       <table style="width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
         <thead style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
           <tr>
-            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">EQUIPO</th>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">ASESOR</th>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">CORREO</th>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">CELULAR</th>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">SUCURSAL</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">EQUIPOS ASIGNADOS</th>
           </tr>
         </thead>
         <tbody style="border-top:1px solid #f1f5f9;">
