@@ -1974,7 +1974,7 @@ function procesarAccionesEquipo(equipo, precioPorGalon) {
 
   // 6. Reconexión
   const fechaTelemetria = equipo.ult_conexion;  // ✅ Campo correcto
-  if (!estaConectadoUltimosDias(fechaTelemetria, 30)) {
+  if (!estaConectadoUltimosDias(fechaTelemetria, 15)) {  // ✅ Consistente con sección Conectividad
     const diasSinDatos = calcularDiasSinDatos(fechaTelemetria);
     acciones.push({
       tipo: 'reconexion',
