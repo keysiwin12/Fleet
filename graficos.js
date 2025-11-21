@@ -2146,22 +2146,41 @@ function generarTablaAsesores(equiposConAcciones) {
     const numInterno = escapeHtml(equipo.num_interno || equipo.numero_interno || 'N/A');
     const familia = escapeHtml(equipo.familia || 'N/A');
     const modelo = escapeHtml(equipo.modelo || '');
+    const idEquipo = escapeHtml(equipo.id_equipo || 'N/A');
+
     const asesor = escapeHtml(equipo.asesor || 'Sin asignar');
+    const email = escapeHtml(equipo.asesor_email || '-');
+    const celular = escapeHtml(equipo.asesor_celular || '-');
+    const sucursal = escapeHtml(equipo.asesor_sucursal || '-');
 
     // Efecto zebra ligero
     const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
 
     return `
       <tr style="background:${bgColor};">
-        <td style="padding:10px 16px; vertical-align:middle; width:250px;">
-          <div style="font-weight:700; font-size:12px; color:#1e293b;">${numInterno}</div>
+        <td style="padding:10px 16px; vertical-align:top; width:180px;">
+          <div style="font-weight:700; font-size:12px; color:#1e293b; margin-bottom:3px;">${numInterno}</div>
+          <div style="font-size:10px; color:#64748b; margin-bottom:2px;">${familia} - ${modelo}</div>
+          <div style="font-size:9px; color:#94a3b8;">${idEquipo}</div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:300px;">
-          <div style="font-size:11px; color:#64748b;">${familia} - ${modelo}</div>
+        <td style="padding:10px 16px; vertical-align:middle; width:200px;">
+          <div style="font-size:11px; color:#1e293b; font-weight:600;">
+            👤 ${asesor}
+          </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:390px;">
-          <div style="font-size:11px; color:#475569;">
-            <span style="font-weight:600;">👤</span> ${asesor}
+        <td style="padding:10px 16px; vertical-align:middle; width:220px;">
+          <div style="font-size:10px; color:#64748b;">
+            📧 ${email}
+          </div>
+        </td>
+        <td style="padding:10px 16px; vertical-align:middle; width:140px;">
+          <div style="font-size:10px; color:#64748b;">
+            📱 ${celular}
+          </div>
+        </td>
+        <td style="padding:10px 16px; vertical-align:middle; width:200px;">
+          <div style="font-size:10px; color:#64748b;">
+            🏢 ${sucursal}
           </div>
         </td>
       </tr>`;
@@ -2178,8 +2197,10 @@ function generarTablaAsesores(equiposConAcciones) {
         <thead style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
           <tr>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">EQUIPO</th>
-            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">TIPO</th>
-            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">ASESOR RESPONSABLE</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">ASESOR</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">CORREO</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">CELULAR</th>
+            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">SUCURSAL</th>
           </tr>
         </thead>
         <tbody style="border-top:1px solid #f1f5f9;">
