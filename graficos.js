@@ -2033,9 +2033,9 @@ function generarHeaderAcciones(periodo, contadores) {
       <div style="font-size:11px; font-weight:600; display:flex; gap:12px;">
         <span>🔴 ${contadores.CRITICO} Crítico</span>
         <span>|</span>
-        <span>🟡 ${contadores.ALTO} Alto</span>
+        <span>🟠 ${contadores.ALTO} Alto</span>
         <span>|</span>
-        <span>🟢 ${contadores.MEDIO} Medio</span>
+        <span>🟡 ${contadores.MEDIO} Medio</span>
       </div>
     </div>`;
 }
@@ -2058,8 +2058,8 @@ function generarTablaAcciones(equiposConAcciones) {
     // Badge de prioridad
     const badgeConfig = {
       CRITICO: { icono: '🔴', bg: '#fee2e2', color: '#991b1b', border: '#dc2626' },
-      ALTO: { icono: '🟡', bg: '#fef3c7', color: '#92400e', border: '#f59e0b' },
-      MEDIO: { icono: '🟢', bg: '#d1fae5', color: '#065f46', border: '#10b981' }
+      ALTO: { icono: '🟠', bg: '#fed7aa', color: '#9a3412', border: '#ea580c' },
+      MEDIO: { icono: '🟡', bg: '#fef3c7', color: '#92400e', border: '#f59e0b' }
     };
     const cfg = badgeConfig[prioridad];
 
