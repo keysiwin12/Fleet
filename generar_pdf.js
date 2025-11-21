@@ -343,11 +343,6 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
 
   //info cliente
   try {
-    // 🔍 LOG: Inicio del proceso
-    console.log(`📧 Iniciando envío de correo para: ${clienteData.razon_social}`);
-    console.log(`   - ID OpCenter: ${clienteData.id_op_center}`);
-    console.log(`   - Contactos disponibles: ${clienteData.contactos ? clienteData.contactos.length : 0}`);
-
     //fecha
     const fechahoy = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy");
     //imágenes correo
@@ -359,13 +354,12 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
 
     // Verificar que la hoja existe
     if (!hojaSeguimiento) {
-      console.error("❌ No se encontró la hoja LOG_ENVIOS");
+      console.error("No se encontró la hoja LOG_ENVIOS");
       return;
     }
 
     // Generar número de informe
     const numInforme = numinforme(clienteData.id_op_center, hojaSeguimiento);
-    console.log(`   - Número de informe: ${numInforme}`);
 
     // Obtener destinatarios (contactos del cliente)
     const destinatarios = clienteData.contactos
@@ -374,19 +368,14 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
       .join(',');
 
     if (!destinatarios) {
-      console.log(`⚠️ No hay contactos con correo para el cliente: ${clienteData.razon_social}`);
-      console.log(`   - Contactos del cliente:`, JSON.stringify(clienteData.contactos, null, 2));
+      console.log(`No hay contactos con correo para el cliente: ${clienteData.razon_social}`);
       return;
     }
-
-    console.log(`   - Destinatarios: ${destinatarios}`);
 
     // Obtener correos de asesores para copia
     const correosAsesores = Object.values(clienteData.asesores || {})
       .filter(asesor => asesor.email && asesor.email.trim() !== '')
       .map(asesor => asesor.email);
-
-    console.log(`   - Asesores en CC: ${correosAsesores.length > 0 ? correosAsesores.join(',') : 'ninguno'}`);
 
     // Configurar opciones del correo
     const opcionesCorreo = {
@@ -409,8 +398,6 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
       opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
     }
 
-    console.log(`   - Preparando envío...`);
-
     // Enviar el correo
     GmailApp.sendEmail(
       destinatarios,
@@ -420,13 +407,12 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
       opcionesCorreo
     );
 
-    console.log(`✅ Correo enviado exitosamente a: ${clienteData.razon_social}`);
+    console.log(`Correo enviado exitosamente a: ${clienteData.razon_social}`);
 
     registrarEnvioLog(clienteData, numInforme);
 
   } catch (error) {
-    console.error(`❌ Error al enviar correo para ${clienteData.razon_social}:`, error);
-    console.error(`   - Stack:`, error.stack);
+    console.error(`Error al enviar correo para ${clienteData.razon_social}:`, error);
     throw error;
   }
 }
