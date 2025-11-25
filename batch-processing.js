@@ -37,9 +37,17 @@ function iniciarProcesamientoLotes() {
     // 2. Inicializar hoja de control
     const hojaControl = inicializarHojaControl();
 
-    // 3. Obtener datos de clientes
-    const datos = extraerDatosHojas();
-    const totalClientes = datos.clientes.length;
+    // 3. Obtener IDs de todos los clientes
+    Logger.log('📊 Cargando modelo de datos...');
+    const modelo = generarModeloConMetricas();
+    const mapaClientes = (modelo.relaciones && modelo.relaciones.clientes_por_opcenter) || {};
+    const todosLosIds = Object.keys(mapaClientes);
+    const totalClientes = todosLosIds.length;
+
+    if (totalClientes === 0) {
+      throw new Error('No hay clientes para procesar. Verifica la hoja Z_CLIENTES.');
+    }
+
     const clientesPorLote = CONFIG_LOTES.CLIENTES_POR_LOTE;
     const numLotes = Math.ceil(totalClientes / clientesPorLote);
 
@@ -47,7 +55,10 @@ function iniciarProcesamientoLotes() {
     Logger.log(`📦 Lotes a procesar: ${numLotes}`);
     Logger.log(`👥 Clientes por lote: ${clientesPorLote}`);
 
-    // 4. Registrar configuración en la hoja de control
+    // 4. Guardar IDs de clientes en Properties (para que los triggers los usen)
+    PropertiesService.getScriptProperties().setProperty('todosLosIds', JSON.stringify(todosLosIds));
+
+    // 5. Registrar configuración en la hoja de control
     const ahora = new Date();
     hojaControl.getRange('B2').setValue(ahora); // Fecha inicio
     hojaControl.getRange('B3').setValue(totalClientes); // Total clientes
@@ -57,7 +68,7 @@ function iniciarProcesamientoLotes() {
     hojaControl.getRange('B7').setValue(0); // Correos enviados
     hojaControl.getRange('B8').setValue('EN PROCESO');
 
-    // 5. Crear registros de lotes
+    // 6. Crear registros de lotes
     const filaInicio = 12; // Fila donde empiezan los lotes
     for (let i = 0; i < numLotes; i++) {
       const inicio = i * clientesPorLote;
@@ -74,7 +85,7 @@ function iniciarProcesamientoLotes() {
       hojaControl.getRange(fila, 8).setValue('');
     }
 
-    // 6. Programar el PRIMER lote para que inicie INMEDIATAMENTE
+    // 7. Programar el PRIMER lote para que inicie INMEDIATAMENTE
     ScriptApp.newTrigger('ejecutarPrimerLote')
       .timeBased()
       .after(5000) // 5 segundos después
@@ -91,6 +102,7 @@ function iniciarProcesamientoLotes() {
 
   } catch (error) {
     Logger.log(`❌ Error al iniciar procesamiento: ${error.message}`);
+    Logger.log(error.stack);
     throw error;
   }
 }
@@ -100,21 +112,18 @@ function iniciarProcesamientoLotes() {
  * (Llamada automáticamente por el trigger)
  */
 function ejecutarPrimerLote() {
-  procesarLote(1, 0, CONFIG_LOTES.CLIENTES_POR_LOTE);
+  procesarLote(1);
 }
 
 /**
  * ⚙️ PASO 2: Procesa un lote específico de clientes
  *
  * @param {number} numLote - Número del lote (1, 2, 3)
- * @param {number} indiceInicio - Índice inicial en el array de clientes
- * @param {number} indiceFin - Índice final en el array de clientes
  */
-function procesarLote(numLote, indiceInicio, indiceFin) {
+function procesarLote(numLote) {
   const inicioEjecucion = new Date();
   Logger.log(`\n${'='.repeat(60)}`);
   Logger.log(`🔄 PROCESANDO LOTE ${numLote}`);
-  Logger.log(`📋 Clientes: ${indiceInicio + 1} a ${indiceFin}`);
   Logger.log(`${'='.repeat(60)}\n`);
 
   try {
@@ -128,68 +137,74 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
     hojaControl.getRange(filaLote, 5).setValue(inicioEjecucion);
     SpreadsheetApp.flush(); // Forzar actualización visual
 
-    // 3. Extraer datos
-    const datos = extraerDatosHojas();
-    const totalClientes = datos.clientes.length;
-    const precioPorGalon = 3.75; // Cambiar a CONFIG si es necesario
+    // 3. Obtener IDs de clientes
+    const props = PropertiesService.getScriptProperties();
+    const todosLosIds = JSON.parse(props.getProperty('todosLosIds'));
 
-    // 4. Validar rango
-    const finReal = Math.min(indiceFin, totalClientes);
-    const clientesDelLote = datos.clientes.slice(indiceInicio, finReal);
-
-    Logger.log(`👥 Clientes en este lote: ${clientesDelLote.length}`);
-
-    // 5. Procesar clientes del lote
-    let pdfsGenerados = 0;
-    let correosEnviados = 0;
-    const errores = [];
-
-    for (let i = 0; i < clientesDelLote.length; i++) {
-      const cliente = clientesDelLote[i];
-      const indiceGlobal = indiceInicio + i;
-
-      try {
-        Logger.log(`\n📄 [${indiceGlobal + 1}/${totalClientes}] Procesando: ${cliente.nombre}`);
-
-        // Generar PDF para este cliente
-        const datosCliente = {
-          clientes: [cliente],
-          equipos: datos.equipos.filter(eq => eq.id_op_center === cliente.id_op_center),
-          contactos: datos.contactos.filter(c => c.id_op_center === cliente.id_op_center),
-          cod_alertas: datos.cod_alertas,
-          alertas: datos.alertas.filter(a => a.id_op_center === cliente.id_op_center),
-          promos: datos.promos,
-          logs: datos.logs
-        };
-
-        const pdfPorCliente = generarPDF(datosCliente, precioPorGalon);
-        pdfsGenerados++;
-
-        // Enviar correo
-        if (pdfPorCliente && pdfPorCliente.length > 0) {
-          enviarPDFsPorCorreo(pdfPorCliente, datosCliente.contactos);
-          correosEnviados++;
-          Logger.log(`✅ PDF generado y enviado para ${cliente.nombre}`);
-        }
-
-      } catch (errorCliente) {
-        const mensajeError = `Error en ${cliente.nombre}: ${errorCliente.message}`;
-        Logger.log(`❌ ${mensajeError}`);
-        errores.push(mensajeError);
-        // Continuar con el siguiente cliente (no detener el lote completo)
-      }
+    if (!todosLosIds || todosLosIds.length === 0) {
+      throw new Error('No se encontraron IDs de clientes en Properties.');
     }
+
+    const clientesPorLote = CONFIG_LOTES.CLIENTES_POR_LOTE;
+    const indiceInicio = (numLote - 1) * clientesPorLote;
+    const indiceFin = Math.min(indiceInicio + clientesPorLote, todosLosIds.length);
+    const idsDelLote = todosLosIds.slice(indiceInicio, indiceFin);
+
+    Logger.log(`👥 Clientes en este lote: ${idsDelLote.length}`);
+    Logger.log(`📋 Rango: ${indiceInicio + 1} a ${indiceFin} de ${todosLosIds.length}`);
+
+    // 4. Cargar modelo completo (necesario para generar PDFs y enviar correos)
+    Logger.log('📊 Cargando modelo de datos...');
+    const modelo = generarModeloConMetricas();
+    const mapaClientes = modelo.relaciones.clientes_por_opcenter;
+
+    // 5. Generar PDFs para este lote usando la función existente
+    Logger.log(`📄 Generando PDFs para ${idsDelLote.length} clientes...`);
+    const resultadosPDF = probarPDF4PaginasTodos({ onlyIds: idsDelLote });
+
+    let pdfsGenerados = resultadosPDF.ok || 0;
+    let errores = [];
+
+    // 6. Enviar correos para los PDFs generados exitosamente
+    Logger.log(`📧 Enviando correos...`);
+    let correosEnviados = 0;
+
+    resultadosPDF.resultados.forEach(resultado => {
+      if (resultado.ok) {
+        const clienteId = resultado.clienteId;
+        const clienteData = mapaClientes[clienteId];
+
+        try {
+          // Extraer file ID de la URL del PDF
+          const match = resultado.url.match(/[-\w]{25,}/);
+          if (match && match[0]) {
+            const pdfFileId = match[0];
+            enviarCorreoCliente(clienteData, pdfFileId);
+            correosEnviados++;
+            Logger.log(`✅ Correo enviado: ${clienteData.razon_social}`);
+          } else {
+            Logger.log(`⚠️ No se pudo extraer file ID de: ${resultado.url}`);
+          }
+        } catch (errorCorreo) {
+          const mensajeError = `Error al enviar correo a ${clienteData.razon_social}: ${errorCorreo.message}`;
+          Logger.log(`❌ ${mensajeError}`);
+          errores.push(mensajeError);
+        }
+      } else {
+        errores.push(`Error en cliente ${resultado.clienteId}: ${resultado.error}`);
+      }
+    });
 
     const finEjecucion = new Date();
     const duracionMin = ((finEjecucion - inicioEjecucion) / 1000 / 60).toFixed(2);
 
-    // 6. Actualizar resultados del lote
+    // 7. Actualizar resultados del lote
     hojaControl.getRange(filaLote, 4).setValue('COMPLETADO');
     hojaControl.getRange(filaLote, 6).setValue(finEjecucion);
     hojaControl.getRange(filaLote, 7).setValue(`${duracionMin} min`);
-    hojaControl.getRange(filaLote, 8).setValue(errores.length > 0 ? errores.join('; ') : 'Sin errores');
+    hojaControl.getRange(filaLote, 8).setValue(errores.length > 0 ? errores.slice(0, 3).join('; ') : 'Sin errores');
 
-    // 7. Actualizar totales globales
+    // 8. Actualizar totales globales
     const lotesCompletados = hojaControl.getRange('B5').getValue() + 1;
     const pdfsGlobales = hojaControl.getRange('B6').getValue() + pdfsGenerados;
     const correosGlobales = hojaControl.getRange('B7').getValue() + correosEnviados;
@@ -198,7 +213,7 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
     hojaControl.getRange('B6').setValue(pdfsGlobales);
     hojaControl.getRange('B7').setValue(correosGlobales);
 
-    // 8. Determinar si hay más lotes pendientes
+    // 9. Determinar si hay más lotes pendientes
     const numLotesTotales = hojaControl.getRange('B4').getValue();
     const hayMasLotes = numLote < numLotesTotales;
 
@@ -209,10 +224,8 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
     Logger.log(`   ⏱️ Duración: ${duracionMin} minutos`);
 
     if (hayMasLotes) {
-      // 9. Programar el SIGUIENTE lote
+      // 10. Programar el SIGUIENTE lote
       const siguienteLote = numLote + 1;
-      const siguienteInicio = indiceInicio + CONFIG_LOTES.CLIENTES_POR_LOTE;
-      const siguienteFin = siguienteInicio + CONFIG_LOTES.CLIENTES_POR_LOTE;
       const pausaMs = CONFIG_LOTES.PAUSA_ENTRE_LOTES_MIN * 60 * 1000;
 
       ScriptApp.newTrigger('ejecutarSiguienteLote')
@@ -221,11 +234,7 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
         .create();
 
       // Guardar datos del siguiente lote en Properties (para que el trigger los use)
-      PropertiesService.getScriptProperties().setProperties({
-        'siguienteLote': siguienteLote.toString(),
-        'siguienteInicio': siguienteInicio.toString(),
-        'siguienteFin': siguienteFin.toString()
-      });
+      props.setProperty('siguienteLote', siguienteLote.toString());
 
       Logger.log(`\n⏭️ Siguiente lote (${siguienteLote}) programado en ${CONFIG_LOTES.PAUSA_ENTRE_LOTES_MIN} minutos`);
 
@@ -234,7 +243,7 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
       hojaControl.getRange(filaProxLote, 4).setValue('PROGRAMADO');
 
     } else {
-      // 10. Proceso completo
+      // 11. Proceso completo
       hojaControl.getRange('B8').setValue('COMPLETADO');
       hojaControl.getRange('B9').setValue(finEjecucion);
 
@@ -258,7 +267,7 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
     const filaLote = 11 + numLote;
 
     hojaControl.getRange(filaLote, 4).setValue('ERROR');
-    hojaControl.getRange(filaLote, 8).setValue(error.message);
+    hojaControl.getRange(filaLote, 8).setValue(error.message.substring(0, 200));
     hojaControl.getRange('B8').setValue('ERROR');
 
     throw error;
@@ -272,10 +281,13 @@ function procesarLote(numLote, indiceInicio, indiceFin) {
 function ejecutarSiguienteLote() {
   const props = PropertiesService.getScriptProperties();
   const numLote = parseInt(props.getProperty('siguienteLote'));
-  const inicio = parseInt(props.getProperty('siguienteInicio'));
-  const fin = parseInt(props.getProperty('siguienteFin'));
 
-  procesarLote(numLote, inicio, fin);
+  if (!numLote || isNaN(numLote)) {
+    Logger.log('❌ No se encontró información del siguiente lote en Properties.');
+    return;
+  }
+
+  procesarLote(numLote);
 }
 
 /**
