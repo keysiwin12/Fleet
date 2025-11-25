@@ -21,10 +21,21 @@ function probarPDF4PaginasTodos(opts = {}) {
   const mapaClientes = (modelo.relaciones && modelo.relaciones.clientes_por_opcenter) || {};
   const allIds = Object.keys(mapaClientes);
 
+  // 🔍 FILTRO: Solo clientes con al menos 1 máquina trabajando
+  const idsConMaquinasTrabajando = allIds.filter(id => {
+    const cliente = mapaClientes[id];
+    const equiposTrabajando = cliente.metricas?.totales?.equiposTrabajando || 0;
+    return equiposTrabajando >= 1;
+  });
+
+  log(`📊 Total clientes en sistema: ${allIds.length}`);
+  log(`✅ Clientes con máquinas trabajando: ${idsConMaquinasTrabajando.length}`);
+  log(`❌ Clientes sin máquinas trabajando (excluidos): ${allIds.length - idsConMaquinasTrabajando.length}`);
+
   // Filtro opcional
   let targetIds = Array.isArray(opts.onlyIds) && opts.onlyIds.length
-    ? allIds.filter(id => opts.onlyIds.includes(id))
-    : allIds;
+    ? idsConMaquinasTrabajando.filter(id => opts.onlyIds.includes(id))
+    : idsConMaquinasTrabajando;
 
   if (typeof opts.max === "number" && opts.max > 0) {
     targetIds = targetIds.slice(0, opts.max);
