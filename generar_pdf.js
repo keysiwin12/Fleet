@@ -389,19 +389,19 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
     };
 
     // Agregar CC si hay asesores
-    if (correosAsesores.length > 0) {
-      opcionesCorreo.cc = correosAsesores.join(',')+ ',cgomezs@ipesa.com.pe';
-    }
+    // if (correosAsesores.length > 0) {
+    //   opcionesCorreo.cc = correosAsesores.join(',')+ ',cgomezs@ipesa.com.pe';
+    // }
 
-    if (clienteData.es_cbd === true){
-      opcionesCorreo.cc = opcionesCorreo.cc ? opcionesCorreo.cc + ",solucionesintegradas@ipesa.com.pe" : "solucionesintegradas@ipesa.com.pe";
-      opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
-    }
+    // if (clienteData.es_cbd === true){
+    //   opcionesCorreo.cc = opcionesCorreo.cc ? opcionesCorreo.cc + ",solucionesintegradas@ipesa.com.pe" : "solucionesintegradas@ipesa.com.pe";
+    //   opcionesCorreo.bcc = "reportcbd@expertconnect.johndeere.com";
+    // }
 
     // Enviar el correo
     GmailApp.sendEmail(
-      destinatarios,
-      // "ksimbron@ipesa.com.pe",
+      // destinatarios,
+      "ksimbron@ipesa.com.pe",
       `Reporte de Gestión de Flota | ${fechahoy} | ${clienteData.razon_social}`,
       '',
       opcionesCorreo

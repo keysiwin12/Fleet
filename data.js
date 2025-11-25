@@ -463,7 +463,7 @@ function calcularMetricasCliente(equipos, precioPorGalon) {
       if (eq.aviso === true) mantProx++;
     }
     
-    if (eq.percent_ralent_horas) {
+    if (eq.horas_total_general > 0) {
       equipos_trabajando++;
     }
 
