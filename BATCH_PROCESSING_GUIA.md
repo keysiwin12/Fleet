@@ -12,6 +12,51 @@ Este sistema divide la generación de 222 PDFs de reportes de flota en **3 lotes
 
 ---
 
+## ⚠️ IMPORTANTE: Autorización Requerida (PASO OBLIGATORIO)
+
+**Antes de ejecutar el sistema por primera vez**, necesitas autorizar los permisos para gestionar triggers.
+
+### 🔑 Pasos de Autorización:
+
+1. **Subir el código a Google Apps Script**
+   - Asegúrate de que `appsscript.json` incluye el scope:
+     ```json
+     "https://www.googleapis.com/auth/script.scriptapp"
+     ```
+   - ✅ Este scope ya está incluido en el archivo `appsscript.json`
+
+2. **Ejecutar cualquier función para forzar la autorización**
+   - Abre el editor de Google Apps Script
+   - Selecciona la función `eliminarTriggersAntiguos` en el menú desplegable
+   - Haz clic en "Ejecutar" (▶️)
+
+3. **Autorizar permisos**
+   - Aparecerá un diálogo: "Autorización necesaria"
+   - Haz clic en "Revisar permisos"
+   - Selecciona tu cuenta de Google
+   - Verás la advertencia "Esta app no está verificada por Google" (es normal)
+   - Haz clic en "Opciones avanzadas"
+   - Haz clic en "Ir a [nombre del proyecto] (no seguro)"
+   - Revisa los permisos solicitados:
+     - ✅ Administrar hojas de cálculo
+     - ✅ Enviar correos
+     - ✅ **Administrar triggers y funciones programadas**
+   - Haz clic en "Permitir"
+
+4. **Verificar autorización**
+   - La función `eliminarTriggersAntiguos()` debería ejecutarse sin errores
+   - Si ves "ℹ️ No se encontraron triggers antiguos" = ✅ Autorización exitosa
+
+**¿Por qué este paso?**
+El sistema necesita permisos para:
+- Crear triggers programados (`ScriptApp.newTrigger()`)
+- Listar triggers existentes (`ScriptApp.getProjectTriggers()`)
+- Eliminar triggers (`ScriptApp.deleteTrigger()`)
+
+**Solo necesitas hacer esto UNA VEZ.** Después, todas las funciones funcionarán normalmente.
+
+---
+
 ## 🎯 Funciones Principales
 
 ### 1️⃣ `iniciarProcesamientoLotes()`
