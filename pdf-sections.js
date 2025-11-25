@@ -181,9 +181,7 @@ function generarSeccionContactos(cliente, periodo) {
       <!-- CONTACTOS IPESA -->
       <div class="contacto-ipesa-box">
         <h3 class="contacto-ipesa-title">📧 CONTACTO IPESA</h3>
-        <p class="contacto-ipesa-text">
-          CSC IPESA: <a href="mailto:solucionesintegradas@ipesa.com.pe" style="color:#1a202c; font-weight:700; text-decoration:none;">solucionesintegradas@ipesa.com.pe</a>
-        </p>
+        <p class="contacto-ipesa-text">CSC IPESA: <a href="mailto:solucionesintegradas@ipesa.com.pe" style="color:#1a202c; font-weight:700; text-decoration:none;">solucionesintegradas@ipesa.com.pe</a></p>
       </div>
 
     </div>
