@@ -16,7 +16,8 @@ const CONFIG_LOTES = {
   CLIENTES_POR_LOTE: 75,
   PAUSA_ENTRE_LOTES_MIN: 3,
   NOMBRE_HOJA_CONTROL: 'BATCH_CONTROL',
-  TAG_TRIGGER: 'batch_processing_fleet'
+  TAG_TRIGGER: 'batch_processing_fleet',
+  ENVIAR_CORREOS: true  // ⚙️ Cambiar a false para probar SIN enviar correos
 };
 
 /**
@@ -179,9 +180,16 @@ function procesarLote(numLote) {
           const match = resultado.url.match(/[-\w]{25,}/);
           if (match && match[0]) {
             const pdfFileId = match[0];
-            enviarCorreoCliente(clienteData, pdfFileId);
-            correosEnviados++;
-            Logger.log(`✅ Correo enviado: ${clienteData.razon_social}`);
+
+            // ⚙️ Solo enviar correo si está habilitado en CONFIG
+            if (CONFIG_LOTES.ENVIAR_CORREOS) {
+              enviarCorreoCliente(clienteData, pdfFileId);
+              correosEnviados++;
+              Logger.log(`✅ Correo enviado: ${clienteData.razon_social}`);
+            } else {
+              correosEnviados++;  // Contar como "enviado" para el reporte (pero no envía realmente)
+              Logger.log(`🧪 [MODO PRUEBA] Correo NO enviado: ${clienteData.razon_social} (PDF: ${pdfFileId})`);
+            }
           } else {
             Logger.log(`⚠️ No se pudo extraer file ID de: ${resultado.url}`);
           }
