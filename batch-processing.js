@@ -588,3 +588,104 @@ function probarSistemaPorLotes() {
     throw error;
   }
 }
+
+/**
+ * 📧 CONTINUAR ENVÍO: Procesa solo los clientes restantes
+ *
+ * Útil cuando ya se enviaron correos a algunos clientes y solo quieres
+ * enviar a los que faltan.
+ *
+ * @param {number} saltarPrimeros - Número de clientes ya procesados (ej: 120)
+ * @returns {Object} Estado del procesamiento
+ */
+function continuarProcesamientoDesde(saltarPrimeros) {
+  try {
+    Logger.log(`🔄 Continuando procesamiento desde cliente ${saltarPrimeros + 1}...`);
+
+    // 1. Verificar y eliminar triggers antiguos
+    eliminarTriggersAntiguos();
+
+    // 2. Inicializar hoja de control
+    const hojaControl = inicializarHojaControl();
+
+    // 3. Obtener IDs de todos los clientes
+    Logger.log('📊 Cargando modelo de datos...');
+    const modelo = generarModeloConMetricas();
+    const mapaClientes = (modelo.relaciones && modelo.relaciones.clientes_por_opcenter) || {};
+    const todosLosIds = Object.keys(mapaClientes);
+
+    // 4. Saltar los primeros N clientes ya procesados
+    const idsRestantes = todosLosIds.slice(saltarPrimeros);
+    const totalRestantes = idsRestantes.length;
+
+    if (totalRestantes === 0) {
+      throw new Error(`No hay clientes restantes. Ya se procesaron todos los ${todosLosIds.length} clientes.`);
+    }
+
+    Logger.log(`📊 Total clientes en sistema: ${todosLosIds.length}`);
+    Logger.log(`⏭️ Saltando primeros: ${saltarPrimeros}`);
+    Logger.log(`📊 Clientes restantes: ${totalRestantes}`);
+
+    const clientesPorLote = CONFIG_LOTES.CLIENTES_POR_LOTE;
+    const numLotes = Math.ceil(totalRestantes / clientesPorLote);
+
+    Logger.log(`📦 Lotes a procesar: ${numLotes}`);
+    Logger.log(`👥 Clientes por lote: ${clientesPorLote}`);
+
+    // 5. Guardar IDs restantes en Properties
+    PropertiesService.getScriptProperties().setProperty('todosLosIds', JSON.stringify(idsRestantes));
+
+    // 6. Registrar configuración en la hoja de control
+    const ahora = new Date();
+    hojaControl.getRange('B2').setValue(ahora);
+    hojaControl.getRange('B3').setValue(totalRestantes); // Solo los restantes
+    hojaControl.getRange('B4').setValue(numLotes);
+    hojaControl.getRange('B5').setValue(0);
+    hojaControl.getRange('B6').setValue(0);
+    hojaControl.getRange('B7').setValue(0);
+    hojaControl.getRange('B8').setValue('EN PROCESO');
+
+    // Nota adicional en la hoja
+    hojaControl.getRange('A10').setValue(`⚠️ Nota: Se saltaron los primeros ${saltarPrimeros} clientes ya procesados`);
+
+    // 7. Crear registros de lotes
+    const filaInicio = 12;
+    for (let i = 0; i < numLotes; i++) {
+      const inicio = i * clientesPorLote;
+      const fin = Math.min(inicio + clientesPorLote, totalRestantes);
+      const fila = filaInicio + i;
+
+      hojaControl.getRange(fila, 1).setValue(`Lote ${i + 1}`);
+      hojaControl.getRange(fila, 2).setValue(`${saltarPrimeros + inicio + 1}-${saltarPrimeros + fin}`);
+      hojaControl.getRange(fila, 3).setValue(fin - inicio);
+      hojaControl.getRange(fila, 4).setValue('PENDIENTE');
+      hojaControl.getRange(fila, 5).setValue('');
+      hojaControl.getRange(fila, 6).setValue('');
+      hojaControl.getRange(fila, 7).setValue('');
+      hojaControl.getRange(fila, 8).setValue('');
+    }
+
+    // 8. Programar el PRIMER lote
+    ScriptApp.newTrigger('ejecutarPrimerLote')
+      .timeBased()
+      .after(5000)
+      .create();
+
+    Logger.log('✅ Sistema iniciado. Primer lote se ejecutará en 5 segundos.');
+    Logger.log(`📧 Se enviarán correos a ${totalRestantes} clientes (${saltarPrimeros + 1} al ${todosLosIds.length})`);
+
+    return {
+      status: 'INICIADO',
+      totalClientesSistema: todosLosIds.length,
+      clientesSaltados: saltarPrimeros,
+      clientesRestantes: totalRestantes,
+      numLotes: numLotes,
+      primerLoteEn: '5 segundos'
+    };
+
+  } catch (error) {
+    Logger.log(`❌ Error al continuar procesamiento: ${error.message}`);
+    Logger.log(error.stack);
+    throw error;
+  }
+}
