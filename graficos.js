@@ -630,15 +630,11 @@ function renderUtilizacion(equipos, metricas, periodo, precioPorGalon) {
   const combPerdidoGal = safeNum(totales.combPerdidoGal);  // ✅ Valor correcto del backend
   const perdidaUSD = safeNum(economico.perdidaUSD_por_combustible);  // ✅ Valor correcto del backend
 
-  // 2. FILTRAR EQUIPOS OPERATIVOS
-  const UMBRAL_MINIMO_HORAS = 1;
-
+  // 2. FILTRAR EQUIPOS OPERATIVOS (mostrar todos los equipos)
   const equiposOperativos = equipos
     .filter(eq => {
-      const horasTotal = safeNum(eq.horas_total_general);
       const pctRalenti = safeNum(eq.percent_ralent_horas);
-      return horasTotal > UMBRAL_MINIMO_HORAS &&
-             pctRalenti > 0.01 &&
+      return pctRalenti > 0.01 &&
              pctRalenti < 1.0;
     })
     .sort((a, b) => {
