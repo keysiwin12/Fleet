@@ -11,9 +11,7 @@ const config = {
 };
 
 
-
 const hojaSeguimiento = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("LOG_ENVIOS");
-
 
 
 // 🔹 CLIENTES

@@ -2,7 +2,7 @@
  * 🆕 PRUEBA: PDF con 4 páginas (Resumen + Recomendaciones + Conectividad + Utilización)
  * Proof of Concept extendido para validar patrón con sección de Utilización
  */
-function probarPDF4PaginasConHtmlService(clienteId = "483165") {
+function probarPDF4PaginasConHtmlService(clienteId = "74991") {
   try {
     Logger.log("🧪 Iniciando prueba con 4 páginas: Resumen + Recomendaciones + Conectividad + Utilización");
     Logger.log("📋 Usando HtmlService.createTemplateFromFile() + getAs(MimeType.PDF)");
