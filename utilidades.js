@@ -133,7 +133,7 @@ function numinforme(idopcenter,hojalogs){
   datos.forEach(fila => {
     if (fila[0] === idopcenter) {
       contador++;
-      console.log(contador);
+      // console.log(contador);
     }
   });
   return `${idopcenter}-${contador + 1}`;
