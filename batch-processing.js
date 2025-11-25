@@ -504,24 +504,87 @@ function inicializarHojaControl() {
 }
 
 /**
- * 🧪 FUNCIÓN DE PRUEBA: Simula procesamiento con 5 clientes
+ * 🧪 FUNCIÓN DE PRUEBA: Procesa solo los primeros 2 clientes
  *
  * Útil para probar el sistema antes del procesamiento real.
+ * IMPORTANTE: Esta función NO usa lotes, procesa directamente 2 clientes.
  */
 function probarSistemaPorLotes() {
-  Logger.log('🧪 Ejecutando prueba del sistema por lotes...');
-
-  // Temporalmente cambiar configuración para prueba
-  const configOriginal = CONFIG_LOTES.CLIENTES_POR_LOTE;
-  CONFIG_LOTES.CLIENTES_POR_LOTE = 2; // 2 clientes por lote
+  Logger.log('🧪 MODO PRUEBA: Procesando solo 2 clientes...');
 
   try {
-    iniciarProcesamientoLotes();
-    Logger.log('✅ Prueba iniciada. Revisa la hoja BATCH_CONTROL.');
+    // 1. Cargar modelo completo
+    Logger.log('📊 Cargando modelo de datos...');
+    const modelo = generarModeloConMetricas();
+    const mapaClientes = (modelo.relaciones && modelo.relaciones.clientes_por_opcenter) || {};
+    const todosLosIds = Object.keys(mapaClientes);
+
+    if (todosLosIds.length === 0) {
+      throw new Error('No hay clientes para procesar.');
+    }
+
+    // 2. Tomar solo los primeros 2 clientes
+    const idsParaPrueba = todosLosIds.slice(0, 2);
+    Logger.log(`👥 Clientes a procesar: ${idsParaPrueba.length}`);
+
+    // 3. Generar PDFs
+    Logger.log('📄 Generando PDFs...');
+    const resultadosPDF = probarPDF4PaginasTodos({ onlyIds: idsParaPrueba });
+
+    let pdfsGenerados = resultadosPDF.ok || 0;
+    let correosEnviados = 0;
+    const errores = [];
+
+    // 4. Enviar correos (si está habilitado)
+    if (CONFIG_LOTES.ENVIAR_CORREOS) {
+      Logger.log('📧 Enviando correos...');
+    } else {
+      Logger.log('🧪 [MODO PRUEBA] Correos deshabilitados (ENVIAR_CORREOS = false)');
+    }
+
+    resultadosPDF.resultados.forEach(resultado => {
+      if (resultado.ok) {
+        const clienteId = resultado.clienteId;
+        const clienteData = mapaClientes[clienteId];
+
+        try {
+          const match = resultado.url.match(/[-\w]{25,}/);
+          if (match && match[0]) {
+            const pdfFileId = match[0];
+
+            if (CONFIG_LOTES.ENVIAR_CORREOS) {
+              enviarCorreoCliente(clienteData, pdfFileId);
+              correosEnviados++;
+              Logger.log(`✅ Correo enviado: ${clienteData.razon_social}`);
+            } else {
+              correosEnviados++;
+              Logger.log(`🧪 [MODO PRUEBA] Correo NO enviado: ${clienteData.razon_social}`);
+            }
+          }
+        } catch (errorCorreo) {
+          errores.push(`Error: ${errorCorreo.message}`);
+          Logger.log(`❌ ${errorCorreo.message}`);
+        }
+      } else {
+        errores.push(`Error en cliente ${resultado.clienteId}`);
+      }
+    });
+
+    // 5. Resumen
+    Logger.log('\n📊 RESUMEN DE PRUEBA:');
+    Logger.log(`   ✅ PDFs generados: ${pdfsGenerados}`);
+    Logger.log(`   📧 Correos ${CONFIG_LOTES.ENVIAR_CORREOS ? 'enviados' : 'simulados'}: ${correosEnviados}`);
+    Logger.log(`   ❌ Errores: ${errores.length}`);
+
+    return {
+      pdfsGenerados,
+      correosEnviados,
+      errores,
+      enviandoCorreosReales: CONFIG_LOTES.ENVIAR_CORREOS
+    };
+
   } catch (error) {
     Logger.log(`❌ Error en prueba: ${error.message}`);
-  } finally {
-    // Restaurar configuración original
-    CONFIG_LOTES.CLIENTES_POR_LOTE = configOriginal;
+    throw error;
   }
 }
