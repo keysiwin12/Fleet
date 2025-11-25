@@ -627,7 +627,15 @@
     /* ================================
        🛡️ JOHN DEERE PROTECT
        ================================ */
-    .page-promo-protect { background:#ffffff; padding:50px 70px; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+    .page-promo-protect {
+      background:#ffffff;
+      padding:50px 70px;
+      box-sizing:border-box;
+      font-family:'Segoe UI', Tahoma, sans-serif;
+      page-break-before: always;
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
     .protect-container { display:flex; gap:30px; align-items:flex-start; }
     .protect-text { flex:1; }
     .protect-text h3 { margin:0 0 15px 0; color:#FDD023; font-size:18px; font-weight:700; }
