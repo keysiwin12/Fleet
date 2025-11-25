@@ -283,6 +283,9 @@ function buildDataModel() {
 
   console.log("⚙️ Construyendo relaciones e índices...");
 
+  // 🚀 OPTIMIZACIÓN: Generar índice de num_informe UNA SOLA VEZ
+  const indiceNumInformes = generarIndiceNumInformes(hojaSeguimiento);
+
   // 📍 Crear índice rápido de sucursales
   // cambiar a la funcion de arriba
   const sucursalesIndex = {};
@@ -391,7 +394,7 @@ function buildDataModel() {
         es_cbd: cli.es_cbd,
         es_signature: cli.es_signature,
         contactos: contactosCliente,
-        num_informe: numinforme(idOpCenter,hojaSeguimiento),
+        num_informe: numinformeDesdeIndice(idOpCenter, indiceNumInformes), // 🚀 OPTIMIZADO: Usa índice
         equipos: [],
         asesores: {},
       };

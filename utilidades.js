@@ -127,6 +127,46 @@ function prepararCarpetasSemana(fechaInicio, fechaFin) {
   };
 }
 
+/**
+ * 🚀 OPTIMIZADO: Genera un índice de contadores de informes por cliente
+ * Lee LOG_ENVIOS UNA SOLA VEZ y retorna un mapa para consultas rápidas
+ * @param {Sheet} hojalogs - Hoja LOG_ENVIOS
+ * @returns {Object} Mapa {id_op_center: contador}
+ */
+function generarIndiceNumInformes(hojalogs) {
+  const ultimaFila = hojalogs.getLastRow();
+  if (ultimaFila < 2) return {}; // Sin datos
+
+  // ✅ UNA SOLA lectura de toda la columna
+  const datos = hojalogs.getRange(2, 2, ultimaFila - 1, 1).getValues();
+
+  // ✅ Crear índice de contadores
+  const contadores = {};
+  datos.forEach(fila => {
+    const idOpCenter = fila[0];
+    if (idOpCenter) {
+      contadores[idOpCenter] = (contadores[idOpCenter] || 0) + 1;
+    }
+  });
+
+  return contadores;
+}
+
+/**
+ * 🚀 OPTIMIZADO: Obtiene el número de informe desde un índice precalculado
+ * @param {string} idopcenter - ID del cliente
+ * @param {Object} indiceContadores - Mapa de contadores generado por generarIndiceNumInformes()
+ * @returns {string} Número de informe formato "ID-N"
+ */
+function numinformeDesdeIndice(idopcenter, indiceContadores) {
+  const contador = indiceContadores[idopcenter] || 0;
+  return `${idopcenter}-${contador + 1}`;
+}
+
+/**
+ * ⚠️ DEPRECATED: Mantener por compatibilidad pero evitar usar en loops
+ * Usar generarIndiceNumInformes() + numinformeDesdeIndice() en su lugar
+ */
 function numinforme(idopcenter,hojalogs){
   const datos = hojalogs.getRange(2,2,hojalogs.getLastRow()-1,1).getValues();
   let contador = 0;
