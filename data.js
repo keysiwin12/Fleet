@@ -74,10 +74,18 @@ function getRawCartera() {
   const cartera = {};
   data.forEach(r => {
     const cliente = String(r.id_cliente || "").trim();
-    if (!cliente) return;
-    cartera[cliente] = {
-      id_asesor: String(r.id_asesor || "").trim()
-    };
+    const asesorId = String(r.id_asesor || "").trim();
+    if (!cliente || !asesorId) return;
+
+    // Soportar múltiples asesores por cliente
+    if (!cartera[cliente]) {
+      cartera[cliente] = [];
+    }
+
+    // Evitar duplicados
+    if (!cartera[cliente].includes(asesorId)) {
+      cartera[cliente].push(asesorId);
+    }
   });
   return cartera;
 }
@@ -340,33 +348,23 @@ function buildDataModel() {
     const eq = equipos[serie];
     const op = operacion[serie];
     if (!op) continue; // sin datos de operación → ignorar
-    
+
 
     const idOpCenter = String(op.id_cliente_oc || "").trim();
     if (!idOpCenter || !clientes[idOpCenter]) continue; // cliente inexistente → ignorar
 
     // 🧩 Datos relacionados
     const tax = taxonomia[eq.id_modelo] || {};
-    const car = cartera[serie] || {};
-    const asesor = asesores[car.id_asesor] || null;
-    const suc = sucursalesIndex[car.id_sucursal] || {};
-
     const dtcEquipo = dtc[serie] || [];
     const eaEquipo = expalert[serie] || [];
     const acEquipo = aceite[serie] || [];
 
-    // 🧱 Enriquecer equipo
+    // 🧱 Enriquecer equipo (sin datos de asesor - ahora están a nivel cliente)
     const equipoFinal = {
       ...eq,
       ...tax,
       ...op,
       id_op_center: idOpCenter,
-      asesor: asesor ? asesor.nombre_completo : null,
-      asesor_email: asesor ? asesor.email : null,
-      asesor_celular: asesor ? asesor.celular : null,
-      asesor_sucursal: asesor ? asesor.sucursal : null,
-      sucursal: suc.sucursal || null,
-      correo_sucursal: suc.correo_sucursal || null,
       dtc: dtcEquipo,
       ea: eaEquipo,
       ac: acEquipo,
@@ -384,6 +382,22 @@ function buildDataModel() {
       // 🚫 Si no tiene contactos CSC válidos → omitir
       if (contactosCliente.length === 0) continue;
 
+      // 🔹 Obtener asesores del cliente desde CARTERA
+      const idsAsesoresCliente = cartera[cli.id_cliente] || [];
+      const asesoresCliente = {};
+
+      idsAsesoresCliente.forEach(idAsesor => {
+        const asesor = asesores[idAsesor];
+        if (asesor) {
+          asesoresCliente[idAsesor] = {
+            nombre_completo: asesor.nombre_completo,
+            email: asesor.email,
+            sucursal: asesor.sucursal,
+            celular: asesor.celular,
+          };
+        }
+      });
+
       // ✅ Crear estructura del cliente
       clienteObj = {
         id_op_center: idOpCenter,
@@ -395,7 +409,7 @@ function buildDataModel() {
         contactos: contactosCliente,
         num_informe: numinformeDesdeIndice(idOpCenter, indiceNumInformes), // 🚀 OPTIMIZADO: Usa índice
         equipos: [],
-        asesores: {},
+        asesores: asesoresCliente,  // ✅ Asesores a nivel cliente
       };
 
       clientes_por_opcenter[idOpCenter] = clienteObj;
@@ -403,20 +417,6 @@ function buildDataModel() {
 
     // 🧩 Agregar equipo enriquecido al cliente
     clienteObj.equipos.push(equipoFinal);
-
-    // 🧩 Registrar asesor si aplica
-    if (asesor) {
-      const idAsesor = car.id_asesor;
-      const asesoresCliente = clienteObj.asesores;
-      if (!asesoresCliente[idAsesor]) {
-        asesoresCliente[idAsesor] = {
-          nombre_completo: asesor.nombre_completo,
-          email: asesor.email,
-          sucursal: asesor.sucursal,
-          celular: asesor.celular,
-        };
-      }
-    }
   }
 
 
