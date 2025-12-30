@@ -99,7 +99,8 @@ function probarPDF4PaginasConHtmlService(clienteId = "483165") {
         inicio: modelo.periodo.inicio,
         fin: modelo.periodo.fin
       },
-      modelo.config.precio_galon  // ✅ Desde CONFIG
+      modelo.config.precio_galon,  // ✅ Desde CONFIG
+      cliente.asesores || {}  // ✅ Asesores del cliente
     );
 
     // 🔹 Contactos

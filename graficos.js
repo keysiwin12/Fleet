@@ -1797,9 +1797,10 @@ function formatearFechaEA(fecha) {
  * @param {Array} equipos - Lista de equipos con datos
  * @param {Object} periodo - {inicio: "01-11-25", fin: "15-11-25"}
  * @param {Number} precioPorGalon - Precio del combustible por galón
+ * @param {Object} asesoresCliente - Objeto con asesores del cliente {id_asesor: {nombre_completo, email, sucursal, celular}}
  * @returns {String} HTML de la sección completa
  */
-function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon) {
+function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon, asesoresCliente = {}) {
   if (!Array.isArray(equipos) || equipos.length === 0) {
     return generarMensajeSinAcciones(periodo);
   }
@@ -1848,7 +1849,7 @@ function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon) {
   // Generar HTML
   const headerHTML = generarHeaderAcciones(periodo, contadores);
   const tablaHTML = generarTablaAcciones(equiposConAcciones);
-  const tablaAsesoresHTML = generarTablaAsesores(equiposConAcciones);
+  const tablaAsesoresHTML = generarTablaAsesores(equiposConAcciones, asesoresCliente);
 
   return `
     <div class="page">
@@ -2133,36 +2134,34 @@ function generarTablaAcciones(equiposConAcciones) {
 }
 
 /**
- * Genera tabla de asesores responsables (agrupados, sin repetir)
+ * Genera tabla de asesores responsables del cliente
+ * @param {Array} equiposConAcciones - Equipos con acciones pendientes
+ * @param {Object} asesoresCliente - Asesores del cliente {id_asesor: {nombre_completo, email, sucursal, celular}}
  */
-function generarTablaAsesores(equiposConAcciones) {
-  // Agrupar equipos por asesor
-  const asesoresMap = {};
+function generarTablaAsesores(equiposConAcciones, asesoresCliente = {}) {
+  // Validar que hay asesores
+  if (!asesoresCliente || Object.keys(asesoresCliente).length === 0) {
+    return ''; // No mostrar tabla si no hay asesores
+  }
 
-  equiposConAcciones.forEach(item => {
-    const { equipo } = item;
-    const asesorNombre = equipo.asesor || 'Sin asignar';
+  // Obtener lista de equipos con acciones (números internos)
+  const equiposConAccionesSet = new Set(
+    equiposConAcciones.map(item => item.equipo.num_interno || item.equipo.numero_interno || 'N/A')
+  );
 
-    if (!asesoresMap[asesorNombre]) {
-      asesoresMap[asesorNombre] = {
-        asesor: asesorNombre,
-        email: equipo.asesor_email || '-',
-        celular: equipo.asesor_celular || '-',
-        sucursal: equipo.asesor_sucursal || equipo.sucursal || '-',
-        equipos: []
-      };
-    }
-
-    const numInterno = equipo.num_interno || equipo.numero_interno || 'N/A';
-    asesoresMap[asesorNombre].equipos.push(numInterno);
+  // Crear array de asesores con formato para tabla
+  const asesoresArray = Object.values(asesoresCliente).map(asesor => {
+    return {
+      asesor: asesor.nombre_completo || 'Sin nombre',
+      email: asesor.email || '-',
+      celular: asesor.celular || '-',
+      sucursal: asesor.sucursal || '-',
+      equipos: Array.from(equiposConAccionesSet) // Todos los equipos con acciones
+    };
   });
 
-  // Convertir a array y ordenar
-  const asesoresArray = Object.values(asesoresMap).sort((a, b) => {
-    if (a.asesor === 'Sin asignar') return 1;
-    if (b.asesor === 'Sin asignar') return -1;
-    return a.asesor.localeCompare(b.asesor);
-  });
+  // Ordenar alfabéticamente por nombre
+  asesoresArray.sort((a, b) => a.asesor.localeCompare(b.asesor));
 
   const filasHTML = asesoresArray.map((asesorData, index) => {
     const asesor = escapeHtml(asesorData.asesor);
