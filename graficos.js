@@ -1801,6 +1801,9 @@ function formatearFechaEA(fecha) {
  * @returns {String} HTML de la sección completa
  */
 function generarAccionesRecomendaciones(equipos, periodo, precioPorGalon, asesoresCliente = {}) {
+  console.log(`[DEBUG ACCIONES] Recibido asesoresCliente:`, asesoresCliente);
+  console.log(`[DEBUG ACCIONES] Cantidad asesores:`, Object.keys(asesoresCliente).length);
+
   if (!Array.isArray(equipos) || equipos.length === 0) {
     return generarMensajeSinAcciones(periodo);
   }

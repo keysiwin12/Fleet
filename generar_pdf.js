@@ -208,6 +208,10 @@ function _generarPdf4PaginasParaCliente({ cliente, modelo, logosB64, toDataUrl, 
   );
 
   // 💡 Acciones y Recomendaciones
+  console.log(`[DEBUG PDF] Cliente: ${cliente.razon_social}`);
+  console.log(`[DEBUG PDF] Asesores del cliente:`, cliente.asesores);
+  console.log(`[DEBUG PDF] Cantidad de asesores:`, Object.keys(cliente.asesores || {}).length);
+
   const accionesHTML = generarAccionesRecomendaciones(
     cliente.equipos || [],
     {
