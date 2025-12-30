@@ -2144,19 +2144,13 @@ function generarTablaAsesores(equiposConAcciones, asesoresCliente = {}) {
     return ''; // No mostrar tabla si no hay asesores
   }
 
-  // Obtener lista de equipos con acciones (números internos)
-  const equiposConAccionesSet = new Set(
-    equiposConAcciones.map(item => item.equipo.num_interno || item.equipo.numero_interno || 'N/A')
-  );
-
   // Crear array de asesores con formato para tabla
   const asesoresArray = Object.values(asesoresCliente).map(asesor => {
     return {
       asesor: asesor.nombre_completo || 'Sin nombre',
       email: asesor.email || '-',
       celular: asesor.celular || '-',
-      sucursal: asesor.sucursal || '-',
-      equipos: Array.from(equiposConAccionesSet) // Todos los equipos con acciones
+      sucursal: asesor.sucursal || '-'
     };
   });
 
@@ -2168,37 +2162,30 @@ function generarTablaAsesores(equiposConAcciones, asesoresCliente = {}) {
     const email = escapeHtml(asesorData.email);
     const celular = escapeHtml(asesorData.celular);
     const sucursal = escapeHtml(asesorData.sucursal);
-    const equipos = asesorData.equipos.map(eq => escapeHtml(eq)).join(', ');
-    const cantidadEquipos = asesorData.equipos.length;
 
     // Efecto zebra ligero
     const bgColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
 
     return `
       <tr style="background:${bgColor};">
-        <td style="padding:10px 16px; vertical-align:middle; width:180px;">
+        <td style="padding:10px 16px; vertical-align:middle;">
           <div style="font-size:11px; color:#1e293b; font-weight:600;">
             👤 ${asesor}
           </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:200px;">
+        <td style="padding:10px 16px; vertical-align:middle;">
           <div style="font-size:10px; color:#64748b;">
             📧 ${email}
           </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:130px;">
+        <td style="padding:10px 16px; vertical-align:middle;">
           <div style="font-size:10px; color:#64748b;">
             📱 ${celular}
           </div>
         </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:120px;">
+        <td style="padding:10px 16px; vertical-align:middle;">
           <div style="font-size:10px; color:#64748b;">
             🏢 ${sucursal}
-          </div>
-        </td>
-        <td style="padding:10px 16px; vertical-align:middle; width:310px;">
-          <div style="font-size:10px; color:#475569;">
-            <span style="font-weight:600; color:#1e293b;">${cantidadEquipos} equipo${cantidadEquipos > 1 ? 's' : ''}:</span> ${equipos}
           </div>
         </td>
       </tr>`;
@@ -2218,7 +2205,6 @@ function generarTablaAsesores(equiposConAcciones, asesoresCliente = {}) {
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">CORREO</th>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">CELULAR</th>
             <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">SUCURSAL</th>
-            <th style="padding:10px 16px; text-align:left; font-size:10px; font-weight:700; text-transform:uppercase; color:#475569; letter-spacing:0.5px;">EQUIPOS ASIGNADOS</th>
           </tr>
         </thead>
         <tbody style="border-top:1px solid #f1f5f9;">
