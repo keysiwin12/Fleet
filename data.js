@@ -73,16 +73,9 @@ function getRawCartera() {
   const data = readSheetAsObjects("CARTERA");
   const cartera = {};
 
-  console.log(`[DEBUG CARTERA] Total de filas leídas: ${data.length}`);
-
-  data.forEach((r, index) => {
+  data.forEach(r => {
     const cliente = String(r.id_cliente || "").trim();
     const asesorId = String(r.id_asesor || "").trim();
-
-    if (index < 3) {
-      console.log(`[DEBUG CARTERA] Fila ${index}: id_cliente="${cliente}", id_asesor="${asesorId}"`);
-    }
-
     if (!cliente || !asesorId) return;
 
     // Soportar múltiples asesores por cliente
@@ -95,9 +88,6 @@ function getRawCartera() {
       cartera[cliente].push(asesorId);
     }
   });
-
-  console.log(`[DEBUG CARTERA] Total de clientes con asesores: ${Object.keys(cartera).length}`);
-  console.log(`[DEBUG CARTERA] Primeros 3 clientes:`, Object.keys(cartera).slice(0, 3));
 
   return cartera;
 }
@@ -353,17 +343,35 @@ function buildDataModel() {
     }
   }
 
-  const clientes_por_opcenter = {};  // ← AGREGAR ESTA LÍNEA
+  const clientes_por_opcenter = {};
+
+  // 📊 Contadores de filtrado
+  let totalEquiposInicial = Object.keys(equipos).length;
+  let filtradosSinOperacion = 0;
+  let filtradosSinCliente = 0;
+  let filtradosSinContactosCSC = 0;
+  let equiposProcesados = 0;
+
+  console.log(`📊 INICIO DE FILTRADO - Total equipos en Z_EQUIPOS: ${totalEquiposInicial}`);
 
   // 🔹 Procesar cada equipo
   for (const serie in equipos) {
     const eq = equipos[serie];
     const op = operacion[serie];
-    if (!op) continue; // sin datos de operación → ignorar
 
+    // FILTRO 1: Sin datos de operación
+    if (!op) {
+      filtradosSinOperacion++;
+      continue;
+    }
 
     const idOpCenter = String(op.id_cliente_oc || "").trim();
-    if (!idOpCenter || !clientes[idOpCenter]) continue; // cliente inexistente → ignorar
+
+    // FILTRO 2: Sin cliente o cliente inexistente
+    if (!idOpCenter || !clientes[idOpCenter]) {
+      filtradosSinCliente++;
+      continue;
+    }
 
     // 🧩 Datos relacionados
     const tax = taxonomia[eq.id_modelo] || {};
@@ -391,21 +399,18 @@ function buildDataModel() {
       const cli = clientes[idOpCenter];
       const contactosCliente = contactos[cli.id_cliente] || [];
 
-      // 🚫 Si no tiene contactos CSC válidos → omitir
-      if (contactosCliente.length === 0) continue;
+      // FILTRO 3: Sin contactos CSC válidos
+      if (contactosCliente.length === 0) {
+        filtradosSinContactosCSC++;
+        continue;
+      }
 
       // 🔹 Obtener asesores del cliente desde CARTERA
       const idsAsesoresCliente = cartera[cli.id_cliente] || [];
       const asesoresCliente = {};
 
-      // 🔍 DEBUG: Verificar búsqueda de asesores
-      console.log(`[DEBUG] Cliente: ${cli.razon_social}`);
-      console.log(`[DEBUG] id_cliente: "${cli.id_cliente}"`);
-      console.log(`[DEBUG] Asesores encontrados en CARTERA:`, idsAsesoresCliente);
-
       idsAsesoresCliente.forEach(idAsesor => {
         const asesor = asesores[idAsesor];
-        console.log(`[DEBUG] Buscando asesor "${idAsesor}":`, asesor ? "✓ Encontrado" : "✗ No encontrado");
         if (asesor) {
           asesoresCliente[idAsesor] = {
             nombre_completo: asesor.nombre_completo,
@@ -435,7 +440,17 @@ function buildDataModel() {
 
     // 🧩 Agregar equipo enriquecido al cliente
     clienteObj.equipos.push(equipoFinal);
+    equiposProcesados++;
   }
+
+  // 📊 Resumen de filtrado
+  console.log(`\n📊 RESUMEN DE FILTRADO:`);
+  console.log(`   Total equipos inicial: ${totalEquiposInicial}`);
+  console.log(`   ❌ Filtrados sin operación: ${filtradosSinOperacion}`);
+  console.log(`   ❌ Filtrados sin cliente: ${filtradosSinCliente}`);
+  console.log(`   ❌ Filtrados sin contactos CSC: ${filtradosSinContactosCSC}`);
+  console.log(`   ✅ Equipos procesados: ${equiposProcesados}`);
+  console.log(`   👥 Clientes finales: ${Object.keys(clientes_por_opcenter).length}\n`);
 
 
   // 🧾 Retornar modelo final
