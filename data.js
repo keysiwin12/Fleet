@@ -72,9 +72,17 @@ function getRawEquipos() {
 function getRawCartera() {
   const data = readSheetAsObjects("CARTERA");
   const cartera = {};
-  data.forEach(r => {
+
+  console.log(`[DEBUG CARTERA] Total de filas leídas: ${data.length}`);
+
+  data.forEach((r, index) => {
     const cliente = String(r.id_cliente || "").trim();
     const asesorId = String(r.id_asesor || "").trim();
+
+    if (index < 3) {
+      console.log(`[DEBUG CARTERA] Fila ${index}: id_cliente="${cliente}", id_asesor="${asesorId}"`);
+    }
+
     if (!cliente || !asesorId) return;
 
     // Soportar múltiples asesores por cliente
@@ -87,6 +95,10 @@ function getRawCartera() {
       cartera[cliente].push(asesorId);
     }
   });
+
+  console.log(`[DEBUG CARTERA] Total de clientes con asesores: ${Object.keys(cartera).length}`);
+  console.log(`[DEBUG CARTERA] Primeros 3 clientes:`, Object.keys(cartera).slice(0, 3));
+
   return cartera;
 }
 
@@ -386,8 +398,14 @@ function buildDataModel() {
       const idsAsesoresCliente = cartera[cli.id_cliente] || [];
       const asesoresCliente = {};
 
+      // 🔍 DEBUG: Verificar búsqueda de asesores
+      console.log(`[DEBUG] Cliente: ${cli.razon_social}`);
+      console.log(`[DEBUG] id_cliente: "${cli.id_cliente}"`);
+      console.log(`[DEBUG] Asesores encontrados en CARTERA:`, idsAsesoresCliente);
+
       idsAsesoresCliente.forEach(idAsesor => {
         const asesor = asesores[idAsesor];
+        console.log(`[DEBUG] Buscando asesor "${idAsesor}":`, asesor ? "✓ Encontrado" : "✗ No encontrado");
         if (asesor) {
           asesoresCliente[idAsesor] = {
             nombre_completo: asesor.nombre_completo,
