@@ -73,11 +73,10 @@ function getRawCartera() {
   const data = readSheetAsObjects("CARTERA");
   const cartera = {};
   data.forEach(r => {
-    const serie = String(r.id_equipo || "").trim();
-    if (!serie) return;
-    cartera[serie] = {
-      id_asesor: String(r.id_asesor || "").trim(),
-      id_sucursal: String(r.id_sucursal || "").trim(),
+    const cliente = String(r.id_cliente || "").trim();
+    if (!cliente) return;
+    cartera[cliente] = {
+      id_asesor: String(r.id_asesor || "").trim()
     };
   });
   return cartera;
