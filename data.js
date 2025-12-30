@@ -345,48 +345,14 @@ function buildDataModel() {
 
   const clientes_por_opcenter = {};
 
-  // 📊 Contadores de filtrado
-  let totalEquiposInicial = Object.keys(equipos).length;
-  let filtradosSinOperacion = 0;
-  let filtradosSinCliente = 0;
-  let filtradosSinIdCliente = 0;
-  let filtradosClienteNoExiste = 0;
-  let filtradosSinContactosCSC = 0;
-  let equiposProcesados = 0;
-
-  console.log(`📊 INICIO DE FILTRADO`);
-  console.log(`   Total equipos en Z_EQUIPOS: ${totalEquiposInicial}`);
-  console.log(`   Total clientes en Z_CLIENTES: ${Object.keys(clientes).length}`);
-
   // 🔹 Procesar cada equipo
   for (const serie in equipos) {
     const eq = equipos[serie];
     const op = operacion[serie];
-
-    // FILTRO 1: Sin datos de operación
-    if (!op) {
-      filtradosSinOperacion++;
-      continue;
-    }
+    if (!op) continue; // sin datos de operación → ignorar
 
     const idOpCenter = String(op.id_cliente_oc || "").trim();
-
-    // FILTRO 2a: Sin id_cliente_oc
-    if (!idOpCenter) {
-      filtradosSinIdCliente++;
-      filtradosSinCliente++;
-      continue;
-    }
-
-    // FILTRO 2b: Cliente no existe en Z_CLIENTES
-    if (!clientes[idOpCenter]) {
-      filtradosClienteNoExiste++;
-      filtradosSinCliente++;
-      if (filtradosClienteNoExiste <= 5) {
-        console.log(`   ⚠️ Cliente no encontrado: "${idOpCenter}" (equipo: ${serie})`);
-      }
-      continue;
-    }
+    if (!idOpCenter || !clientes[idOpCenter]) continue; // cliente inexistente → ignorar
 
     // 🧩 Datos relacionados
     const tax = taxonomia[eq.id_modelo] || {};
@@ -414,11 +380,8 @@ function buildDataModel() {
       const cli = clientes[idOpCenter];
       const contactosCliente = contactos[cli.id_cliente] || [];
 
-      // FILTRO 3: Sin contactos CSC válidos
-      if (contactosCliente.length === 0) {
-        filtradosSinContactosCSC++;
-        continue;
-      }
+      // 🚫 Si no tiene contactos CSC válidos → omitir
+      if (contactosCliente.length === 0) continue;
 
       // 🔹 Obtener asesores del cliente desde CARTERA
       const idsAsesoresCliente = cartera[cli.id_cliente] || [];
@@ -455,18 +418,7 @@ function buildDataModel() {
 
     // 🧩 Agregar equipo enriquecido al cliente
     clienteObj.equipos.push(equipoFinal);
-    equiposProcesados++;
   }
-
-  // 📊 Resumen de filtrado
-  console.log(`\n📊 RESUMEN DE FILTRADO:`);
-  console.log(`   Total equipos inicial: ${totalEquiposInicial}`);
-  console.log(`   ❌ Filtrados sin operación: ${filtradosSinOperacion}`);
-  console.log(`   ❌ Filtrados sin id_cliente_oc: ${filtradosSinIdCliente}`);
-  console.log(`   ❌ Filtrados cliente no existe en Z_CLIENTES: ${filtradosClienteNoExiste}`);
-  console.log(`   ❌ Filtrados sin contactos CSC: ${filtradosSinContactosCSC}`);
-  console.log(`   ✅ Equipos procesados: ${equiposProcesados}`);
-  console.log(`   👥 Clientes finales: ${Object.keys(clientes_por_opcenter).length}\n`);
 
 
   // 🧾 Retornar modelo final
