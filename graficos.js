@@ -2141,6 +2141,7 @@ function generarTablaAcciones(equiposConAcciones) {
 function generarTablaAsesores(equiposConAcciones, asesoresCliente = {}) {
   // Validar que hay asesores
   if (!asesoresCliente || Object.keys(asesoresCliente).length === 0) {
+    Logger.log(asesoresCliente);
     return ''; // No mostrar tabla si no hay asesores
   }
 

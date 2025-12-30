@@ -413,7 +413,7 @@ function enviarCorreoCliente(clienteData, pdfFileId) {
     // Enviar el correo
     GmailApp.sendEmail(
       // destinatarios,
-      "ksimbron@ipesa.com.pe",
+      "ksimbron@ipesa.com.pe,cgomezs@ipesa.com.pe",
       `Reporte de Gestión de Flota | ${fechahoy} | ${clienteData.razon_social}`,
       '',
       opcionesCorreo
